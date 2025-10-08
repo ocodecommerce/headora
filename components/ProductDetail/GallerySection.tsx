@@ -220,7 +220,7 @@ function GallerySection({ currentVariantData }: any) {
           }}
           modules={[Zoom, FreeMode, Navigation, Thumbs, Pagination]}
           autoHeight={true}
-          pagination={true}
+          pagination={{ clickable: true }}
           onClick={handleImageTap}
         >
           {sortedMediaGallery?.map((gallery: any, i: any) => (
