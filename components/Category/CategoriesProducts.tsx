@@ -918,8 +918,9 @@ function CategoriesProducts({ productsData, categoriesData, categoryDetail, show
                                   className={styles.addToCartButton}
                                   onClick={(e) => {
                                     e.preventDefault()
+                                    console.log("product", product)
                                     if (product.__typename === "ConfigurableProduct") {
-                                      router.push(`/${product.url_key}`)
+                                      router.push(`/${product.url_key}.html`)
                                     } else {
                                       handleAddToCart(productItem.id, 1)
                                     }
