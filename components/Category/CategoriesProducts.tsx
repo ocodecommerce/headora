@@ -758,7 +758,7 @@ function CategoriesProducts({ productsData, categoriesData, categoryDetail, show
           <div className={styles.filterContainer}>
             <div className={styles.filterModal} style={{ zIndex: "unset" }}>
               <div className={styles.filterHeader}>
-                <h4>Filter By</h4>
+                <label>Filter By</label>
               </div>
               <div className={styles.filterContent}>
                 <div className={styles.filterGroup} style={{ borderBottom: activeFilters.length === 0 ? "none" : "" }}>
@@ -782,7 +782,7 @@ function CategoriesProducts({ productsData, categoriesData, categoryDetail, show
                   .filter((aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand")
                   .map((aggregation: any) => (
                     <div key={aggregation.label} className={styles.filterGroup}>
-                      <h5 className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
+                      <p className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
                         {aggregation.label.replace(/_/g, " ")}
                         <span className={styles.dropdownArrow}>
                           {openGroups[aggregation.label] ? (
@@ -791,7 +791,7 @@ function CategoriesProducts({ productsData, categoriesData, categoryDetail, show
                             <Image src="/Images/down-arrow.png" alt="Down Arrow" height={10} width={10} />
                           )}
                         </span>
-                      </h5>
+                      </p>
 
                       {openGroups[aggregation.label] && (
                         <div className={styles.filterOptionsGrid}>

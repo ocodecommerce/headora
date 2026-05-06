@@ -617,8 +617,8 @@ const breadcrumbsProducts = [
         <div style={{position:'relative'
         }}>
           <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/>
-          <p>generatedAt: {generatedAt}</p>
-          <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p>
+          {/* <p>generatedAt: {generatedAt}</p> */}
+          <p style={{color:"wheat"}}>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p>
           <CategoriesProducts
             Data={{ name: category?.name }}
             categoryDetail={category}
@@ -711,7 +711,7 @@ const breadcrumbsProducts = [
         ReturnDataCMSBlock={ReturnDataCMSBlock}
         showRibbon={showRibbon}/>
           {/* <StaticReview /> */}
-        <p>generatedAt: {generatedAt}+{process.env.NEXT_PHASE},"process.env.NEXT_PHASE"</p>
+        <p style={{color:"wheat"}}>generatedAt: {generatedAt}+{process.env.NEXT_PHASE},"process.env.NEXT_PHASE"</p>
 
         <ReviewSection Data={productData} AllReviews={reviews} />
         <CrossSellProducts Data={productData}/>

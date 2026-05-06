@@ -94,7 +94,7 @@
 }
 
 .contentContainer h1 {
-  font-size: 24px;
+  font-size: 46px;
   font-weight: 400;
   margin: 20px;
   font-family: var(--SourceSerifPro);
@@ -459,7 +459,7 @@
   border-bottom: 1px solid #ccc;
 }
 
-.filterHeader h4 {
+.filterHeader label {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 1px;
