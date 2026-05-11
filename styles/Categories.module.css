@@ -1160,11 +1160,82 @@
 }
 
 .descriptionContainer {
-  max-width: 1440px;
-  margin: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+  padding: 0px 40px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  /* width: 1440px; */
+
+  @media screen and (max-width:650px)  {
+    padding: 0px 20px;
+  }
+}
+
+
+.content h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: var(--SourceSerifPro);
+}
+
+/* Styling for paragraphs */
+.content p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  /* margin-bottom: 20px; */
+
+  @media screen and (max-width:650px) {
+    font-size: 12px;
+  }
+
+}
+
+/* Styling for bold text */
+.content strong {
+  font-weight: 700;
+  color: #000;
+
+}
+
+/* Add spacing between elements */
+.content p+p {
+  margin-top: 10px;
+
+}
+
+/* Show more/less toggle */
+.showToggle {
+  display: inline-block;
+  margin-top: 10px;
+  color: #686868;
+  cursor: pointer;
+  font-weight: 500;
+margin-bottom: 20px;
+  text-decoration: none;
+}
+
+.showToggle:hover {
+  color: #D4A902;
+}
+
+/* Brand Name Section */
+.brandName{
+  font-family: var(--muli);
+  text-align: center;
+  text-transform: uppercase;
+}
+.conditionName{
+  font-family: var(--muli);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 300 !important;
+  color: #a29253;
+}
+.loadingContainer{
+  text-align: center;
+  padding: 50px 0;
 }
 
 .WishListIconWrraper {

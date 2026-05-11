@@ -616,9 +616,12 @@ const breadcrumbsProducts = [
         <>
         <div style={{position:'relative'
         }}>
-          <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/>
+
+<CollectionHeader Data={collection} />
+<CollectionBreadCrumbs Data={collection} />
+          {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
           {/* <p>generatedAt: {generatedAt}</p> */}
-          <p style={{color:"wheat"}}>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p>
+          {/* <p style={{color:"wheat"}}>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
           <CategoriesProducts
             Data={{ name: category?.name }}
             categoryDetail={category}
@@ -699,7 +702,7 @@ const breadcrumbsProducts = [
         {/* <ProductSchema product={productData} aggregations={aggregations} schemaImage={schemaImage} price={price} metaDiscription={metaDiscription} /> */}
        
         <BreadcrumbSchema breadcrumbs={breadcrumbsProducts} products={productData} />
-        <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p>
+        {/* <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
         <ProductSchema product={productData} aggregations={aggregations} schemaImage={schemaImage} price={price} metaDiscription={metaDiscription} />
         
         <ProductDetail 
@@ -711,7 +714,7 @@ const breadcrumbsProducts = [
         ReturnDataCMSBlock={ReturnDataCMSBlock}
         showRibbon={showRibbon}/>
           {/* <StaticReview /> */}
-        <p style={{color:"wheat"}}>generatedAt: {generatedAt}+{process.env.NEXT_PHASE},"process.env.NEXT_PHASE"</p>
+        {/* <p style={{color:"wheat"}}>generatedAt: {generatedAt}+{process.env.NEXT_PHASE},"process.env.NEXT_PHASE"</p> */}
 
         <ReviewSection Data={productData} AllReviews={reviews} />
         <CrossSellProducts Data={productData}/>
