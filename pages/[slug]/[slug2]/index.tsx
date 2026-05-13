@@ -352,10 +352,14 @@ const CollectionDescription = collection?.description || null
           <SubCollectionListing Collection={collection} />
           <CollectionReletatedProducts Data={category} Collection={collection} />
           {/* <CollectionContent BlogContent={BlogContent}/> */}
+
+          <Content description={CollectionDescription}/>
         </>
       ) : (
         <>
-          <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/>
+        <CollectionHeader Data={collection} />
+        <CollectionBreadCrumbs Data={collection} />
+          {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
           <CategoriesProducts
             Data={{ name: category?.name }}
             categoryDetail={category}
