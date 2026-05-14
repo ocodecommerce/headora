@@ -62,7 +62,7 @@ function CollectionHeader({ Data }: any) {
     <div className={styles.collectionHeaderContainer}
       style={{
         // backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 80%)), url(${Data?.image || "#1a1e25"})`,
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgb(255 222 144 / 41%)), url(${process.env.baseURLForSchema}${Data?.ocode_image || "#1a1e25"})`,
+        // backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgb(255 222 144 / 41%)), url(${process.env.baseURLForSchema}${Data?.ocode_image || "#1a1e25"})`,
         backgroundRepeat: "no-repeat, no-repeat",
         // backgroundPosition: "center center, calc(100% - 10%) bottom",
         backgroundSize: "cover", 
@@ -99,7 +99,7 @@ function CollectionHeader({ Data }: any) {
   </p> : null}
 
 
-        <div className={styles.underline}></div>
+        {/* <div className={styles.underline}></div> */}
       </div>
       {/* <div className={styles.imageContainer}>
         <Image
