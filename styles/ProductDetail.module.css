@@ -660,6 +660,7 @@ font-size: 46px;
   background-color: #fff;
   cursor: pointer;
   font-size: 16px;
+  border-radius: 6px;
   height: 36px;
   width: 40px;
 
@@ -675,6 +676,7 @@ font-size: 46px;
  border-left: none;
   text-align: center;
   width: 64px;
+  border-radius: 6px;
   height: 36px;
   font-size: 16px;
   background-color: unset;
@@ -857,7 +859,7 @@ font-size: 46px;
 
   border: none;
   border-radius: 2px;
-
+border-radius: 6px;
   font-size: 15px;
   font-weight: 600;
   text-transform: uppercase;
@@ -1655,7 +1657,7 @@ font-weight: 600;
   color: #000000;
   text-decoration: none;
   font-size: 16px;
-
+border-radius: 6px;
   /* min-width: 412px; */
   min-height: 60px;
   cursor: pointer;
