@@ -1,6 +1,6 @@
 "use client"
+import React, { useEffect, useState, useCallback } from "react"
 
-import React from "react"
 import { Currency } from "../Currency/currency"
 import styles from "../../styles/Categories.module.css"
 import { useRouter } from "next/router"
@@ -37,6 +37,10 @@ function SearchProduct({
   isLoading,
 }: any) {
   const router = useRouter()
+  const handlePriceRangeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    // Search page doesn't use price slider, so this is a no-op
+    // Or implement price filtering if needed
+  }, []) 
 
   function formatPrice(value: number): string {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -81,28 +85,31 @@ function SearchProduct({
   return (
     <>
       {hasValidAggregations && (
-        <Filter
-          isSortListHovered={isSortListHovered}
-          handleCheckboxChange={handleCheckboxChange}
-          handleFilterClick={handleFilterClick}
-          handleSortOptionClick={handleSortOptionClick}
-          handleSortListHover={handleSortListHover}
-          categoriesData={{ products: { aggregations: aggrations } }}
-          isFilterOpen={isFilterOpen}
-          productCount={productCount}
-          filters={filters}
-          filterOptions={filterOptions}
-          setSelectedSortOption={setSelectedSortOption}
-          selectedSortOption={selectedSortOption}
-          setIsFilterOpen={setIsFilterOpen}
-          activeFilters={activeFilters}
-          handleRemoveFilter={handleRemoveFilter}
-          setPriceRange={setPriceRange}
-          highestPrice={highestPrice}
-          lowestPrice={lowestPrice}
-          setFilters={setFilters}
-          setActiveFilters={setActiveFilters}
-        />
+               <Filter
+               isSortListHovered={isSortListHovered}
+               handleCheckboxChange={handleCheckboxChange}
+               handleFilterClick={handleFilterClick}
+               handleSortOptionClick={handleSortOptionClick}
+               handleSortListHover={handleSortListHover}
+               categoriesData={{ products: { aggregations: aggrations } }}
+               isFilterOpen={isFilterOpen}
+               productCount={productCount}
+               filters={filters}
+               filterOptions={filterOptions}
+               setSelectedSortOption={setSelectedSortOption}
+               selectedSortOption={selectedSortOption}
+               setIsFilterOpen={setIsFilterOpen}
+               activeFilters={activeFilters}
+               handleRemoveFilter={handleRemoveFilter}
+               setPriceRange={setPriceRange}
+               highestPrice={highestPrice}
+               lowestPrice={lowestPrice}
+               setFilters={setFilters}
+               setActiveFilters={setActiveFilters}
+               handlePriceRangeChange={handlePriceRangeChange}
+                 Currency={Currency}
+                 priceRange={setPriceRange}
+             />
       )}
 
       <div className={styles.allSearchProductContainer}>
