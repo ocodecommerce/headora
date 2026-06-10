@@ -314,8 +314,8 @@ h6 {
   font-family: var(--font-body);
 }
 
-.hero_section_slide_left h2 {
-  font-size: clamp(32px, 5vw, 64px);
+.hero_section_slide_left h1 {
+  font-size: clamp(32px, 5vw, 46px);
   max-width: 520px;
   line-height: 1.1;
   font-weight: 500;
@@ -568,7 +568,7 @@ button.next {
 }
 
 .section_title {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(28px, 4vw, 40px);
   font-weight: 500;
   font-family: var(--font-heading);
   color: var(--text-primary);
@@ -624,6 +624,7 @@ button.next {
   text-decoration: none;
   display: block;
   transition: transform var(--transition-base);
+  background-image: url('/Images/clothes.jpg');
 }
 
 .featured_box:hover {
@@ -790,7 +791,7 @@ button.next {
 }
 
 .section_row_left h4 {
-  font-size: clamp(28px, 3.5vw, 40px);
+  font-size: clamp(28px, 3.5vw, 34px);
   font-weight: 500;
   margin-bottom: 8px;
   line-height: 1.2;
@@ -904,7 +905,7 @@ button.next {
 }
 
 .section_row_right_2 h4 {
-  font-size: clamp(32px, 4vw, 48px);
+  font-size: clamp(32px, 4vw, 40px);
   font-weight: 400;
   margin-bottom: 16px;
   line-height: 1.15;
@@ -1109,10 +1110,14 @@ button.next:focus-visible,
 
 .mySwiper .swiper-slide-thumb-active img {
   max-height: 134px !important;
-  box-shadow: 0px 4px 15px #a29253;
+  aspect-ratio: 1/1;
+  box-shadow: 0px 4px 15px #1979c3;
   /* Soft shadow similar to the image */
   border: none;
+  object-fit: contain;
   /* Ensure the border is removed */
+  filter: contrast(.98) brightness(.97);
+  background: hsla(0, 0%, 80%, .168);
   transition: box-shadow 0.3s ease;
   /* Smooth transition for shadow changes */
 }

@@ -26,9 +26,6 @@ import MakeAOffer from "../Modals/MakeAOffer";
 import ShortDescriptionNavBars from "./ShortDescriptionNavBars";
 import { manufacturer } from "../Category/ManufacturerData"
 
-
-
-
 function ProductDetail({
   Data,
   aggregations,

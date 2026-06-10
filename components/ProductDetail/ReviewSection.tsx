@@ -112,10 +112,10 @@ function ReviewSection({ Data, AllReviews }: any) {
       <div className={styles.ReviewContainer}>
         <div className={styles.ReviewNavbarContainer}>
           <ul className={styles.ReviewNavList}>
-            <li className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
+            <h2 className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
               REVIEWS
               <span className={styles.ReviewActiveUnderline}></span>
-            </li>
+            </h2>
           </ul>
         </div>
         {!isReviewFormOpen && (
@@ -125,7 +125,7 @@ function ReviewSection({ Data, AllReviews }: any) {
         }`}
       >
             <div className={styles.ReviewContent}>
-              <h4>Customer Reviews</h4>
+              <label>Customer Reviews</label>
               <div className={styles.RatingStars}>
                 <Image src="/Images/Filled.png" alt="star" height={12} width={12} />
                 <Image src="/Images/Filled.png" alt="star" height={12} width={12} />

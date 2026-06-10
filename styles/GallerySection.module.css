@@ -52,6 +52,9 @@
     max-width: 100%;
     height: auto;
     cursor: pointer;
+    filter: contrast(.98) brightness(.97);
+    background: hsla(0, 0%, 80%, .168);
+
 }
 .gallerysectionLeft{
 width:20%;

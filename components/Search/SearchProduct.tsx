@@ -1,6 +1,6 @@
 "use client"
+import React, { useEffect, useState, useCallback } from "react"
 
-import React from "react"
 import { Currency } from "../Currency/currency"
 import styles from "../../styles/Categories.module.css"
 import { useRouter } from "next/router"
@@ -37,6 +37,10 @@ function SearchProduct({
   isLoading,
 }: any) {
   const router = useRouter()
+  const handlePriceRangeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    // Search page doesn't use price slider, so this is a no-op
+    // Or implement price filtering if needed
+  }, []) 
 
   function formatPrice(value: number): string {
     return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -81,28 +85,31 @@ function SearchProduct({
   return (
     <>
       {hasValidAggregations && (
-        <Filter
-          isSortListHovered={isSortListHovered}
-          handleCheckboxChange={handleCheckboxChange}
-          handleFilterClick={handleFilterClick}
-          handleSortOptionClick={handleSortOptionClick}
-          handleSortListHover={handleSortListHover}
-          categoriesData={{ products: { aggregations: aggrations } }}
-          isFilterOpen={isFilterOpen}
-          productCount={productCount}
-          filters={filters}
-          filterOptions={filterOptions}
-          setSelectedSortOption={setSelectedSortOption}
-          selectedSortOption={selectedSortOption}
-          setIsFilterOpen={setIsFilterOpen}
-          activeFilters={activeFilters}
-          handleRemoveFilter={handleRemoveFilter}
-          setPriceRange={setPriceRange}
-          highestPrice={highestPrice}
-          lowestPrice={lowestPrice}
-          setFilters={setFilters}
-          setActiveFilters={setActiveFilters}
-        />
+               <Filter
+               isSortListHovered={isSortListHovered}
+               handleCheckboxChange={handleCheckboxChange}
+               handleFilterClick={handleFilterClick}
+               handleSortOptionClick={handleSortOptionClick}
+               handleSortListHover={handleSortListHover}
+               categoriesData={{ products: { aggregations: aggrations } }}
+               isFilterOpen={isFilterOpen}
+               productCount={productCount}
+               filters={filters}
+               filterOptions={filterOptions}
+               setSelectedSortOption={setSelectedSortOption}
+               selectedSortOption={selectedSortOption}
+               setIsFilterOpen={setIsFilterOpen}
+               activeFilters={activeFilters}
+               handleRemoveFilter={handleRemoveFilter}
+               setPriceRange={setPriceRange}
+               highestPrice={highestPrice}
+               lowestPrice={lowestPrice}
+               setFilters={setFilters}
+               setActiveFilters={setActiveFilters}
+               handlePriceRangeChange={handlePriceRangeChange}
+                 Currency={Currency}
+                 priceRange={setPriceRange}
+             />
       )}
 
       <div className={styles.allSearchProductContainer}>
@@ -110,7 +117,7 @@ function SearchProduct({
           <div className={styles.filterContainer}>
             <div className={styles.filterModal} style={{ zIndex: "unset" }}>
               <div className={styles.filterHeader}>
-                <h4>Filter By</h4>
+                <label>Filter By</label>
               </div>
               <div className={styles.filterContent}>
                 <div
@@ -146,7 +153,7 @@ function SearchProduct({
                   .filter((aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand")
                   .map((aggregation: any) => (
                     <div key={aggregation.label} className={styles.filterGroup}>
-                     <h5 className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
+                     <p className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
                     {aggregation.label.replace(/_/g, " ")}
                     <span className={styles.dropdownArrow}>
                       {openGroups[aggregation.label] ? (
@@ -155,7 +162,7 @@ function SearchProduct({
                         <Image src="/Images/down-arrow.png" alt="Down Arrow" height={10} width={10} />
                       )}
                     </span>
-                  </h5>
+                  </p>
                       {openGroups[aggregation.label] && (
                         <div className={styles.filterOptionsGrid}>
                           {aggregation.options.map((option: any) => {

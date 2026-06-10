@@ -15,6 +15,145 @@
 
 } */
 
+.updatedSortList {
+  position: relative;
+  width: 280px;
+  font-family: inherit;
+}
+.updatedArrowRotate{
+  transform: rotate(180deg);
+}
+
+/* Main Button */
+.updatedSortButton {
+  width: 100%;
+  height: 46px;
+  padding: 0 18px;
+  background: #ffffff;
+  border: 2px solid #111827;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  /* box-shadow: -6px 6px 0 #c8cdfd; */
+  transition: all 0.2s ease;
+}
+
+.updatedSortButton span {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2b2b2b;
+  white-space: nowrap;
+}
+
+/* Arrow */
+.updatedArrow {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.updatedSortList:hover .updatedArrow {
+  /* transform: rotate(180deg); */
+}
+
+/* Dropdown */
+.updatedSortDropdown {
+  position: absolute;
+  top: 54px;
+  right: 0;
+  width: 92%;
+  background: #ffffff;
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 999;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* UL */
+.updatedSortDropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* LI */
+.updatedSortOption {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.updatedSortOption:last-child {
+  border-bottom: none;
+}
+
+/* Label */
+.updatedSortOption label {
+  position: relative;
+  width: 100%;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background: #ffffff;
+  transition: background 0.2s ease;
+}
+
+.updatedSortOption label:hover {
+  background: #f7f7f7;
+}
+
+/* Text */
+.updatedSortOption label span {
+  font-size: 15px;
+  font-weight: 400;
+  color: #2d2d2d;
+}
+
+/* Hide Checkbox */
+.updatedCheckbox {
+  display: none;
+}
+
+/* Active Selected */
+.updatedActive span {
+  font-weight: 500;
+}
+
+/* Tick Mark */
+.updatedActive::after {
+  content: "✓";
+  font-size: 18px;
+  font-weight: 600;
+  color: #111111;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .updatedSortList {
+    width: 100%;
+  }
+
+  .updatedSortButton {
+    height: 44px;
+  }
+
+  .updatedSortButton span {
+    font-size: 14px;
+  }
+
+  .updatedSortOption label {
+    padding: 12px 16px;
+  }
+
+  .updatedSortOption label span {
+    font-size: 14px;
+  }
+}
+
+/* OLD */
 .cartegoryHeaderContainer span {
   text-decoration: none;
 }
@@ -62,12 +201,12 @@
 .cartegoryHeadeBreadcrumbs span {
   text-decoration: none;
   text-transform: capitalize;
-  color: #a29253;
+  color: #1979c3;;
   font-size: 10px;
 }
 
 .cartegoryHeadeBreadcrumbs a {
-  color: #a29253;
+  color: #1979c3;;
   text-decoration: none;
   font-weight: 500;
   font-size: 10px;
@@ -94,7 +233,7 @@
 }
 
 .contentContainer h1 {
-  font-size: 24px;
+  font-size: 46px;
   font-weight: 400;
   margin: 20px;
   font-family: var(--SourceSerifPro);
@@ -459,7 +598,7 @@
   border-bottom: 1px solid #ccc;
 }
 
-.filterHeader h4 {
+.filterHeader label {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 1px;
@@ -546,6 +685,8 @@
   line-height: 16px;
   font-size: 14px;
   color: #111827;
+
+
   cursor: pointer;
   align-items: center;
 
@@ -570,8 +711,9 @@
   -moz-appearance: none;
   /* For Firefox */
   place-content: center;
+  border-radius:4px;
   background-color: #fff;
-  border-radius: 3px;
+  /* border-radius: 3px; */
   border: 2px solid #111827;
   display: inline-grid;
   height: 20px;
@@ -788,7 +930,9 @@
 }
 
 .filterContainer {
-  width: 30%;
+  /* width: 30%; */
+  width: 325px;
+  margin-right: 20px;
 
   @media screen and (max-width:1000px) {
     display: none;
@@ -850,12 +994,11 @@
   cursor: pointer;
   color: #000;
   text-decoration: none;
-  gap: 5px;
+  /* justify-content: flex-end; */
+  /* gap: 5px; */
   font-size: 14px;
   align-items: flex-start;
 }
-
-
 
 .watchItem.search {
   background-color: white;
@@ -1003,6 +1146,7 @@
   justify-content: flex-start;
   margin: auto;
   gap: 10px;
+  margin-top:5px;
 }
 
 .addToCartButton {
@@ -1013,7 +1157,7 @@
   color: #fff;
   background-color: #1979c3;
   border: 1px solid #1979c3;
-  border-radius: 2px;
+  border-radius: 6px;
 
   font-size: 14px;
   font-weight: 600;
@@ -1160,11 +1304,82 @@
 }
 
 .descriptionContainer {
-  max-width: 1440px;
-  margin: auto;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
+  padding: 0px 40px;
+  margin: 0 auto;
+  padding-bottom: 20px;
+  /* width: 1440px; */
+
+  @media screen and (max-width:650px)  {
+    padding: 0px 20px;
+  }
+}
+
+
+.content h3 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+  font-family: var(--SourceSerifPro);
+}
+
+/* Styling for paragraphs */
+.content p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+  /* margin-bottom: 20px; */
+
+  @media screen and (max-width:650px) {
+    font-size: 12px;
+  }
+
+}
+
+/* Styling for bold text */
+.content strong {
+  font-weight: 700;
+  color: #000;
+
+}
+
+/* Add spacing between elements */
+.content p+p {
+  margin-top: 10px;
+
+}
+
+/* Show more/less toggle */
+.showToggle {
+  display: inline-block;
+  margin-top: 10px;
+  color: #686868;
+  cursor: pointer;
+  font-weight: 500;
+margin-bottom: 20px;
+  text-decoration: none;
+}
+
+.showToggle:hover {
+  color: #D4A902;
+}
+
+/* Brand Name Section */
+.brandName{
+  font-family: var(--muli);
+  text-align: center;
+  text-transform: uppercase;
+}
+.conditionName{
+  font-family: var(--muli);
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 300 !important;
+  color: #a29253;
+}
+.loadingContainer{
+  text-align: center;
+  padding: 50px 0;
 }
 
 .WishListIconWrraper {
@@ -1295,6 +1510,70 @@
   object-fit: cover;
   width: 100%;
   height: auto;
+}
+
+
+.priceSliderContainer {
+  padding: 10px 0;
+}
+
+.priceRangeLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #333;
+}
+
+.sliderWrapper {
+  position: relative;
+  height: 20px;
+}
+
+.priceSlider {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  appearance: none;
+  background: transparent;
+  pointer-events: auto;
+}
+
+.priceSlider::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: #1979c3;
+  border-radius: 2px;
+}
+
+.priceSlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #1979c3;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  pointer-events: auto;
+  z-index: 99999;
+}
+
+.priceSlider::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+}
+
+.priceSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #1979c3;
+  border-radius: 50%;
+  cursor: pointer;
+  pointer-events: auto;
+  
 }
 
 /* ==================================================================Media Query============================================================= */
@@ -1474,4 +1753,117 @@
     padding: 45% 0;
 
   }
+
+
+
+.categoryContent {
+  max-width: 1440px;
+  margin: 0 auto;
+  margin-top: 20px;
 }
+
+.categorySection {
+  padding: 0 20px;
+}
+
+.richText {
+  font-size: 14px;
+  line-height: 1.65;
+  color: #333;
+}
+.richText h2 {
+  font-size: 34px;
+  font-weight: 600;
+  @media screen and (max-width: 650px) {
+    font-size: 22px;
+    margin: 12px 0 5px;
+  }
+
+}
+
+.richText h3 {
+  font-size: 30px;
+  font-weight: 600;
+  margin: 24px 0 10px;
+
+  @media screen and (max-width: 650px) {
+    font-size: 18px;
+    margin: 12px 0 5px;
+  }
+
+}
+
+.richText p {
+  margin-bottom: 8px;
+}
+
+.richText ul {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+
+.richText li {
+  margin-bottom: 8px;
+}
+
+}
+
+/* Skeltonş */
+
+/* Skeleton Animation */
+@keyframes skeleton-loading {
+  0% {
+    background-color: #eee;
+  }
+  50% {
+    background-color: #f5f5f5;
+  }
+  100% {
+    background-color: #eee;
+  }
+}
+
+.skeletonImage {
+  width: 100%;
+  height: 260px;
+  border-radius: 6px;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+.skeletonBrand {
+  height: 14px;
+  width: 40%;
+  margin-top: 10px;
+  border-radius: 4px;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+.skeletonTitle {
+  height: 16px;
+  width: 80%;
+  margin-top: 6px;
+  border-radius: 4px;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+.skeletonCondition {
+  height: 14px;
+  width: 50%;
+  margin-top: 6px;
+  border-radius: 4px;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+.skeletonPrice {
+  height: 18px;
+  width: 60%;
+  margin-top: 10px;
+  border-radius: 4px;
+  animation: skeleton-loading 1.2s infinite;
+}
+
+
+
+
+/* KIMO */
+
