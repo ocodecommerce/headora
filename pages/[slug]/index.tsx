@@ -617,8 +617,8 @@ const breadcrumbsProducts = [
         <div style={{position:'relative'
         }}>
 
-<CollectionHeader Data={collection} />
-<CollectionBreadCrumbs Data={collection} />
+          <CollectionHeader Data={collection} />
+          <CollectionBreadCrumbs Data={collection} />
           {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
           {/* <p>generatedAt: {generatedAt}</p> */}
           {/* <p style={{color:"wheat"}}>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}

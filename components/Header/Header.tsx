@@ -314,7 +314,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                   category.children.length < 5 ? { position: "relative" } : { position: "unset" }
                 }
               >
-                <Link href={`/${category.url_path}`}>{category.name}</Link>
+                <Link href={`/${category.url_path?.replace(/^\/+/, "")}`}>{category.name}</Link>
 
                 <>
                   {category.children.length > 0 && (
@@ -359,7 +359,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                               className={styles.categoryColumn}
                             >
                               <span className={styles.categoryTitle}>
-                                <Link href={`/${subCategory.url_path}`}>{subCategory.name}</Link>
+                                <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>{subCategory.name}</Link>
                               </span>
 
                               {subCategory.children?.length > 0 && (
@@ -380,7 +380,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                                           {category.name.toLowerCase() !==
                                             "brands" ? (
                                             <Link
-                                              href={`/${subSubCategory.url_path}`}
+                                              href={`${subSubCategory.url_path}`}
                                             >
                                               {subSubCategory.name}
                                             </Link>
@@ -393,7 +393,7 @@ const refinedCategories = (categories || []).map((category: any) => {
 
                                   {subCategory.children.length > 4 && (
                                     <li className={styles.viewAllLink}>
-                                      <Link href={`/${subCategory.url_path}`}>
+                                      <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
                                         View All
                                       </Link>
                                     </li>
@@ -445,7 +445,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                                 className={styles.categoryColumn}
                               >
                                 <span className={styles.categoryTitle}>
-                                  <Link href={`/${subCategory.url_path}`}>
+                                  <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
                                     {subCategory.name}
                                   </Link>
                                 </span>
@@ -468,7 +468,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                                             {category.name.toLowerCase() !==
                                               "brands" ? (
                                               <Link
-                                                href={`/${subSubCategory.url_path}`}
+                                                href={`${subSubCategory.url_path}`}
                                               >
                                                 {subSubCategory.name}
                                               </Link>
@@ -485,7 +485,7 @@ const refinedCategories = (categories || []).map((category: any) => {
 
                                     {subCategory.children.length > 4 && (
                                       <li className={styles.viewAllLink}>
-                                        <Link href={`/${subCategory.url_path}`}>
+                                        <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
                                           View All
                                         </Link>
                                       </li>

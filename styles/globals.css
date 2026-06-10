@@ -1110,10 +1110,14 @@ button.next:focus-visible,
 
 .mySwiper .swiper-slide-thumb-active img {
   max-height: 134px !important;
-  box-shadow: 0px 4px 15px #a29253;
+  aspect-ratio: 1/1;
+  box-shadow: 0px 4px 15px #1979c3;
   /* Soft shadow similar to the image */
   border: none;
+  object-fit: contain;
   /* Ensure the border is removed */
+  filter: contrast(.98) brightness(.97);
+  background: hsla(0, 0%, 80%, .168);
   transition: box-shadow 0.3s ease;
   /* Smooth transition for shadow changes */
 }

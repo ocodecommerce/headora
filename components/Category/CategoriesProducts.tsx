@@ -20,6 +20,7 @@ const productsPerPage = 21
 
 function CategoriesProducts({ iscollectionData, productsData, categoriesData, categoryDetail, showRibbon, isMobile }: any) {
   const router = useRouter()
+  console.log("CategoryDetail:", categoryDetail, "productsData:", productsData, "categoriesData:", categoriesData)
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -1154,7 +1155,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                                   add to cart
                                 </button>
                               ) : (
-                                <button className={styles.addToCartButton} disabled>
+                                <button className={styles.addToCartButton} >
                                   add to cart
                                 </button>
                               )}
