@@ -178,7 +178,9 @@
 
   margin: auto;
 
-  padding: 100px 20px 0;
+  /* padding: 100px 20px 0; */
+  padding: 0 60px !important;
+  margin-bottom: 20px !important;
   width: 100%;
   max-width: 1440px;
   margin: auto;
@@ -286,7 +288,7 @@
 .sortContainer {
   display: flex;
   justify-content: space-between;
-  padding: 15px 40px 15px 40px;
+  padding: 20px 60px 20px 60px;
   width: 100%;
   max-width: 1440px;
   margin: auto;
@@ -898,13 +900,18 @@
 
 /* ========================================================Main Products========================================================== */
 .allProductContainer {
-  padding: 10px 20px;
+  padding: 0 60px;
+  margin-top: 50px;
   width: 100%;
   max-width: 1440px;
   margin: auto;
+  margin-top: 50px;
+  gap: 50px;
+  gap: auto;
+  margin-bottom: 50px;
   display: flex;
-
   background-color: #ffffff;
+  justify-content: space-between;
 
   @media screen and (max-width:1000px) {
     padding: 0;
@@ -1265,7 +1272,9 @@
 
 /* Pagination */
 .pagination {
-  padding: 30px 0 40px 0;
+  /* padding: 10px 0 50px 0; */
+  margin-top: 10px;
+  margin-bottom: 50px;
   text-align: center;
 
   @media screen and (max-width: 1000px) {
@@ -1304,10 +1313,12 @@
 }
 
 .descriptionContainer {
-  padding: 0px 40px;
-  margin: 0 auto;
-  padding-bottom: 20px;
-  /* width: 1440px; */
+  padding: 0px 60px;
+  margin: auto;
+  margin-bottom: 50px;
+  margin-top: 50px;
+
+  width: 1440px;
 
   @media screen and (max-width:650px)  {
     padding: 0px 20px;

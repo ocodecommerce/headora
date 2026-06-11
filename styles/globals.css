@@ -1109,7 +1109,7 @@ button.next:focus-visible,
 }
 
 .mySwiper .swiper-slide-thumb-active img {
-  max-height: 134px !important;
+  /* max-height: 134px !important; */
   aspect-ratio: 1/1;
   box-shadow: 0px 4px 15px #1979c3;
   /* Soft shadow similar to the image */

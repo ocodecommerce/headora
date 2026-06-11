@@ -93,7 +93,7 @@ function ReviewSection({ Data, AllReviews }: any) {
           <div className={styles.ReviewNavbarContainer}>
             <ul className={styles.ReviewNavList}>
               <li className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
-                REVIEWS
+                Reviews
                 <span className={styles.ReviewActiveUnderline}></span>
               </li>
             </ul>
@@ -113,7 +113,7 @@ function ReviewSection({ Data, AllReviews }: any) {
         <div className={styles.ReviewNavbarContainer}>
           <ul className={styles.ReviewNavList}>
             <h2 className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
-              REVIEWS
+              Reviews
               <span className={styles.ReviewActiveUnderline}></span>
             </h2>
           </ul>
@@ -165,7 +165,7 @@ function ReviewSection({ Data, AllReviews }: any) {
       <div className={styles.ReviewNavbarContainer}>
         <ul className={styles.ReviewNavList}>
           <li className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
-            REVIEWS
+            Reviews
             <span className={styles.ReviewActiveUnderline}></span>
           </li>
           {reviews.length > 0 && (
