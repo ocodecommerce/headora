@@ -25,7 +25,7 @@ function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, ag
 
   return (
     <>
-      <ul className={styles.ShortDescriptionNavList}>
+      {/* <ul className={styles.ShortDescriptionNavList}>
         <div className={styles.underline} ></div>
 
       <li
@@ -48,13 +48,13 @@ function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, ag
         </li>
 
 
-      </ul>
+      </ul> */}
 
-                  <div
+          <div
               key={activeTab}
               className={styles.ShortDescriptionTabContent}
             >
-              {activeTab === "Description" && (
+
                 <ShortDescription
                   currentVariant={currentVariant}
                   configurableOptions={configurableOptions}
@@ -64,9 +64,8 @@ function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, ag
                       : Data?.aggregations
                   }
                 />
-              )}
-
-              {activeTab === "details" && (
+          
+  
                 <ProductItemDetails
                   currentVariant={currentVariant}
                   configurableOptions={configurableOptions}
@@ -76,7 +75,7 @@ function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, ag
                       : Data?.aggregations
                   }
                 />
-              )}
+            
 
             </div>
       

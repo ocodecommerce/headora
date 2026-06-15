@@ -1052,7 +1052,7 @@ function ProductDetail({
                     { Data?.name}
                 </h1>
               </div>
-              <p onClick={scrollToBottom} className={styles.paymentInfo} style={{ cursor: 'pointer' }}>Be the first to review this product</p>
+              {/* <p onClick={scrollToBottom} className={styles.paymentInfo} style={{ cursor: 'pointer' }}>Be the first to review this product</p> */}
               <p className={styles.paymentInfo}>
                 <b>Item #:</b> {currentVariant ? currentVariant.sku : Data?.sku}
                 {isMounted && (
@@ -1232,130 +1232,7 @@ function ProductDetail({
 
 
 
-            <ul className={styles.productFeatures}>
-
-
-                <li>
-                <Image
-                  height={50}
-                  width={50}
-                  src="/Images/ShippingLogo.png"
-                  alt="ShippingLogo"
-                />
-                <p>
-                  <span
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      window.open(
-                        `${process.env.baseURLWithoutTrailingSlash}/shipping`,
-                        "_blank"
-                      );
-                    }}
-                  >
-                    Shipping
-                  </span>{" "}
-                  and{" "}
-                  <span
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      window.open(
-                        `${process.env.baseURLWithoutTrailingSlash}/returns`,
-                        "_blank"
-                      );
-                    }}
-                  >
-                    Returns
-                  </span>
-                </p>
-              </li>
-              <li>
-                <Image
-                  height={50}
-                  width={50}
-                  src="/Images/PersonLogo.png"
-                  alt="PersonLogo"
-                />
-                <p>
-                  Speak to an expert{" "}
-                  <Link href="tel:6234556258"> 623.455.6258</Link>
-                </p>
-              </li>
-              <li>
-                <Image
-                  height={50}
-                  width={50}
-                  src="/Images/ruler.png"
-                  alt="Ruler"
-                />
-                <Link href={`${process.env.baseURL}/#`} target="_blank">
-                  <p>Content Guide</p>
-                </Link>
-              </li> 
-
-
-              <div className={styles.SharedSocialMediaIcons}>
-                {/* <Link href={`sendfriend/product/send/id/${Data?.id}/`}>
-                  <Image src={"Images/envelope-icon.png"} alt="mail Icons" width={22} height={18} />
-                </Link> */}
-                <Link
-                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(generateProductUrl())}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Share on Facebook"
-                >
-                  <div className={styles.socialIcon}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                    </svg>
-                  </div>
-                </Link>
-                <Link
-                  href={`https://x.com/intent/post?url=${encodeURIComponent(generateProductUrl())}&text=${encodeURIComponent(getProductName())}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Share on Twitter/X"
-                >
-                  <div className={styles.socialIcon}>
-                    <Image src={'/Images/x.png'} height={16} width={16} alt={"x icon"} />
-                  </div>
-                </Link>
-                {/* <Link
-                  href={`https://plus.google.com/share?url=${encodeURIComponent(generateProductUrl())}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Share on Google Plus"
-                >
-                  <div className={styles.socialIcon}>
-                    <Image src={"/Images/GPlusSocial.png"} alt="G Plus" height={20} width={24} />
-                  </div>
-                </Link> */}
-
-                <Link
-                  href={`https://in.pinterest.com/pin-builder/?description=${encodeURIComponent(getProductName())}&media=${encodeURIComponent(getProductImageUrl() || "")}&url=${encodeURIComponent(generateProductUrl())}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Share on Pinterest"
-                >
-                  <div className={styles.socialIcon}>
-                    <Image src={'/Images/pinterest-icon.png'} height={20} width={20} alt={"p icon"} />
-                  </div>
-                </Link>
-              </div>
-             
-              {/*  <li>
-                <Image
-                  height={50}
-                  width={50}
-                  src="/Images/gift.png"
-                  alt="ShippingLogo"
-                  style={{ width: "18px", height: "16px" }}
-                />
-                <p>
-                  {" "}
-                  Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"}
-                </p>
-              </li> */}
-            </ul>
+     
             {/* <div className={styles.WishListIconWrraper}>
                             {wishlistLoading[Data.id] || wishlistItemsLoading ? (
                               <div className={styles.SearchLoader}></div>

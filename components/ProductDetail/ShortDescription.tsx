@@ -97,25 +97,29 @@ function ProductDescription({ currentVariant }: any) {
   }, [currentVariant]);
 
   return (
-    <>
-        <div
+    <div className={styles.productDetailNewDescriptionContainer} >
+
+<p className={styles.sectionHeading}>Description</p>
+
+    
+        {/* <div
     className={
       styles.productDetailDescriptionContainer +
       " " +
       styles.productShortDetailDescriptionContainer
     }
-  >
-    <p>
-      Headora promises authenticity of our products. Learn more about
-      Headora's{" "}
-      {/* <Link href={"/authenticity-promise"}> */}
+  > */}
+    {/* <p>
+      Headora promises authenticity of our products. Learn more about/
+       Headora's{" "}
+      <Link href={"/authenticity-promise"}>
         authenticity promise.
-      {/* </Link>. */}
-    </p>
+      </Link>
+    </p> */}
 
     {/* ✅ Short Description */}
     {/* <div dangerouslySetInnerHTML={{ __html: descriptionHTML }} /> */}
-  </div>
+  {/* </div> */}
       {/* SHORT (optional) */}
       {/* 
       <div className={styles.productShortDetailDescriptionContainer}>
@@ -124,10 +128,10 @@ function ProductDescription({ currentVariant }: any) {
       */}
 
       {/* FULL */}
-      <div className={styles.productDetailNewDescriptionContainer} style={{textAlign:"justify"}}>
+      <div className={styles.productDetailNewDescriptionContainerss} style={{textAlign:"justify"}}>
         <div dangerouslySetInnerHTML={{ __html: fullDesc }} />
       </div>
-    </>
+    </div>
   );
 }
 
