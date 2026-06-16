@@ -24,8 +24,8 @@ function ItemDetails({
   );
 
   return (
-    <div className={styles.productDetailNewDescriptionContainer}>
-       <h3 className={styles.sectionHeading}>Specifications</h3>
+    <div className={styles.productDetailNewDescriptionContainerDetails}>
+       <p className={styles.sectionHeading}>Details</p>
       {/* ATTRIBUTES */}
       {hasAttributes && (
         <div className={styles.productAttributes}>

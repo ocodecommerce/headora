@@ -1,6 +1,77 @@
+.compareNotification {
+  background: #f0f9f0;
+  border-left: 4px solid #27ae60;
+  color: #2c3e50;
+  padding: 14px 20px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.compareNotification a {
+  color: #e67e22;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.AdditionalButtonsBox{
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.wishwithcomparButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+text-transform: capitalize;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  background: unset;
+}
+
+.wishwithcomparButton:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+
+
+.ShortDescriptionTabContent {
+  display: flex;
+  border-top: 1px solid #e5e5e5;
+  justify-content: flex-start;
+  gap: 10%;
+  align-items: flex-start;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
+  margin-top: 50px;
+
+  @media screen and (max-width: 650px) {
+ flex-direction: column;
+  }
+
+  @media screen and (min-width: 650px) and (max-width: 1000px) {
+    flex-direction: column;
+  }
+
+}
+.sectionHeading{
+  font-weight: 600;
+  font-size: 16px !important;
+  color: #333;
+  margin-bottom: 10px;
+}
 
 
 /* =================================Detail==================================== */
+
 
 
 .navBarSpace {
@@ -14,7 +85,10 @@
   max-width: 1440px;
   margin: 0 auto;
   background-color: #fff;
-  padding: 15px;
+  /* padding: 14px; */
+  margin-top: 20px;
+  margin-bottom: 50px;
+  padding: 0 60px 0 60px;
 }
 
 .brandReviewWrapper {
@@ -73,7 +147,8 @@
   padding-left: 0;
   width: 100%;
   margin: auto;
-
+  /* padding-top: 20px; */
+  padding-bottom: 30px;
   display: flex;
   justify-content: start;
   align-items: center;
@@ -93,11 +168,11 @@
 .cartegoryHeadeBreadcrumbs span {
   text-decoration: none;
   text-transform: capitalize;
-  color: #1979c3;
+  color: rgb(16 24 39);
 }
 
 .cartegoryHeadeBreadcrumbs a {
-  color: #1979c3;
+  color: rgb(16 24 39);
     text-decoration: none;
     font-weight: 500;
     font-size: 10px;
@@ -128,8 +203,8 @@
 
 .productDetail {
   display: flex;
-  gap: 0px;
-  padding: 15px 0px;
+  gap: 10%;
+  /* padding: 14px 0px; */
   justify-content: space-between;
 
   @media screen and (max-width: 1000px) {
@@ -209,12 +284,12 @@
 }
 
 .priceTitleWrapper {
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
-  gap: 15px;
+  gap: 14px;
   justify-content: space-between;
   align-items: baseline;
-  padding-bottom: 15px;
+  padding-bottom: 14px;
   border-bottom: #bdbdbd 1px solid;
 
   @media screen and (max-width:1000px) {
@@ -240,7 +315,7 @@ font-size: 46px;
 
 .productInfo h1,
 .mobileViewProductTitle {
-  font-size: 46px;
+  font-size: 32px;
 
   font-weight: 600;
   line-height: 50px;
@@ -265,8 +340,8 @@ font-size: 46px;
 }
 
 .price {
-  font-size: 15px;
-  font-weight: 400;
+  font-size: 18px;
+  /* font-weight: 400; */
   color: #111827;
   width: auto;
   text-align: right;
@@ -287,14 +362,14 @@ font-size: 46px;
     gap: 5px;
     align-items: center;
     font-size: 18px;
-    margin-top: 15px;
+    margin-top: 14px;
   }
 }
 
 .price span {
   text-decoration: none;
   font-weight: 500;
-  color: red;
+  /* color: red; */
 }
 
 .price span.regular {
@@ -351,7 +426,7 @@ font-size: 46px;
   margin: unset;
   display: flex;
   justify-content: center;
-  padding-top: 15px;
+  padding-top: 14px;
 }
 
 /* Buy Now Button */
@@ -374,7 +449,7 @@ font-size: 46px;
 }
 .actionButtonsWrapper{
     width: 100%;
-    padding-top: 15px;
+    padding-top: 14px;
 }
 .addToCart{
   padding: 0px 25px;
@@ -429,12 +504,12 @@ font-size: 46px;
 .addToCart,
 .buyNow {
   @media screen and (max-width: 1550px) {
-    padding: 0px 15px;
+    padding: 0px 14px;
   }
 
 
   @media screen and (max-width: 1350px) {
-    padding: 0px 15px;
+    padding: 0px 14px;
   }
 
   @media screen and (max-width: 1260px) {
@@ -446,13 +521,13 @@ font-size: 46px;
   }
 
   @media screen and (max-width: 1050px) {
-    padding: 0px 15px;
+    padding: 0px 14px;
   }
 
 } */
 
 .addToCartDisable img {
-  width: 15px;
+  width: 14px;
   height: auto;
 }
 
@@ -497,7 +572,7 @@ font-size: 46px;
 }
 
 .wishlist_container img {
-  width: 15px;
+  width: 14px;
   height: 18px;
 }
 
@@ -521,8 +596,8 @@ font-size: 46px;
   display: flex;
   flex-direction: column;
   border-top: #bdbdbd 1px solid;
-  padding-top: 15px;
-  padding-bottom: 10px;
+  padding-top: 14px;
+  /* padding-bottom: 10px; */
 
   /* border-bottom: #bdbdbd 1px solid; */
 
@@ -530,7 +605,7 @@ font-size: 46px;
 
   @media screen and (max-width: 650px) {
     flex-direction: column;
-    padding-top: 15px;
+    padding-top: 14px;
     padding-bottom: 5px;
   }
 }
@@ -568,9 +643,9 @@ font-size: 46px;
 .additionalInfo {
   display: flex;
   gap: 30px;
-  margin-top: 15px;
+  margin-top: 14px;
   border-bottom: #bdbdbd 1px solid;
-  padding-bottom: 15px;
+  padding-bottom: 14px;
 
   @media screen and (max-width:1000px) {
     margin-top: 10px;
@@ -600,7 +675,7 @@ font-size: 46px;
 
 .watchInfo h2 {
   font-size: 18px;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
   border-bottom: 1px solid #000;
@@ -620,9 +695,9 @@ font-size: 46px;
 .quantitySelector {
   display: flex;
   align-items: flex-start;
-  margin-top: 15px;
+  margin-top: 14px;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
   font-size: 16px;
   font-weight: 600;
 
@@ -631,7 +706,7 @@ font-size: 46px;
     gap: 10px;
     flex-direction: unset;
     align-items: baseline;
-    padding-top: 15px;
+    padding-top: 14px;
   }
 }
 
@@ -652,6 +727,7 @@ font-size: 46px;
   align-items: center;
   gap: 5px;
   border-radius: 1px;
+
 
 }
 
@@ -694,13 +770,13 @@ font-size: 46px;
 }
 
 .ConfigurableSelectorWrapper {
-  padding-top: 15px;
+  padding-top: 14px;
   display: flex;
-  gap: 15px;
+  gap: 14px;
   width: 100%;
   align-items: flex-start;
   flex-direction: column;
-  padding-bottom: 15px;
+  padding-bottom: 14px;
   border-bottom: #bdbdbd 1px solid;
 }
 
@@ -821,11 +897,10 @@ font-size: 46px;
 
 .quantityActionWrapper {
   display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  gap: 15px;
-  padding-bottom: 15px;
- 
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 14px;
   justify-content: space-between;
 
   @media screen and (max-width: 1250px) {
@@ -835,7 +910,7 @@ font-size: 46px;
 
   @media screen and (max-width: 1000px) {
     gap: 10px;
-    padding-bottom: 15px;
+    padding-bottom: 14px;
   }
 
 }
@@ -846,7 +921,7 @@ font-size: 46px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 15px;
+  gap: 14px;
 }
 
 .shopNow {
@@ -854,13 +929,13 @@ font-size: 46px;
   height: 44px;
   padding: 0 16px;
 
-  background-color: #1979c3; /* strong CTA yellow */
+  background-color: rgb(41 84 255); /* strong CTA yellow */
   color: white;
 
   border: none;
   border-radius: 2px;
-border-radius: 6px;
-  font-size: 15px;
+border-radius: 50px;
+  font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
 
@@ -879,13 +954,13 @@ border-radius: 6px;
 
 .shopNow:hover {
   background-color: unset;
-  background-color: #0970be;
+  background-color: rgb(0, 51, 255);
   transform: translateY(-1px);
 }
 
 /* Active – click feedback */
 .shopNow:active {
-  background-color: #1979c3;
+  background-color: rgb(0, 51, 255);
   transform: translateY(0);
 }
 
@@ -903,7 +978,7 @@ border-radius: 6px;
 }
 
 .shopNow:hover {
-  background-color: #0078d4;
+  background-color:  rgb(0, 51, 255);
   color: white;
 
 }
@@ -912,7 +987,7 @@ border-radius: 6px;
 .navbarContainer {
   margin: 50px 0px;
   max-width: 1440px;
-  padding: 0 15px;
+  padding: 0 14px;
   margin: auto;
 
   @media screen and (max-width:1000px) {
@@ -934,7 +1009,7 @@ border-radius: 6px;
 
 .navItem {
   position: relative;
-  padding: 15px 0px;
+  padding: 14px 0px;
   cursor: pointer;
   font-weight: 400;
   font-size: 16px;
@@ -947,7 +1022,7 @@ border-radius: 6px;
 
 .navItem2 {
   position: relative;
-  padding: 15px 0px;
+  padding: 14px 0px;
   cursor: pointer;
   font-weight: 400;
   font-size: 16px;
@@ -968,7 +1043,7 @@ border-radius: 6px;
 
 .navItem img {
   width: 16px;
-  margin-right: 15px;
+  margin-right: 14px;
   height: auto;
 
   @media screen and (max-width:1000px) {
@@ -1001,9 +1076,9 @@ border-radius: 6px;
 
 
 .productAttributes {
-  display: flex;
+  /* display: flex; */
   flex-direction: row;
-  margin: 10px 0px;
+  /* margin: 10px 0px; */
   justify-content: flex-start;
   flex-wrap: wrap;
     filter: hue-rotate(175deg);
@@ -1013,12 +1088,12 @@ border-radius: 6px;
   display: flex;
   flex-direction: row;
   gap: 5px;
-  width: 33%;
+  /* width: 33%; */
   margin: 5px 0px;
   align-items: center;
 
   @media screen and (max-width: 1300px) {
-    width: 50%;
+    /* width: 50%; */
   }
 
 }
@@ -1031,8 +1106,8 @@ border-radius: 6px;
 .productDetailDescriptionContainer h2 {
   font-size: 22px;
 
-  padding-bottom: 15px;
-  padding: 15px 0 15px;
+  padding-bottom: 14px;
+  padding: 14px 0 14px;
 }
 
 .productDetailDescriptionContainer ul {
@@ -1061,7 +1136,7 @@ border-radius: 6px;
 }
 
 .AuthenticityTabSubcontent {
-  padding: 15px 0;
+  padding: 14px 0;
 }
 
 .AuthenticityTabSubcontent a {
@@ -1074,7 +1149,7 @@ border-radius: 6px;
 }
 
 .returnDescribtionConatiner {
-  padding: 15px 0;
+  padding: 14px 0;
 }
 
 .returnDescribtionConatiner span a {
@@ -1085,12 +1160,12 @@ border-radius: 6px;
 
 .productDetailDescriptionContainer {
   color: #777;
-  padding: 15px 0;
+  padding: 14px 0;
   line-height: 26px;
   font-size: 14px;
 
   @media screen and (max-width: 650px) {
-    line-height: 15px;
+    line-height: 14px;
     font-size: 12px;
       padding: 0px;
   }
@@ -1117,7 +1192,7 @@ border-radius: 6px;
 .AuthenticityList {
   list-style: none;
   padding: 0;
-  margin: 15px 0;
+  margin: 14px 0;
 }
 
 .AuthenticityListItem {
@@ -1127,9 +1202,18 @@ border-radius: 6px;
 }
 .productDetailNewDescriptionContainer{
   color: #777;
-  padding-bottom: 15px;
+  /* padding-bottom: 14px; */
   line-height: 26px;
   font-size: 14px;
+}
+
+.productDetailNewDescriptionContainerDetails{
+  color: #777;
+  /* padding-bottom: 14px; */
+  line-height: 26px;
+  font-size: 14px;
+  margin-top: 14px;
+  margin-bottom: 14px;
 }
 
 .Label {
@@ -1147,7 +1231,7 @@ border-radius: 6px;
 }
 
 .AuthenticityViewPromise {
-  margin-top: 15px;
+  margin-top: 14px;
 }
 
 .AuthenticityViewPromise a {
@@ -1163,14 +1247,16 @@ border-radius: 6px;
 .ReviewContainer {
   max-width: 1440px;
   margin: auto;
-  padding: 15px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+  padding: 0 60px 0 60px;
 }
 
 /* Slide-down fade-in animation */
 @keyframes slideDownFadeIn {
   from {
     opacity: 0;
-    transform: translateY(-15px);
+    transform: translateY(-14px);
   }
 
   to {
@@ -1188,7 +1274,7 @@ border-radius: 6px;
 
   to {
     opacity: 0;
-    transform: translateY(-15px);
+    transform: translateY(-14px);
   }
 }
 
@@ -1196,7 +1282,7 @@ border-radius: 6px;
   animation: slideDownFadeIn 0.6s ease forwards;
   opacity: 0;
   /* Initial hidden state */
-  transform: translateY(-15px);
+  transform: translateY(-14px);
 }
 
 .AddReviewButton.hidden {
@@ -1245,7 +1331,7 @@ border-radius: 6px;
   padding-top: 10px;
   animation: slideIn 1s ease forwards;
   opacity: 0;
-  transform: translateY(15px);
+  transform: translateY(14px);
 }
 
 .review_form.hidden {
@@ -1256,7 +1342,7 @@ border-radius: 6px;
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(14px);
   }
 
   to {
@@ -1273,7 +1359,7 @@ border-radius: 6px;
 
   to {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(14px);
   }
 }
 
@@ -1315,7 +1401,7 @@ border-radius: 6px;
 }
 
 .review_form .field .starrating img {
-  width: 15px;
+  width: 14px;
   height: auto;
   cursor: pointer;
 }
@@ -1385,8 +1471,8 @@ border-radius: 6px;
   display: flex;
   justify-content: space-between;
   margin: 0;
-margin-bottom: 15px;
-  gap: 15px;
+  margin-bottom: 14px;
+  gap: 14px;
 
 }
 
@@ -1394,10 +1480,10 @@ margin-bottom: 15px;
   position: relative;
   cursor: pointer;
   font-weight: 400;
-  font-size: 15px;
-
-  padding-bottom: 10px;
-  margin-right: 15px;
+  font-size: 33px;
+  padding-bottom: 4px;
+  /* margin-right: 14px; */
+  text-transform: capitalize;
 
   @media screen and (max-width: 650px) {
     margin-right: 10px;
@@ -1423,8 +1509,8 @@ margin-bottom: 15px;
   background: white;
   border-radius: 2px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 14px;
+  margin-bottom: 14px;
   width: 100%;
 }
 
@@ -1452,7 +1538,7 @@ margin-bottom: 15px;
 }
 
 .ReviewSummary {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   margin: 10px 0;
   color: #222;
@@ -1472,7 +1558,7 @@ margin-bottom: 15px;
   font-size: 16px;
   line-height: 1.6;
   color: #444;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 
   @media screen and (max-width: 650px) {
     font-size: 12px;
@@ -1487,7 +1573,7 @@ margin-bottom: 15px;
 
 .ReviewRatingsBreakdown {
   display: flex;
-  gap: 15px;
+  gap: 14px;
 }
 
 .RatingItem {
@@ -1524,13 +1610,13 @@ margin-bottom: 15px;
   font-size: 18px;
   color: #666;
   text-align: center;
-  padding: 15px;
+  padding: 14px;
 }
 
 /* Adjustments for responsiveness */
 @media (max-width: 650px) {
   .ReviewCard {
-    padding: 15px;
+    padding: 14px;
   }
 
   .ReviewHeader {
@@ -1556,7 +1642,7 @@ margin-bottom: 15px;
 
 .ReviewHeadingWrapper span {
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   padding: 0px 5px 0px 30px;
   cursor: pointer;
 
@@ -1576,7 +1662,7 @@ margin-bottom: 15px;
   animation: fadeInSlideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   opacity: 0;
   /* Default hidden state */
-  transform: translateY(15px)
+  transform: translateY(14px)
 }
 
 .ReviewContainContainer.hidden {
@@ -1587,7 +1673,7 @@ margin-bottom: 15px;
 @keyframes fadeInSlideUp {
   from {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(14px);
   }
 
   to {
@@ -1605,7 +1691,7 @@ margin-bottom: 15px;
 
   to {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(14px);
   }
 }
 
@@ -1614,7 +1700,7 @@ margin-bottom: 15px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px
+  gap: 14px
 }
 
 .ReviewContent label {
@@ -1648,11 +1734,11 @@ font-weight: 600;
 
   color: #000000;
   text-align: center;
-  padding-bottom: 15px;
+  padding-bottom: 14px;
 }
 
 .reviewButton {
-  padding: 15px 40px;
+  padding: 14px 40px;
   background-color: unset;
   border: 1px solid #000000;
   color: #000000;
@@ -1683,7 +1769,7 @@ border-radius: 6px;
 
   @media screen and (max-width: 650px) {
     padding-top: 10px;
-    padding-bottom: 15px;
+    padding-bottom: 14px;
   }
 
   @media screen and (min-width: 650px) and (max-width: 1000px) {
@@ -1701,7 +1787,7 @@ border-radius: 6px;
 
   @media screen and (max-width: 650px) {
     min-height: 200px;
-    padding-bottom: 15px;
+    padding-bottom: 14px;
   }
 
 }
@@ -1735,7 +1821,7 @@ border-radius: 6px;
 }
 
 .title {
-  font-size: 15px;
+  font-size: 14px;
 
   text-transform: uppercase;
   padding-bottom: 30px;
@@ -1893,7 +1979,7 @@ border-radius: 6px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 14px;
 }
 
 .dicountBlockContent p {
@@ -1971,7 +2057,7 @@ border-radius: 6px;
   color: #000;
   text-align: left;
   border: 1px solid #ddd;
-  padding: 15px;
+  padding: 14px;
   border-radius: 6px;
   position: absolute;
   z-index: 10;
@@ -2011,7 +2097,7 @@ border-radius: 6px;
   color: #a29253;
   font-weight: bold;
   text-align: center;
-  padding-top: 15px;
+  padding-top: 14px;
   line-height: 16px;
   padding-bottom: 10px;
   text-transform: uppercase;
@@ -2032,14 +2118,26 @@ border-radius: 6px;
 }
 .productDetailNewDescriptionContainer table {
  width: 100% !important;
- margin-top: 15px;
+ margin-top: 14px;
 }
 .productDetailNewDescriptionContainer {
-  width: 100%;
+  width: 60%;
   border-collapse: collapse; /* cleaner borders */
-  margin-top: 15px;
+  margin-top: 14px;
+  margin-bottom: 14px;
   font-size: 16px;
   text-align: left;
+
+  @media screen and (max-width: 650px) {
+    width: 100%;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  @media screen and (min-width: 650px) and (max-width: 1000px) {
+    width: 100%;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
 }
 
 .productDetailNewDescriptionContainer h2{
@@ -2048,7 +2146,7 @@ border-radius: 6px;
   margin-bottom: 0px;
   font-weight: 600;
   @media screen and (max-width:1000px) {
-    font-size: 15px;
+    font-size: 14px;
   }
 }
 
@@ -2078,7 +2176,7 @@ border-radius: 6px;
 .productDetailNewDescriptionContainer th,
 .productDetailNewDescriptionContainer td {
   border: 1px solid #ddd;
-  padding: 12px 15px;
+  padding: 12px 14px;
 }
 
 .productDetailNewDescriptionContainer th {
@@ -2109,9 +2207,9 @@ border-radius: 6px;
 
 .ShortDescriptionProductAttributes span {
   display: inline-block;
-  background-color: #f5f5f5;
+  /* background-color: #f5f5f5; */
   color: #333;
-  padding: 2px 8px;
+  /* padding: 2px 8px; */
   margin: 4px 6px 4px 0;
   border-radius: 4px;
   font-size: 13px;
@@ -2125,13 +2223,13 @@ border-radius: 6px;
   padding: 0;
   margin: 0;
   border-bottom: 1px solid #ccc;
-margin-top: 15px;
+margin-top: 50px;
   justify-content: flex-start;
 
 }
 
 .ShortDescriptionNavList li {
-  padding: 10px 15px;
+  padding: 10px 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2176,8 +2274,8 @@ margin-top: 15px;
 
 .SharedSocialMediaIcons {
   display: flex;
-  gap: 15px;
-  padding: 15px 0;
+  gap: 14px;
+  padding: 14px 0;
   border-top: #bdbdbd 1px solid;
 
 }
@@ -2186,7 +2284,7 @@ margin-top: 15px;
 
 .StaticSliderWrapper {
   text-align: center;
-  padding: 40px 15px;
+  padding: 40px 14px;
   background: #fafafa;
   max-width: 1440px;
   margin: auto;
@@ -2203,7 +2301,7 @@ margin-top: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 15px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
@@ -2243,7 +2341,7 @@ margin-top: 15px;
   color: #555;
   font-size: 0.95rem;
   line-height: 1.6;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .StaticCustomer {
@@ -2263,11 +2361,11 @@ margin-top: 15px;
 
 .staticButtonWrapper {
   display: flex;
-  gap: 15px;
+  gap: 14px;
 }
 
 .StaticArrow img {
-  width: 15px;
+  width: 14px;
   height: 30px;
 
 }
@@ -2305,12 +2403,12 @@ margin-top: 15px;
 
   .StaticReviewCard {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
   }
 
   .StaticArrow img {
-    width: 15px !important;
-    height: 15px !important;
+    width: 14px !important;
+    height: 14px !important;
   }
 
   .StaticReviewCount {
@@ -2333,11 +2431,11 @@ margin-top: 15px;
 
 @media screen and (max-width: 480px) {
   .StaticReviewCard {
-    padding: 15px;
+    padding: 14px;
   }
 
   .StaticReviewCount {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .StaticTitle {
@@ -2372,18 +2470,18 @@ margin-top: 15px;
   font-size: 14px;
   letter-spacing: 2px;
   color: #998243;
-  margin-bottom: 15px;
+  margin-bottom: 14px;
 }
 
 .brandGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 14px;
 }
 
 .brandCard {
   border: 1px solid #998243;
-  padding: 40px 15px;
+  padding: 40px 14px;
   text-align: center;
   font-family: 'Futura', sans-serif;
   color: #998243;
@@ -2400,7 +2498,7 @@ margin-top: 15px;
 @media screen and (min-width: 650px) and (max-width: 1000px) {
   .breadcrumb {
     font-size: 12px;
-    margin: 15px 0;
+    margin: 14px 0;
   }
 
   .breadcrumb span {
@@ -2460,7 +2558,7 @@ margin-top: 15px;
   .reviewButton {
     min-width: unset;
     min-height: unset;
-    padding: 10px 15px;
+    padding: 10px 14px;
   }
 
   .relatedProductsContainer {
@@ -2475,7 +2573,7 @@ margin-top: 15px;
   .dicountBlockContainer {
     padding: 0 10px;
     margin: 0;
-    margin-top: 15px;
+    margin-top: 14px;
   }
 
   .detailContainer {
@@ -2601,7 +2699,7 @@ margin-top: 15px;
     border-bottom: none;
     gap: 10px;
     padding-bottom: 0;
-    padding-top: 15px;
+    padding-top: 14px;
   }
 
 
@@ -2637,8 +2735,8 @@ margin-top: 15px;
   }
 
   .wishlist_container img {
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
   }
 
   .wishlist {
@@ -2656,7 +2754,7 @@ margin-top: 15px;
 
   .navbarContainer {
     margin: auto;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
   }
 
   .navItem {
@@ -2672,17 +2770,17 @@ margin-top: 15px;
   .reviewButton {
     min-width: unset;
     min-height: unset;
-    padding: 10px 15px;
+    padding: 10px 14px;
   }
 
   .ReviewContainer {
     padding: 0 10px;
-    padding-bottom: 15px;
+    padding-bottom: 14px;
   }
 
   .relatedProductsContainer {
-    padding: 0 15px;
-    padding-bottom: 15px;
+    padding: 0 14px;
+    padding-bottom: 14px;
   }
 
   .productItem {
@@ -2710,7 +2808,7 @@ margin-top: 15px;
   }
 
   .dicountBlockContent h4 {
-    font-size: 15px;
+    font-size: 14px;
   }
 
   .dicountBlockContent p {
@@ -2761,14 +2859,14 @@ margin-top: 15px;
 
   .productName {
     font-size: 14px;
-    line-height: 15px;
+    line-height: 14px;
     margin-top: 5px;
 
   }
 
   .productPrice {
     font-size: 14px;
-    line-height: 15px;
+    line-height: 14px;
   }
 
   .priceTitleWrapper {
@@ -2837,9 +2935,9 @@ margin-top: 15px;
   }
 
   .collectionHeader h2 {
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: 2px;
-    margin-bottom: 15px;
+    margin-bottom: 14px;
   }
 
   .collectionHeader hr {
@@ -2858,7 +2956,7 @@ margin-top: 15px;
 
   .productName {
     font-size: 11px;
-    line-height: 15px;
+    line-height: 14px;
   }
 
   .productPrice {
@@ -2867,7 +2965,7 @@ margin-top: 15px;
 
   .nextButton img,
   .prevButton img {
-    width: 15px;
+    width: 14px;
   }
 
   .relatedProductsContainer {

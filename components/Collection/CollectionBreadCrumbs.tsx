@@ -47,7 +47,7 @@ export default function CollectionBreadCrumbs({Data, categories}:any) {
                 <span>/</span>
               </>
             ) : (
-              <span style={{ fontSize: '10px', color: '#1979c3' }}>{crumb.name.replaceAll('.html','')}</span>
+              <span style={{ fontSize: '10px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
             )}
           </React.Fragment>
         ))}

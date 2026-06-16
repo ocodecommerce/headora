@@ -1,8 +1,15 @@
 /* Footer.module.css */
 .footer {
   width: 100%;
-  padding: 2rem 1rem;
+  margin: auto;
+  max-width: 1440px;
+  margin-top: 50px;
+  padding: 0 60px 0 60px;
   background-color: white;
+  margin-bottom: 50px;
+  @media (max-width: 1000px) {
+    padding: 0 20px 0 20px;
+  }
 }
 
 .container {
