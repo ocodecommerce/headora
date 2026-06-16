@@ -35,6 +35,8 @@ function ProductDetail({
   showRibbon
 }: any) {
 
+  console.log("ProductDetail Data:", Data);
+
   if (!Data) return null;
   const router = useRouter();
 
@@ -81,6 +83,71 @@ function ProductDetail({
   const [modalHeading, setModalHeading] = useState<any>("")
   const [modalMessage, setModalMessage] = useState<any>("")
   const [breadcrumbs, setBreadcrumbs] = useState<any>([]);
+  const [compareMessage, setCompareMessage] = useState<string>("");
+  const [loading, setLoading] = useState<any>(false);
+
+
+
+
+  // ================== ADD TO COMPARE (Improved) ==================
+const COMPARE_KEY = "compareProducts";
+
+const getCompareItems = (): any[] => {
+  if (typeof window === "undefined") return [];
+  const items = localStorage.getItem(COMPARE_KEY);
+  return items ? JSON.parse(items) : [];
+};
+
+const isInCompare = () => {
+  const items = getCompareItems();
+  const currentId = currentVariant?.id || Data?.id;
+  return items.some((item: any) => item.id === currentId);
+};
+
+
+
+const handleAddToCompare = () => {
+
+  setLoading(true);
+  const items = getCompareItems();
+
+  // if (items.length >= 4) {
+  //   setCompareMessage("You can compare up to 4 products only. Please remove one first.");
+  //   setTimeout(() => setCompareMessage(""), 4000);
+  //   return;
+  // }
+
+  const currentId = currentVariant?.id || Data?.id;
+  const productName = currentVariant?.variant_name || Data?.name;
+
+  const currentProduct = {
+    id: currentId,
+    name: productName,
+    sku: currentVariant?.sku || Data?.sku,
+    price: currentVariant?.priceRange?.maximum_price?.final_price?.value || 
+           Data?.priceRange?.maximum_price?.final_price?.value,
+    image: currentVariant?.media_gallery?.[0]?.url || Data?.image?.url,
+    url_key: Data?.url_key || currentVariant?.url_key,
+    description: Data?.description || Data?.description,
+  };
+
+  if (items.some((item) => item.id === currentId)) {
+    return;
+  }
+
+  const updatedItems = [...items, currentProduct];
+  localStorage.setItem(COMPARE_KEY, JSON.stringify(updatedItems));
+
+  setLoading(null);
+
+  // Nice message with link
+  // setCompareMessage(
+  //   `You added product <strong>${productName}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.`
+  // );
+
+  // setTimeout(() => setCompareMessage(""), 5000);
+};
+
 
   useEffect(() => {
 
@@ -826,9 +893,31 @@ function ProductDetail({
       .replace(/\-\-+/g, "-");
   };
 
+
+
+
+
   return (
     <>
+    {/* Compare Success Message */}
       <div className={styles.navBarSpace}></div>
+
+        {compareMessage && (
+          <div 
+            className={styles.compareNotification}
+            dangerouslySetInnerHTML={{ __html: compareMessage }}
+          />
+        )}
+
+{isMounted && (isInCompare() || loading === null )&& (
+          <div 
+            className={styles.compareNotification}
+            dangerouslySetInnerHTML={{ __html: `You added product <strong>${currentVariant?.variant_name || Data?.name}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.` }}
+          />
+        )}
+
+        
+
       {showMoadal && (
         <div className="modal_outer">
           <div className="modal_contenct">
@@ -1051,9 +1140,9 @@ function ProductDetail({
                      Data?.name} */}
                     { Data?.name}
                 </h1>
-              </div>
+    
               {/* <p onClick={scrollToBottom} className={styles.paymentInfo} style={{ cursor: 'pointer' }}>Be the first to review this product</p> */}
-              <p className={styles.paymentInfo}>
+              {/* <p className={styles.paymentInfo}>
                 <b>Item #:</b> {currentVariant ? currentVariant.sku : Data?.sku}
                 {isMounted && (
                   <span className={styles.tooltipWrapper}>
@@ -1067,12 +1156,14 @@ function ProductDetail({
                           competitors.
                         </div>
                         <div className={styles.tooltipTitle}>CONTACT OUR CONCIERGE</div>
-                        <div className={styles.tooltipText}>support@DSH.com or 1-800-690-3736.</div>
+                        <div className={styles.tooltipText}>support@headora.com or1-234-5623-9.</div>
                       </div>
                     </div>
                   </span>
                 )}
-              </p>
+              </p> */}
+
+              </div>
 
               <div className={styles.price}>
                 <span className={styles.special}>{finalPrice()}</span>
@@ -1204,6 +1295,66 @@ function ProductDetail({
                 )}
               </div>
 
+            <div  className={styles.AdditionalButtonsBox}>
+  
+
+
+                    <div className={styles.WishListIconWrraper}>
+                            {wishlistLoading[Data.id] || wishlistItemsLoading ? (
+                              <div className={styles.SearchLoader}></div>
+                            ) : wishlistItems[Data.id] ? (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  handleRemoveWishlist(wishlistItemIds[Data.id])
+                                }}
+                                className={styles.wishwithcomparButton}
+                              >
+                                <Image
+                                  src="/Images/wishlistIconFill.png"
+                                  height={18}
+                                  width={20}
+                                  alt="wishlist filled icon"
+                                />
+                                Added to Favorites
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  handleWishlist(Data.sku, Data.id)
+                                }}
+                                className={styles.wishwithcomparButton}
+                              >
+                                <Image src="/Images/wishlistIcon.png" height={18} width={20} alt="wishlist icon" style={{filter:"brightness(0.1)"}}/>
+                                Add to Favorites
+                              </button>
+                            )}
+                          </div>
+
+
+                    <button
+   
+                        className={styles.wishwithcomparButton}
+                        onClick={handleAddToCompare}
+                        disabled={!isMounted
+                          ? false : isInCompare() || loading === null}
+                      >
+                        <Image
+                          src="/Images/compare.png"
+                          alt="Compare"
+                          width={22}
+                          height={20}
+                          style={{filter: isInCompare() ? "invert(0.5)" : "none"}}
+                        />
+
+                        {!isMounted
+  ? false : !loading ? isInCompare()
+                          ? "Already in Compare"
+                          : `Add to Compare` : "Loading..."}
+                      </button>
+                      </div>
+
               {/* Offer Component */}
               {/* {stockStatus !== "OUT_OF_STOCK" && !loadingStockStatus && (
                 <MakeAOffer
@@ -1233,36 +1384,7 @@ function ProductDetail({
 
 
      
-            {/* <div className={styles.WishListIconWrraper}>
-                            {wishlistLoading[Data.id] || wishlistItemsLoading ? (
-                              <div className={styles.SearchLoader}></div>
-                            ) : wishlistItems[Data.id] ? (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  handleRemoveWishlist(wishlistItemIds[Data.id])
-                                }}
-                                style={{ background: "none", border: "none", cursor: "pointer" }}
-                              >
-                                <Image
-                                  src="/Images/wishlistIconFill.png"
-                                  height={24}
-                                  width={27}
-                                  alt="wishlist filled icon"
-                                />
-                              </button>
-                            ) : (
-                              <button
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  handleWishlist(Data.sku, Data.id)
-                                }}
-                                style={{ background: "none", border: "none", cursor: "pointer" }}
-                              >
-                                <Image src="/Images/wishlistIcon.png" height={24} width={27} alt="wishlist icon" />
-                              </button>
-                            )}
-                          </div> */}
+
             {/* <div className={styles.wishlist_container}>
 
               <Link href={'/customer/account/login/'} style={{ display: 'flex', gap: '10px' }}>

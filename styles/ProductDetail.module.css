@@ -1,3 +1,46 @@
+.compareNotification {
+  background: #f0f9f0;
+  border-left: 4px solid #27ae60;
+  color: #2c3e50;
+  padding: 14px 20px;
+  margin: 15px 0;
+  border-radius: 4px;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.compareNotification a {
+  color: #e67e22;
+  text-decoration: underline;
+  font-weight: 500;
+}
+.AdditionalButtonsBox{
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.wishwithcomparButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+text-transform: capitalize;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  background: unset;
+}
+
+.wishwithcomparButton:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
 
 
 .ShortDescriptionTabContent {
@@ -125,11 +168,11 @@
 .cartegoryHeadeBreadcrumbs span {
   text-decoration: none;
   text-transform: capitalize;
-  color: #1979c3;
+  color: rgb(16 24 39);
 }
 
 .cartegoryHeadeBreadcrumbs a {
-  color: #1979c3;
+  color: rgb(16 24 39);
     text-decoration: none;
     font-weight: 500;
     font-size: 10px;
@@ -160,7 +203,7 @@
 
 .productDetail {
   display: flex;
-  gap: 0px;
+  gap: 10%;
   /* padding: 14px 0px; */
   justify-content: space-between;
 
@@ -241,7 +284,7 @@
 }
 
 .priceTitleWrapper {
-  flex-direction: column;
+  flex-direction: row;
   display: flex;
   gap: 14px;
   justify-content: space-between;
@@ -272,7 +315,7 @@ font-size: 46px;
 
 .productInfo h1,
 .mobileViewProductTitle {
-  font-size: 46px;
+  font-size: 32px;
 
   font-weight: 600;
   line-height: 50px;
@@ -886,12 +929,12 @@ font-size: 46px;
   height: 44px;
   padding: 0 16px;
 
-  background-color: #1979c3; /* strong CTA yellow */
+  background-color: rgb(41 84 255); /* strong CTA yellow */
   color: white;
 
   border: none;
   border-radius: 2px;
-border-radius: 6px;
+border-radius: 50px;
   font-size: 14px;
   font-weight: 600;
   text-transform: uppercase;
@@ -911,13 +954,13 @@ border-radius: 6px;
 
 .shopNow:hover {
   background-color: unset;
-  background-color: #0970be;
+  background-color: rgb(0, 51, 255);
   transform: translateY(-1px);
 }
 
 /* Active – click feedback */
 .shopNow:active {
-  background-color: #1979c3;
+  background-color: rgb(0, 51, 255);
   transform: translateY(0);
 }
 
@@ -935,7 +978,7 @@ border-radius: 6px;
 }
 
 .shopNow:hover {
-  background-color: #0078d4;
+  background-color:  rgb(0, 51, 255);
   color: white;
 
 }
