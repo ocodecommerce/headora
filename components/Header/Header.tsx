@@ -561,7 +561,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                 <span className={styles.icon}>
                  
                   <Image
-                    src="/images/personHeader.png"
+                    src="/Images/personHeader.png"
                     alt="person icon"
                     width={24}
                     height={24}
