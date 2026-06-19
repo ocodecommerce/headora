@@ -17,7 +17,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 32px;
-    height: 70px;
+    height: 80px;
 
     max-width: 1440px;
     margin: auto;
@@ -43,6 +43,7 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    font-weight: 200;
     align-items: center;
   }
   
@@ -52,6 +53,11 @@
     cursor: pointer;
     display: flex;
   }
+
+  .navItem:hover {
+text-decoration: underline;
+  }
+
   
   .navItem span {
     /* font-size: 12px;
@@ -81,15 +87,16 @@
     font-size: 16px;
     color: #333;
     cursor: pointer;
+    letter-spacing: 0.02em;
   }
   .actionItemWrapper{
     display: flex;
     align-items: center;
-    gap: 10px;
-    font-size: 11px;
+    gap: 20px;
+    font-size: 10px;
     color: #333;
     cursor: pointer;
-    letter-spacing: 0.2em;
+    /* letter-spacing: 0.2em; */
   }
   
   .icon {
@@ -106,6 +113,7 @@
     align-items: center;
     justify-content: center;
     text-transform: capitalize;
+    letter-spacing: 0.02em;
     
   }
   .navItem > a{
@@ -116,6 +124,7 @@
   }
   .navItem span.icon {
     margin-left: 8px; /* Adjust spacing for the arrow icon */
+    margin-right: -4px;
     display: flex;
     align-items: center;
   }
@@ -142,25 +151,27 @@
   .navItem:hover .dropdown {
     display: flex;
     flex-wrap: wrap;
-    padding-left: 460px;
-    padding-right: 280px;
+    /* padding-left: 460px; */
+    /* padding-right: 280px; */
+    padding: 35px;
+    justify-content: center;
     animation: fadeIn 0.3s ease-in-out; /* Smooth transition */
-    justify-content: flex-end;
+    /* justify-content: flex-end; */
     @media screen and (min-width: 1700px) and (max-width: 1800px) {
-      padding-right: 170px;
-      padding-left: 380px;
+      /* padding-right: 170px; */
+      /* padding-left: 380px; */
     }
     @media screen and (min-width: 1600px) and (max-width: 1700px) {
-      padding-right: 140px;
-      padding-left: 320px;
+      /* padding-right: 140px; */
+      /* padding-left: 320px; */
     }
     @media screen and (min-width: 1500px) and (max-width: 1600px) {
-      padding-right: 100px;
-      padding-left: 295px;
+      /* padding-right: 100px; */
+      /* padding-left: 295px; */
     }
     @media screen and (min-width:  1000px) and (max-width:1440px ) {
-      padding-right: 40px;
-      padding-left: 270px;
+      /* padding-right: 40px; */
+      /* padding-left: 270px; */
     }
     /* @media screen and (min-width: 1000px) and (max-width: 1440px) {
     padding-left: 20px;
@@ -236,7 +247,7 @@
 .searchInput {
   width: 100%;
   padding: 12px 40px 12px 40px;
-  border: 1px solid #f9b500;
+  border: 1px solid rgb(47, 47, 255);
   border-radius: 4px;
   font-size: 16px;
   transition: border-color 0.2s ease;
@@ -244,7 +255,7 @@
 
 .searchInput:focus {
   outline: none;
-  border-color: #f9b500;
+  border-color: blue;
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
 }
 
@@ -367,7 +378,7 @@
 
 .loader {
   border: 3px solid #e0e0e0;
-  border-top: 3px solid #f9b500;
+  border-top: 3px solid blue;
   border-radius: 50%;
   width: 20px;
   height: 20px;
@@ -393,29 +404,47 @@
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    border: 2px solid #000000;
-    color: #000000;
+    border: 2px solid blue;
+    color: #ffffff;
     text-align: center;
-    font-size: 8px;
+    font-weight: 800;
+    font-size: 11px;
+    background: blue;
     display: flex;
     flex-wrap: wrap;
     position: absolute;
-    top: -15px;
-    right: -15px;
+    top: -10px;
+    right: -8px;
     align-items: center;
     justify-content: center;
     text-decoration: none;
   }
   .categoryGrid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    /* grid-template-columns: repeat(4, 1fr); */
     gap: 20px;
-    flex: 1;
+    /* flex: 1 1; */
+    justify-content: space-around;
+    width: 100%;
+  }
+  .categoryGrid span a:hover {
+text-decoration: underline;
+  }
+  .categoryGrid span a {
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: var(--sansSerif);
+    letter-spacing: 1px;
   }
   .megaMenuContainer{
     display: flex;
     gap: 10px;
     align-items: flex-start;
+    width: 100%;
+    max-width: 1440px;
   }
   .MegaMenuBrandsHeading{
     font-size: 18px;
@@ -504,7 +533,7 @@ font-size: 10px;
   margin-bottom: 10px;
 }
 .categoryGrid > div{
-  min-width: 200px;
+  /* min-width: 200px; */
 }
 
 

@@ -62,7 +62,7 @@ border-bottom: solid 1px #d1d1d1;
   /* Search Button */
   .searchButton {
     background-color: #ffffff; /* Bright blue color */
-    color: #a29253;
+    color: rgb(55, 55, 255);
     border: none;
     padding: 11px 20px;
 
@@ -72,7 +72,7 @@ border-bottom: solid 1px #d1d1d1;
   }
   
   .searchButton:hover{
-   color: #bb9f30;
+   color: blue;
   }
   /* Hover effect for button */
   .searchButton:active {

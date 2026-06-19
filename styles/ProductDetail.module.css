@@ -1,3 +1,15 @@
+.border{
+  border-bottom: #bdbdbd 1px solid;
+  /* border-radius: 4px; */
+  /* padding: 10px; */
+  /* margin-top: 15px; */
+  width: 100%;
+  @media screen and (max-width: 1000px) {
+    display: none;
+    
+  }
+}
+
 .compareNotification {
   background: #f0f9f0;
   border-left: 4px solid #27ae60;
@@ -17,7 +29,7 @@
 .AdditionalButtonsBox{
   display: flex;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 18px;
 }
 .wishwithcomparButton {
   display: inline-flex;
@@ -31,9 +43,10 @@ text-transform: capitalize;
   cursor: pointer;
 
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 200;
   line-height: 1;
   background: unset;
+  letter-spacing: 0.02em
 }
 
 .wishwithcomparButton:disabled {
@@ -148,7 +161,7 @@ text-transform: capitalize;
   width: 100%;
   margin: auto;
   /* padding-top: 20px; */
-  padding-bottom: 30px;
+  padding-bottom: 45px;
   display: flex;
   justify-content: start;
   align-items: center;
@@ -175,7 +188,8 @@ text-transform: capitalize;
   color: rgb(16 24 39);
     text-decoration: none;
     font-weight: 500;
-    font-size: 10px;
+    font-size: 14x;
+    text-decoration: underline;
     cursor: pointer;
     text-transform: capitalize;
   @media screen and (max-width: 650px) {
@@ -187,7 +201,7 @@ text-transform: capitalize;
   color: #1979c3;;
   text-decoration: none;
   font-weight: 500;
-  font-size: 10px;
+  font-size: 14px;
 
   text-transform: capitalize;
 
@@ -286,10 +300,10 @@ text-transform: capitalize;
 .priceTitleWrapper {
   flex-direction: row;
   display: flex;
-  gap: 14px;
+  gap: 18px;
   justify-content: space-between;
   align-items: baseline;
-  padding-bottom: 14px;
+  padding-bottom: 18px;
   border-bottom: #bdbdbd 1px solid;
 
   @media screen and (max-width:1000px) {
@@ -315,9 +329,9 @@ font-size: 46px;
 
 .productInfo h1,
 .mobileViewProductTitle {
-  font-size: 32px;
+  font-size: 26px;
 
-  font-weight: 600;
+  font-weight: 200;
   line-height: 50px;
 
   @media screen and (max-width:1000px) {
@@ -362,7 +376,7 @@ font-size: 46px;
     gap: 5px;
     align-items: center;
     font-size: 18px;
-    margin-top: 14px;
+    margin-top: 18px;
   }
 }
 
@@ -449,7 +463,7 @@ font-size: 46px;
 }
 .actionButtonsWrapper{
     width: 100%;
-    padding-top: 14px;
+    padding-top: 18px;
 }
 .addToCart{
   padding: 0px 25px;
@@ -605,7 +619,7 @@ font-size: 46px;
 
   @media screen and (max-width: 650px) {
     flex-direction: column;
-    padding-top: 14px;
+    padding-top: 18px;
     padding-bottom: 5px;
   }
 }
@@ -643,9 +657,9 @@ font-size: 46px;
 .additionalInfo {
   display: flex;
   gap: 30px;
-  margin-top: 14px;
+  margin-top: 18px;
   border-bottom: #bdbdbd 1px solid;
-  padding-bottom: 14px;
+  padding-bottom: 18px;
 
   @media screen and (max-width:1000px) {
     margin-top: 10px;
@@ -695,9 +709,9 @@ font-size: 46px;
 .quantitySelector {
   display: flex;
   align-items: flex-start;
-  margin-top: 14px;
+  margin-top: 18px;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
   font-size: 16px;
   font-weight: 600;
 
@@ -706,7 +720,7 @@ font-size: 46px;
     gap: 10px;
     flex-direction: unset;
     align-items: baseline;
-    padding-top: 14px;
+    padding-top: 18px;
   }
 }
 
@@ -736,11 +750,12 @@ font-size: 46px;
   background-color: #fff;
   cursor: pointer;
   font-size: 16px;
-  border-radius: 6px;
+  border-radius: 50px;
   height: 36px;
   width: 40px;
+  color: gray;
 
-  border: 1px solid #aaa;
+  border: 2px solid rgb(90 92 97);
 }
 
 .decrementButton:active {
@@ -756,7 +771,7 @@ font-size: 46px;
   height: 36px;
   font-size: 16px;
   background-color: unset;
-  border: 1px solid #aaa;
+  border: 2px solid rgb(90 92 97);
 
 }
 
@@ -772,19 +787,19 @@ font-size: 46px;
 .ConfigurableSelectorWrapper {
   padding-top: 14px;
   display: flex;
-  gap: 14px;
+  gap: 18px;
   width: 100%;
   align-items: flex-start;
   flex-direction: column;
-  padding-bottom: 14px;
+  padding-bottom: 18px;
   border-bottom: #bdbdbd 1px solid;
 }
 
 .ConfigurableWrapper label {
   font-size: 16px;
-
+  font-weight: 400;
   text-transform: capitalize;
-  font-weight: 600;
+  /* font-weight: 600; */
 }
 
 .optionSelector {
@@ -899,8 +914,8 @@ font-size: 46px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
-  padding-bottom: 14px;
+  gap: 18px;
+  padding-bottom: 18px;
   justify-content: space-between;
 
   @media screen and (max-width: 1250px) {
@@ -910,7 +925,7 @@ font-size: 46px;
 
   @media screen and (max-width: 1000px) {
     gap: 10px;
-    padding-bottom: 14px;
+    padding-bottom: 18px;
   }
 
 }
@@ -921,7 +936,7 @@ font-size: 46px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  gap: 14px;
+  gap: 18px;
 }
 
 .shopNow {
@@ -1020,6 +1035,8 @@ border-radius: 50px;
   }
 }
 
+
+
 .navItem2 {
   position: relative;
   padding: 14px 0px;
@@ -1106,7 +1123,7 @@ border-radius: 50px;
 .productDetailDescriptionContainer h2 {
   font-size: 22px;
 
-  padding-bottom: 14px;
+  padding-bottom: 18px;
   padding: 14px 0 14px;
 }
 
@@ -1202,17 +1219,17 @@ border-radius: 50px;
 }
 .productDetailNewDescriptionContainer{
   color: #777;
-  /* padding-bottom: 14px; */
+  /* padding-bottom: 18px; */
   line-height: 26px;
   font-size: 14px;
 }
 
 .productDetailNewDescriptionContainerDetails{
   color: #777;
-  /* padding-bottom: 14px; */
+  /* padding-bottom: 18px; */
   line-height: 26px;
   font-size: 14px;
-  margin-top: 14px;
+  margin-top: 18px;
   margin-bottom: 14px;
 }
 
@@ -1231,7 +1248,7 @@ border-radius: 50px;
 }
 
 .AuthenticityViewPromise {
-  margin-top: 14px;
+  margin-top: 18px;
 }
 
 .AuthenticityViewPromise a {
@@ -1472,7 +1489,7 @@ border-radius: 50px;
   justify-content: space-between;
   margin: 0;
   margin-bottom: 14px;
-  gap: 14px;
+  gap: 18px;
 
 }
 
@@ -1573,7 +1590,7 @@ border-radius: 50px;
 
 .ReviewRatingsBreakdown {
   display: flex;
-  gap: 14px;
+  gap: 18px;
 }
 
 .RatingItem {
@@ -1734,7 +1751,7 @@ font-weight: 600;
 
   color: #000000;
   text-align: center;
-  padding-bottom: 14px;
+  padding-bottom: 18px;
 }
 
 .reviewButton {
@@ -1769,7 +1786,7 @@ border-radius: 6px;
 
   @media screen and (max-width: 650px) {
     padding-top: 10px;
-    padding-bottom: 14px;
+    padding-bottom: 18px;
   }
 
   @media screen and (min-width: 650px) and (max-width: 1000px) {
@@ -1787,7 +1804,7 @@ border-radius: 6px;
 
   @media screen and (max-width: 650px) {
     min-height: 200px;
-    padding-bottom: 14px;
+    padding-bottom: 18px;
   }
 
 }
@@ -1898,7 +1915,7 @@ border-radius: 6px;
 .productName {
   font-size: 16px;
   line-height: 22px;
-  margin-top: 14px;
+  margin-top: 18px;
   color: #666;
 
 }
@@ -1956,10 +1973,10 @@ border-radius: 6px;
   text-transform: capitalize;
 }
 
-/* .selectedFilter b {
-  color: #000;
+.selectedFilter p {
+  font-weight: 200;
  
-} */
+}
 
 
 /*========================================= Discount Block Section ======================================= */
@@ -1979,7 +1996,7 @@ border-radius: 6px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 18px;
 }
 
 .dicountBlockContent p {
@@ -2118,12 +2135,12 @@ border-radius: 6px;
 }
 .productDetailNewDescriptionContainer table {
  width: 100% !important;
- margin-top: 14px;
+ margin-top: 18px;
 }
 .productDetailNewDescriptionContainer {
   width: 60%;
   border-collapse: collapse; /* cleaner borders */
-  margin-top: 14px;
+  margin-top: 18px;
   margin-bottom: 14px;
   font-size: 16px;
   text-align: left;
@@ -2274,7 +2291,7 @@ margin-top: 50px;
 
 .SharedSocialMediaIcons {
   display: flex;
-  gap: 14px;
+  gap: 18px;
   padding: 14px 0;
   border-top: #bdbdbd 1px solid;
 
@@ -2301,7 +2318,7 @@ margin-top: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 18px;
   flex-wrap: wrap;
 }
 
@@ -2361,7 +2378,7 @@ margin-top: 50px;
 
 .staticButtonWrapper {
   display: flex;
-  gap: 14px;
+  gap: 18px;
 }
 
 .StaticArrow img {
@@ -2476,7 +2493,7 @@ margin-top: 50px;
 .brandGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 18px;
 }
 
 .brandCard {
@@ -2573,7 +2590,7 @@ margin-top: 50px;
   .dicountBlockContainer {
     padding: 0 10px;
     margin: 0;
-    margin-top: 14px;
+    margin-top: 18px;
   }
 
   .detailContainer {
@@ -2699,7 +2716,7 @@ margin-top: 50px;
     border-bottom: none;
     gap: 10px;
     padding-bottom: 0;
-    padding-top: 14px;
+    padding-top: 18px;
   }
 
 
@@ -2775,12 +2792,12 @@ margin-top: 50px;
 
   .ReviewContainer {
     padding: 0 10px;
-    padding-bottom: 14px;
+    padding-bottom: 18px;
   }
 
   .relatedProductsContainer {
     padding: 0 14px;
-    padding-bottom: 14px;
+    padding-bottom: 18px;
   }
 
   .productItem {

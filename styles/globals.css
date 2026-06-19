@@ -7,6 +7,18 @@
   --peragraph-color: #333
 }
 
+
+
+
+@font-face {
+  font-family: 'Muli';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url('/public/Fonts/Montserrat-Thin.otf') format('opentype');
+}
+
+
 @font-face {
   font-family: 'Muli';
   font-style: normal;
@@ -169,6 +181,7 @@ ul li {
 
 p {
   font-family: var(--Secondary);
+  font-weight: 400;
 }
 
 h1,
@@ -1012,7 +1025,9 @@ button.next:focus-visible,
 
 .sliderContainerInner p.selected {
   /* border: 2px solid #D4A902 !important; */
-  background: linear-gradient(-45deg, rgba(0, 0, 0, 0.2), transparent);
+  /* background: linear-gradient(-45deg, rgba(0, 0, 0, 0.2), transparent); */
+  background: black;
+  color: white;
 }
 
 .sliderContainerInner p.disable {

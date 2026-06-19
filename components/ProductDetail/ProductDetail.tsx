@@ -1265,6 +1265,9 @@ const handleAddToCompare = () => {
                 </div>
               )}
 
+
+              <div className={styles.border}></div>
+
               {/* Action Buttons */}
               <div className={styles.actionButtonsWrapper}>
                 {loadingStockStatus ? (

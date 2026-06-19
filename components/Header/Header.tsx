@@ -310,9 +310,9 @@ const refinedCategories = (categories || []).map((category: any) => {
               <li
                 key={category.uid}
                 className={styles.navItem}
-                style={
-                  category.children.length < 5 ? { position: "relative" } : { position: "unset" }
-                }
+                // style={
+                //   category.children.length < 5 ? { position: "relative" } : { position: "unset" }
+                // }
               >
                 <Link href={`/${category.url_path?.replace(/^\/+/, "")}`}>{category.name}</Link>
 
@@ -336,7 +336,11 @@ const refinedCategories = (categories || []).map((category: any) => {
                   )}
 
                   {/* {category.children?.some((subCategory: any) => subCategory.product_count ? ( */}
-                  {category.children.length > 5 || category.children.some((child: any) => child.children && child.children.length > 0) ? (
+
+                  {category.children.length > 5 || category.children.some((child: any) => child.children 
+                  // && child.children.length > 0
+                ) ? (
+
                     <div className={styles.dropdown}>
                       {category.name.toLowerCase() == "brands" ? (<h3 className={styles.MegaMenuBrandsHeading}>Brands</h3>) : (null)}
                       <div className={styles.megaMenuContainer}>
@@ -403,13 +407,13 @@ const refinedCategories = (categories || []).map((category: any) => {
                             </div>
                           ))}
                         </div>
-                        <div className={styles.bannerColumn}>
+                        {/* <div className={styles.bannerColumn}>
                           <img
                             src={category.image || "/Images/Affirm banner.png"}
                             alt={`${category.name} Banner`}
                             className={styles.bannerImage}
                           />
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ) : category.children
@@ -506,28 +510,7 @@ const refinedCategories = (categories || []).map((category: any) => {
             ))}
 
 
-            <li>
-              <div className={styles.actionItem} onClick={toggleSearch}>
-                <span className={styles.icon}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="icon-icon-_rq"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </span>
-                Search
-              </div>
-            </li>
+
           </ul>
         </nav>
         <div className={styles.actions}>
@@ -548,7 +531,50 @@ const refinedCategories = (categories || []).map((category: any) => {
 
           <div className={styles.actionItemWrapper}>
             {/* <Link href="/cart"> */}
-            <span className={styles.icon}>
+
+{/*  */}
+            {/* <li> */}
+              <div className={styles.actionItem} onClick={toggleSearch}>
+                <span className={styles.icon}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="icon-icon-_rq"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </span>
+                Search
+              </div>
+
+
+
+              <div className={styles.actionItem} onClick={toggleSearch}>
+                <span className={styles.icon}>
+                 
+                  <Image
+                    src="/images/personHeader.png"
+                    alt="person icon"
+                    width={24}
+                    height={24}
+                  />
+                </span>
+                Sign in
+              </div>
+
+
+            {/* </li> */}
+
+
+            {/* <span className={styles.icon}>
 
               <Link href={'/boutique/wishlist/'} >
                 <div className={styles.iconContainer}>
@@ -556,7 +582,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                   <Image className={styles.whishlistGoldenIcon} src={'/Images/wishlistIcon.png'} height={20} width={23} alt="wishlist icon" />
                 </div>
               </Link>
-            </span>
+            </span> */}
             <span className={styles.icon} onClick={toggleCartBag}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
