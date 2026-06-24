@@ -29,13 +29,13 @@ import { manufacturer } from "../Category/ManufacturerData"
 function ProductDetail({
   Data,
   aggregations,
-  categories,
+  
   // breadcrumbs,
   ReturnDataCMSBlock,
   showRibbon
 }: any) {
 
-  console.log("ProductDetail Data:", Data);
+  // console.log("ProductDetail Data:", Data);
 
   if (!Data) return null;
   const router = useRouter();

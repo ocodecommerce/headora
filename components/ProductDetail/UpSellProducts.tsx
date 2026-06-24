@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Currency } from '../Currency/currency';
 
 function UpSellProducts({ Data }: any) {
-console.log("CrossSellProducts Data:", Data);
+// console.log("CrossSellProducts Data:", Data);
 
   const level2CategoryName =
   Data?.categories?.find(
@@ -29,7 +29,7 @@ console.log("CrossSellProducts Data:", Data);
   }
 
   function finalPrice(item: any) {
-    console.log("finalPrice item:", item);
+    // console.log("finalPrice item:", item);
     const final = item?.price_range?.maximum_price?.final_price?.value;
     const currency = item?.price?.regularPrice?.amount?.currency || 'INR';
     return final ? `${Currency[currency]}${final.toLocaleString()}` : '';

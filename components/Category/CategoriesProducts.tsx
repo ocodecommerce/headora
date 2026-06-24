@@ -20,7 +20,7 @@ const productsPerPage = 21
 
 function CategoriesProducts({ iscollectionData, productsData, categoriesData, categoryDetail, showRibbon, isMobile }: any) {
   const router = useRouter()
-  console.log("CategoryDetail:", categoryDetail, "productsData:", productsData, "categoriesData:", categoriesData)
+  // console.log("CategoryDetail:", categoryDetail, "productsData:", productsData, "categoriesData:", categoriesData)
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -367,9 +367,9 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [categoryDetail, currentPage, client])
 
-  useEffect(() => {
-    fetchStockData()
-  }, [fetchStockData])
+  // useEffect(() => {
+  //   fetchStockData()
+  // }, [fetchStockData])
 
   // Cookie helpers
   const setCookie = useCallback((name: string, value: string, days: number) => {
@@ -1144,7 +1144,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                                   className={styles.addToCartButton}
                                   onClick={(e) => {
                                     e.preventDefault()
-                                    console.log("product", product)
+                                    // console.log("product", product)
                                     if (product.__typename === "ConfigurableProduct") {
                                       router.push(`/${product.url_key}.html`)
                                     } else {

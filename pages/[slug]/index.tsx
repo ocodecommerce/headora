@@ -240,10 +240,15 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const allCategoriesPathFile = path.resolve(`./cacheM/topLevelCategoriesPath.json`);
   const allProductsPathFile = path.resolve(`./cacheM/allProductsPath.json`);
   try {
-    let allCategories= JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8'));
-    let allProducts= JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
+    let allCategories = JSON.parse(
+      await fs.readFile(allCategoriesPathFile, 'utf-8')
+    ).map((item:any) => item.replace(/\.html$/, ''));
+  
+    // let allProducts= JSON.parse(
+    //   await fs.readFile(allProductsPathFile, 'utf-8')
+    // ).map((item:any) => item.replace(/\.html$/, ''));
 
-    
+    let allProducts= JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
     const combinedPaths = [...allCategories, ...allProducts];
 
     const paths = combinedPaths.map((url: any) => {
@@ -251,40 +256,18 @@ export const getStaticPaths: GetStaticPaths = async () => {
     });
    let responseData = {
     paths,
-    fallback: 'blocking' as const,
+    fallback: false,
   }
 
   return responseData;
 
   } catch (error) {
-    
-  }
-  try{
-    console.log('/////////////////////getStaticPaths from server////////////')
-    const response = await client.fetchCategories();
-    const allUrl = response?.data?.categories?.items?.[0];
-    const paths = allUrl.children.map((item: { url_path: string }) => {
-            // Ensure the slug is an array of values
-            return {
-              params: {
-                slug: item.url_path+'', // Split slug by '/' to get an array (e.g., ['product', 'green-t-shirt'])
-              },
-            };
-          });
-
-        
-    let responseData = {
-          paths,
-          fallback: 'blocking' as const,
-        }
-   
-    return responseData;
-  } catch (error) {
     return {
       paths: [],
-      fallback:'blocking' as const,
+      fallback: false,
     };
   }
+ 
 }
 
 // Static Props
@@ -296,38 +279,34 @@ export const getStaticProps: GetStaticProps = async ({params, query}:any) => {
   const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
   
   const { slug } = params as { slug: string;};
+  console.log(slug," slug urlPath")
   const urlPath=slug.replace(/\.html$/, '')
-  console.log('/////////////////////getStaticProps////////////slug1:-',urlPath)
-  const cacheStaticProps= createHash('md5')
-  .update(urlPath+'')
-  .digest('hex');
+console.log(urlPath,"urlPath")
+  // const cacheStaticProps= createHash('md5')
+  // .update(urlPath+'')
+  // .digest('hex');
 
-// During build: Try cache first (fast, low load)
-    // During ISR/runtime: SKIP cache, always fetch fresh
-    let useCache = isBuildTime; // Only use cache at build time
+  // const cacheProductPropsPath= path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
 
-   
-      // Your existing cache check loop
-  // const cacheStaticPropsPath= path.resolve(`./cacheM/category/${cacheStaticProps}.json`)
-  const cacheProductPropsPath= path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
-  if (useCache) {
-    const cachePaths = [
-     // path.resolve(`./cacheM/category/${cacheStaticProps}.json`),
-      path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
-    ];
 
-    for (const cachePath of cachePaths) {
-      try {
-        console.log('---------------------Return date from cache..')
-        if(urlPath =='designers-live'){
-          console.log('cachePath filename ',cachePath)
-        }
-        return JSON.parse(await fs.readFile(cachePath, 'utf-8'));
-      } catch (error) {
+  // if (useCache) {
+  //   const cachePaths = [
+  //    // path.resolve(`./cacheM/category/${cacheStaticProps}.json`),
+  //     path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
+  //   ];
+
+  //   for (const cachePath of cachePaths) {
+  //     try {
+  //       console.log('---------------------Return date from cache..')
+  //       if(urlPath =='designers-live'){
+  //         console.log('cachePath filename ',cachePath)
+  //       }
+  //       return JSON.parse(await fs.readFile(cachePath, 'utf-8'));
+  //     } catch (error) {
        
-      }
-    }
-  }
+  //     }
+  //   }
+  // }
   
   const client = new Client();
   
@@ -418,18 +397,19 @@ try {
         view:'product',
         generatedAt: new Date().toISOString(),
         urlPath:urlPath,
-        check:useCache
+
       },
       revalidate: 10,
     }
     
-    await fs.writeFile(cacheProductPropsPath, JSON.stringify(responseData));
+    // await fs.writeFile(cacheProductPropsPath, JSON.stringify(responseData));
     return responseData;
   }
 } catch (error) {
   console.log(error,"error-error")
   return {
     props: {
+      
       allProductList: [],  
       category: null,     
       currentPage: page,  
@@ -444,9 +424,23 @@ try {
 };
 
 // Collection Component
-const Collection = ({ check,view,urlPath,allProductList, category, productsRes, collection,categories,productData, aggregations, reviews, ReturnDataCMSBlock, categoriesList, showRibbon, isMobile,generatedAt}: any) => {
+const Collection = ({ 
+          view,
+          urlPath,
+          allProductList, 
+          category, 
+          productsRes, 
+          collection,
+          categories,
+          productData, 
+          aggregations, 
+          reviews, 
+          ReturnDataCMSBlock, 
+          categoriesList, 
+          showRibbon, 
+          isMobile,
+          generatedAt}: any) => {
 
-console.log(view,check,"viewviewview")
 
   const [price, setPrice] = useState<any>()
   const [productBbreadcrumbs, setProductBbreadcrumbs] = useState<any>([]);
@@ -494,6 +488,20 @@ const breadcrumbsProducts = [
   })),
 ];
 
+useEffect(() => {
+  console.log("=== CURRENT VIEW ===", view, "urlPath",urlPath, "URL:", router.asPath);
+}, [view, router.asPath]);
+
+
+useEffect(() => {
+  setPrice(null);
+  setProductBbreadcrumbs([]);
+  
+  if (typeof window !== 'undefined') {
+    sessionStorage.removeItem('breadcrumbs');
+  }
+}, [router.asPath]); // or [urlPath]
+
 
   useEffect(() => {
 
@@ -506,7 +514,7 @@ const breadcrumbsProducts = [
         sessionStorage.removeItem('breadcrumbs');
       }
     }
-  }, []);
+  }, [router.asPath]);
 
 // ---------------------CategoriesProducts and Collection Meta Details------------------------------------
 
@@ -553,185 +561,263 @@ const breadcrumbsProducts = [
       )
   : "";
 
-  if(view=='collection'){
-
-    return (
-    <>
-    
-      <Head>
-      <meta charSet="UTF-8"/>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-      <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}/>
-
-        <title>{collection?.meta_title || collection?.name}</title>
-        <meta name="title" content={collection?.meta_title || collection?.name}/>
-        {collection?.meta_description && (
-          <meta name="description" content={collection?.meta_description}/>
-        )}
-        {collection?.meta_keywords && (
-          <meta name="keywords" content={collection?.meta_keywords}/>
-        )}
- 
-
-
-        <meta property="og:type" content="category"/>
-        <meta property="og:title" content={collection?.meta_title || collection?.name}/>
-        {collection?.meta_description && (
-        <meta property="og:description" content={collection?.meta_description}/>
-        )}
-        <meta property="og:image" content={CategoryImage}/>
-        <meta property="og:image:secure_url" content={CategoryImage}/>
-        <meta property="og:image:width" content="800"/>
-        <meta property="og:image:height" content="800"/>
-        <meta property="og:image:type" content={`image/${fileExtension}`}/>
-        <meta property="og:url" content={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}/>
-        <meta property="og:site_name" content="Headora"/>
-
-
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:title" content={collection?.meta_title || collection?.name}/>
-        {collection?.meta_description && (
-        <meta name="twitter:description" content={collection?.meta_description}/>
-        )}
-        <meta name="twitter:image" content={CategoryImage}/>
-      </Head>
-
-      
-      <BreadcrumbSchema breadcrumbs={breadcrumbs} />
-      <CategorySchema category={collection} url={slug}/>
-      <CategoryProductSchema products={allProductList} />
-
-      {category?.display_mode === "PAGE" ? (
+  const isCollection = view === "collection";
+  const isProduct = view === "product";
+  
+  if (!isCollection && !isProduct) {
+    return null;
+  }
+  
+  const schemaImage = isProduct
+    ? (
+        productData?.__typename === "ConfigurableProduct"
+          ? productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, "/")
+          : productData?.image?.url?.replace(/\/cache\/.*?\//, "/")
+      ) || `${process.env.baseURL}media/catalog/product/placeholder/default/coming-soon-sign_3.jpg`
+    : null;
+  
+  const productFileExtension = schemaImage?.split('.').pop()?.toLowerCase() || "jpg";
+  
+  return (
+    <div key={urlPath || router.asPath}>
+      {isCollection && (
         <>
-          <CollectionHeader Data={collection} />
-          <CollectionBreadCrumbs Data={collection} />
-          <CollectionListing Collection={collection} />
-          <CollectionReletatedProducts Data={category} Collection={collection} />
-          {/* <CollectionContent BlogContent={BlogContent}/> */}
-          <Content description={CollectionDescription}/>
-        </>
-      ) : (
-        <>
-        <div style={{position:'relative'
-        }}>
-
-          <CollectionHeader Data={collection} />
-          <CollectionBreadCrumbs Data={collection} />
-          {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
-          {/* <p>generatedAt: {generatedAt}</p> */}
-          {/* <p style={{color:"wheat"}}>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
-          <CategoriesProducts
-            Data={{ name: category?.name }}
-            categoryDetail={category}
-            categoriesData={productsRes}
-            productsData={allProductList}
-            showRibbon={showRibbon}
-            isMobile={isMobile}
-          />
-          
-          <Content description={category?.description} />
-          </div>
+          <Head>
+            <meta charSet="UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+            <meta name="robots" content="noindex, nofollow" />
+            <link
+              rel="canonical"
+              href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
+            />
+  
+            <title>{collection?.meta_title || collection?.name}</title>
+            <meta
+              name="title"
+              content={collection?.meta_title || collection?.name}
+            />
+            {collection?.meta_description && (
+              <meta
+                name="description"
+                content={collection?.meta_description}
+              />
+            )}
+            {collection?.meta_keywords && (
+              <meta
+                name="keywords"
+                content={collection?.meta_keywords}
+              />
+            )}
+  
+            <meta property="og:type" content="category" />
+            <meta
+              property="og:title"
+              content={collection?.meta_title || collection?.name}
+            />
+            {collection?.meta_description && (
+              <meta
+                property="og:description"
+                content={collection?.meta_description}
+              />
+            )}
+            <meta property="og:image" content={CategoryImage} />
+            <meta property="og:image:secure_url" content={CategoryImage} />
+            <meta property="og:image:width" content="800" />
+            <meta property="og:image:height" content="800" />
+            <meta property="og:image:type" content={`image/${fileExtension}`} />
+            <meta
+              property="og:url"
+              content={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
+            />
+            <meta property="og:site_name" content="Headora" />
+  
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta
+              name="twitter:title"
+              content={collection?.meta_title || collection?.name}
+            />
+            {collection?.meta_description && (
+              <meta
+                name="twitter:description"
+                content={collection?.meta_description}
+              />
+            )}
+            <meta name="twitter:image" content={CategoryImage} />
+          </Head>
+  
+          <BreadcrumbSchema breadcrumbs={breadcrumbs} />
+          <CategorySchema category={collection} url={slug} />
+          <CategoryProductSchema products={allProductList} />
+  
+          {category?.display_mode === "PAGE" ? (
+            <>
+              <CollectionHeader Data={collection} />
+              <CollectionBreadCrumbs Data={collection} />
+              <CollectionListing Collection={collection} />
+              <CollectionReletatedProducts
+                Data={category}
+                Collection={collection}
+              />
+              <Content description={CollectionDescription} />
+            </>
+          ) : (
+            <>
+              <div
+                style={{
+                  position: "relative",
+                }}
+              >
+                <CollectionHeader Data={collection} />
+                <CollectionBreadCrumbs Data={collection} />
+  
+                <CategoriesProducts
+                  Data={{ name: category?.name }}
+                  categoryDetail={category}
+                  categoriesData={productsRes}
+                  productsData={allProductList}
+                  showRibbon={showRibbon}
+                  isMobile={isMobile}
+                />
+  
+                <Content description={category?.description} />
+              </div>
+            </>
+          )}
         </>
       )}
-    </>
-  );
-}else if(view=='product'){
- const schemaImage = productData?.__typename === "ConfigurableProduct"
-    ? productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, "/")
-    : productData?.image?.url?.replace(/\/cache\/.*?\//, "/") || `${process.env.baseURL}media/catalog/product/placeholder/default/coming-soon-sign_3.jpg`;
-  const fileExtension = schemaImage?.split('.').pop()?.toLowerCase() || "jpg";
-
-  return (
-<>
-<Head>
-        <meta charSet="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        {/* Robots */}
-        <meta name="robots" content="noindex, nofollow" />
-        <link rel="canonical" href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`} />
-        {/* Title and Canonical */}
-        
-
-
-        {/* SEO Meta Tags */}
-         <title>{`${productData?.meta_title ? productData?.meta_title : productData?.name}`}</title>
-        <meta name="title" content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`} />
-        <meta name="description"
-          content={metaDiscription}
-        />
-        <meta name="keywords" content={productData?.meta_keyword ? productData?.meta_keyword : 'Headora'} />
-
-        {/* Open Graph / Facebook Meta Tags */}
-        <meta property="og:locale" content="en_US" />
-        <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`} />
-        <meta property="og:description"
-          content={
-            metaDiscription
-          }
-        />
-        <meta property="og:url" content={`${process.env.baseURL}/${productData?.url_key}.html`} />
-        <meta property="og:site_name" content="Headora" />
-        <meta property="og:image" content={schemaImage} />
-        <meta property="og:image:secure_url" content={schemaImage} />
-        <meta property="og:image:width" content="800" />
-        <meta property="og:image:height" content="800" />
-        <meta property="og:image:type" content={`image/${fileExtension}`} />
-        <meta property="og:price:amount" content={price} />
-        <meta property="og:price:currency" content="USD" />
-
-        {/* Twitter Meta Tags */}
-        <meta name="twitter:card" content="summary" />
-        <meta name="twitter:title" content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`} />
-        <meta name="twitter:description"
-          content={metaDiscription}
-        />
-        <meta name="twitter:image" content={schemaImage} />
-
-        {/* Schema.org Meta Tags */}
-        <meta itemProp="name" content={productData?.name} />
-        <meta itemProp="description"
-          content={metaDiscription}
-        />
-        <meta itemProp="image" content={schemaImage} />
-      </Head>
-
-        {/* <BreadcrumbSchema breadcrumbs={breadcrumbs} products={productData} /> */}
-        {/* <ProductSchema product={productData} aggregations={aggregations} schemaImage={schemaImage} price={price} metaDiscription={metaDiscription} /> */}
-       
-        <BreadcrumbSchema breadcrumbs={breadcrumbsProducts} products={productData} />
-        {/* <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
-        <ProductSchema product={productData} aggregations={aggregations} schemaImage={schemaImage} price={price} metaDiscription={metaDiscription} />
-        
-        <ProductDetail 
-        Data={productData} 
-        aggregations={aggregations} 
-        categories={categories} 
-        breadcrumbs={productBbreadcrumbs} 
-        setPrice={setPrice} 
-        ReturnDataCMSBlock={ReturnDataCMSBlock}
-        showRibbon={showRibbon}/>
-          {/* <StaticReview /> */}
-        {/* <p style={{color:"wheat"}}>generatedAt: {generatedAt}+{process.env.NEXT_PHASE},"process.env.NEXT_PHASE"</p> */}
-
-        <ReviewSection Data={productData} AllReviews={reviews} />
-        <CrossSellProducts Data={productData}/>
-        <UpSellProducts Data={productData}/>
-        <ReletedProducts Data={productData} />
-        <RelatedBrands RelatedCategories={productData?.categories} categoriesList={categoriesList} />
+  
+      {isProduct && (
+        <>
+          <Head>
+            <meta charSet="UTF-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1.0"
+            />
+  
+            <meta name="robots" content="noindex, nofollow" />
+            <link
+              rel="canonical"
+              href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
+            />
+  
+            <title>
+              {`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
+            </title>
+  
+            <meta
+              name="title"
+              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
+            />
+  
+            <meta
+              name="description"
+              content={metaDiscription}
+            />
+  
+            <meta
+              name="keywords"
+              content={
+                productData?.meta_keyword
+                  ? productData?.meta_keyword
+                  : "Headora"
+              }
+            />
+  
+            <meta property="og:locale" content="en_US" />
+            <meta property="og:type" content="product" />
+  
+            <meta
+              property="og:title"
+              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
+            />
+  
+            <meta
+              property="og:description"
+              content={metaDiscription}
+            />
+  
+            <meta
+              property="og:url"
+              content={`${process.env.baseURL}/${productData?.url_key}.html`}
+            />
+  
+            <meta property="og:site_name" content="Headora" />
+            <meta property="og:image" content={schemaImage} />
+            <meta property="og:image:secure_url" content={schemaImage} />
+            <meta property="og:image:width" content="800" />
+            <meta property="og:image:height" content="800" />
+            <meta
+              property="og:image:type"
+              content={`image/${productFileExtension}`}
+            />
+  
+            <meta property="og:price:amount" content={price} />
+            <meta property="og:price:currency" content="USD" />
+  
+            <meta name="twitter:card" content="summary" />
+  
+            <meta
+              name="twitter:title"
+              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
+            />
+  
+            <meta
+              name="twitter:description"
+              content={metaDiscription}
+            />
+  
+            <meta name="twitter:image" content={schemaImage} />
+  
+            <meta itemProp="name" content={productData?.name} />
+            <meta
+              itemProp="description"
+              content={metaDiscription}
+            />
+            <meta itemProp="image" content={schemaImage} />
+          </Head>
+  
+          <BreadcrumbSchema
+            breadcrumbs={breadcrumbsProducts}
+            products={productData}
+          />
+  
+          <ProductSchema
+            product={productData}
+            aggregations={aggregations}
+            schemaImage={schemaImage}
+            price={price}
+            metaDiscription={metaDiscription}
+          />
+  
+          <ProductDetail
+            Data={productData}
+            aggregations={aggregations}
+      
+            breadcrumbs={productBbreadcrumbs}
+            setPrice={setPrice}
+            ReturnDataCMSBlock={ReturnDataCMSBlock}
+            showRibbon={showRibbon}
+          />
+  
+          <ReviewSection
+            Data={productData}
+            AllReviews={reviews}
+          />
+  
+          <CrossSellProducts Data={productData} />
+          <UpSellProducts Data={productData} />
+          <ReletedProducts Data={productData} />
+  
+          <RelatedBrands
+            RelatedCategories={productData?.categories}
+            categoriesList={categoriesList}
+          />
         </>
+      )}
+    </div>
   );
-}else{
-  const router = useRouter();
-
-  // useEffect(() => {
-  //   router.push('/404');
-  // }, []);
-
-  return null;
-}
-}
+  }
 
 export default Collection;

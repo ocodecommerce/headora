@@ -103,7 +103,7 @@ import styles from "../../styles/ProductDetail.module.css";
     const brandsCategory = categoriesList.data.categories.items?.[0]?.children.find(
       (category: any) => category.name.toLowerCase() === "brands",
     )
-    console.log(RelatedCategories,"RelatedCategories",brandsCategory,"brandsCategory")
+    // console.log(RelatedCategories,"RelatedCategories",brandsCategory,"brandsCategory")
     let RelatedCategory:any = ""
     let Data = categoriesList?.data?.categories?.items?.[0]?.children
     const relatedBrands:any = Data[RelatedCategory];

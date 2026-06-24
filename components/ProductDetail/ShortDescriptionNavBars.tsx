@@ -7,7 +7,7 @@ import styles from "../../styles/ProductDetail.module.css";
 import Image from "next/image";
 
 function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, aggregations, ReturnDataCMSBlock, ReturnPolicy }: any) {
-  console.log("aggregations in ShortDescriptionNavBars:", aggregations);
+  // console.log("aggregations in ShortDescriptionNavBars:", aggregations);
   const [activeTab, setActiveTab] = useState("Description");
 
   const handleTabClick = (index:any) => {

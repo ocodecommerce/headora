@@ -4,7 +4,7 @@ import Link from "next/link";
 
 
 function ProductDescription({ currentVariant }: any) {
-  console.log("Rendering ProductDescription with variant:", currentVariant);
+  // console.log("Rendering ProductDescription with variant:", currentVariant);
   const [shortDesc, setShortDesc] = useState("");
   const [fullDesc, setFullDesc] = useState("");
 
