@@ -423,7 +423,7 @@ try {
 }
 };
 
-// Collection Component
+// Collection Component test
 const Collection = ({ 
           view,
           urlPath,
