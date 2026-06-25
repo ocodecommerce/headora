@@ -17,6 +17,8 @@ function Header({ categoriesList,megamenu }: any) {
   const [showCartBag, setShowCartBag] = useState(false);
   const [cartCount, setCartCount] = useState<any>(0);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [userLoggedIn, setUserLoggedIn] = useState<boolean | null>(false)
+
   // const categories = categoriesList?.data?.categories?.items[0]?.children || [];
   const inputRef = useRef<HTMLInputElement>(null);
   const [categories, setCategories] = useState(categoriesList?.data?.categories?.items[0]?.children || [])
@@ -59,6 +61,36 @@ function Header({ categoriesList,megamenu }: any) {
         : item?.children,
     }));
   };
+
+
+  const checkUserLogin = async () => {
+    try {
+      if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+        console.log("Skipping user sync on localhost")
+        return
+      }
+      const response = await fetch(`${process.env.baseURL}fcprofile/sync/index`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (!response.ok) throw new Error("Network response was not ok")
+      const user = await response.json()
+      if (user.logged_in) {
+        setUserLoggedIn(true)
+        // await fetchWishlistId()
+      } else {
+        setUserLoggedIn(false)
+        
+        router.push("/customer/account/login/")
+      }
+    } catch (error) {
+      console.error("Error checking user login status:", error)
+      setUserLoggedIn(false)
+    }
+  }
+
 
 
   useEffect(() => {
@@ -557,7 +589,7 @@ const refinedCategories = (categories || []).map((category: any) => {
 
 
 
-              <div className={styles.actionItem} onClick={toggleSearch}>
+              <div className={styles.actionItem} onClick={checkUserLogin}>
                 <span className={styles.icon}>
                  
                   <Image
@@ -567,7 +599,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                     height={24}
                   />
                 </span>
-                Sign in
+                {!userLoggedIn? "Sign in" : ""}
               </div>
 
 

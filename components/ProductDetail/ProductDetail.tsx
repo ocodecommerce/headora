@@ -35,7 +35,7 @@ function ProductDetail({
   showRibbon
 }: any) {
 
-  // console.log("ProductDetail Data:", Data);
+  console.log("ProductDetail Data:", Data);
 
   if (!Data) return null;
   const router = useRouter();
@@ -513,7 +513,7 @@ const handleAddToCompare = () => {
 
   useEffect(() => {
     if (Data?.__typename == "ConfigurableProduct") {
-      setDefailtOption(0);
+      // setDefailtOption(0);
     }
   }, [Data]);
 
@@ -798,8 +798,9 @@ const handleAddToCompare = () => {
     });
   }
   function finalPrice() {
+   
     const isConfigurable = Data.__typename === "ConfigurableProduct";
-    const final_price = isConfigurable
+    const final_price = (isConfigurable && currentVariant)
       ? currentVariant?.priceRange?.maximum_price?.final_price?.value
       : Data?.priceRange?.maximum_price?.final_price?.value;
     let currency: any = Data?.price?.regularPrice?.amount?.currency;
@@ -1079,6 +1080,7 @@ const handleAddToCompare = () => {
           <div className={styles.productImages}>
             <GallerySection
               currentVariantData={currentVariant ? currentVariant : Data}
+              Data={currentVariant ? Data : null}
             />
           </div>
 
@@ -1132,6 +1134,8 @@ const handleAddToCompare = () => {
             <div
               className={`${styles.priceTitleWrapper} ${styles.desktopBlock}`}
             >
+
+              <div className={styles.outersubTitelWrapper}>
               <div className={styles.subTitelWrapper}>
                 <h1>
                   {/* {Data.__typename === "ConfigurableProduct"
@@ -1175,8 +1179,30 @@ const handleAddToCompare = () => {
                 )}
                 {/* <p className={styles.AnticipatedDeliveryText}>Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"} </p> */}
               </div>
-             
+              
+              </div>
+              {/* // Click location */}
+              <p
+                  onClick={() => {
+                    window.dispatchEvent(new Event('openReviewForm'));
+
+                    const element = document.getElementById('reviews-section');
+
+                    if (element) {
+                      const offset = 100;
+
+                      window.scrollTo({
+                        top: element.offsetTop - offset,
+                        behavior: 'smooth',
+                      });
+                    }
+                  }}
+                >
+                  Be the first to review this product.
+                </p>
+ 
             </div>
+         
 
             {Data?.__typename === "ConfigurableProduct" && (
               <div

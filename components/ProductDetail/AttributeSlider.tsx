@@ -10,7 +10,7 @@ function AttributeSlider({ option, handleOptionSelect, disabledOptions, activeFi
   const [currectIndex, setCurrentIndex] = useState(0);
   const [maxtranslateX, setMaxTranslateX] = useState(0);
   const [visibleItems, setVisibleItems] = useState(100);
-  const [selectedValue, setSelectedValue] = useState<string | null>(null); // State for active filter
+  const [selectedValue, setSelectedValue] = useState<string | null>("none"); // State for active filter
 
   const itemsToShow = 4; // Number of items to show in the slider
 
@@ -105,8 +105,8 @@ function AttributeSlider({ option, handleOptionSelect, disabledOptions, activeFi
                         {activeFilters.includes(option.attribute_code + '--' + standardizeValue(value.label)) && (
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
+                            width="16"
+                            height="16"
                             viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
@@ -134,13 +134,13 @@ function AttributeSlider({ option, handleOptionSelect, disabledOptions, activeFi
       </div>
 
       {/* Display Selected Attribute Label and Value */}
-      {selectedValue && (
+      {/* {selectedValue && ( */}
         <div className={styles.selectedFilter}>
           <p>
             Selected {attributeLabels(option.attribute_code)}:  {selectedValue}
           </p>
         </div>
-      )}
+      {/* )} */}
     </div>
   );
 }

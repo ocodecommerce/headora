@@ -13,19 +13,32 @@ import 'swiper/css/pagination';
 import { getFilePath } from '../../components/ConfigureProduct';
 import { Navigation, Thumbs, FreeMode, Mousewheel, Zoom, Pagination } from 'swiper/modules';
 
-function GallerySection({ currentVariantData }: any) {
+function GallerySection({ currentVariantData,Data }: any) {
+  console.log('currentVariantData', currentVariantData);
+  console.log('data', Data);
+
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [currentVariantion, setCurrentVariantion] = useState<any>(null);
   const [sortedMediaGallery, setSortedMediaGallery] = useState<any[]>([]);
 
+
+
   useEffect(() => {
-    if (currentVariantData.videos) {
+    const updatedVariant = {
+      ...currentVariantData,
+      media_gallery: [
+        ...(currentVariantData?.media_gallery || []),
+        ...(Data?.media_gallery || []),
+      ],
+    };
+  
+    if (updatedVariant.videos?.length) {
       updateVideoThubnail();
     } else {
-      setCurrentVariantion(currentVariantData);
-      updateSortedGallery(currentVariantData);
+      setCurrentVariantion(updatedVariant);
+      updateSortedGallery(updatedVariant);
     }
-  }, [currentVariantData]);
+  }, [currentVariantData, Data]);
 
   const updateVideoThubnail = async () => {
     let videosList = [];
@@ -220,7 +233,7 @@ function GallerySection({ currentVariantData }: any) {
           }}
           modules={[Zoom, FreeMode, Navigation, Thumbs, Pagination]}
           autoHeight={true}
-          pagination={true}
+          pagination={false}
           onClick={handleImageTap}
         >
           {sortedMediaGallery?.map((gallery: any, i: any) => (

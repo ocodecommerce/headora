@@ -52,8 +52,9 @@ function UpSellProducts({ Data }: any) {
       <h2 className={styles.title}>Up Sell {level2CategoryName}</h2>
 
       <div className={styles.Updated_slider}>
-        {/* Prev Button - Visible only on desktop */}
-        <button 
+        {/* Prev Button - Visible only on desktop -- Uncomment to show Scroll bar -- bottom button as well */}
+
+        {/* <button 
           className={styles.Updated_prevButton} 
           onClick={() => {
             const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
@@ -67,7 +68,7 @@ function UpSellProducts({ Data }: any) {
             width={10} 
             height={40} 
           />
-        </button>
+        </button> */}
 
         {/* Scrollable Container - Touch friendly */}
         <div className={styles.Updated_productsContainer2}>
@@ -99,8 +100,8 @@ function UpSellProducts({ Data }: any) {
                       }
                       alt={variantProduct.name}
                       className={styles.productImage}
-                      width={250}
-                      height={250}
+                      width={200}
+                      height={200}
                     />
                     <p className={styles.productName}>{variantProduct.name}</p>
                     <p className={styles.RelatedPrice}>
@@ -122,8 +123,10 @@ function UpSellProducts({ Data }: any) {
           </div>
         </div>
 
-        {/* Next Button - Visible only on desktop */}
-        <button 
+        {/* Next Button - Visible only on desktop-- Uncomment to show Scroll bar  */}
+
+
+        {/* <button 
           className={styles.Updated_nextButton} 
           onClick={() => {
             const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
@@ -137,7 +140,7 @@ function UpSellProducts({ Data }: any) {
             width={10} 
             height={40} 
           />
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -30,6 +30,11 @@
     letter-spacing: 2px;
     margin-top: 5px;
   }
+
+  .logo a {
+ font-weight: 200;
+  }
+
   
   .nav {
     flex: 1;
