@@ -3,6 +3,7 @@ import styles from '../../styles/ProductDetail.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Currency } from '../Currency/currency';
+import WishlistCompareButtons from './WishlistCompareButtons';
 
 function CrossSellProducts({ Data }: any) {
 // console.log("CrossSellProducts Data:", Data);
@@ -114,7 +115,11 @@ function CrossSellProducts({ Data }: any) {
     ? configurableFinalPrice(selectedVariant?.product || product)
     : finalPrice(variantProduct)}
                       </span> */}
-                    </p>
+                                    </p>
+
+                                            {/* Reusable Wishlist + Compare */}
+                                            <WishlistCompareButtons product={variantProduct} />
+      
                   </Link>
                 </div>
               );

@@ -3,6 +3,7 @@ import styles from '../../styles/ProductDetail.module.css';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Currency } from '../Currency/currency';
+import WishlistCompareButtons from './WishlistCompareButtons';
 
 function UpSellProducts({ Data }: any) {
 // console.log("CrossSellProducts Data:", Data);
@@ -116,6 +117,9 @@ function UpSellProducts({ Data }: any) {
     : finalPrice(variantProduct)}
                       </span> */}
                     </p>
+
+                                          {/* Reusable Wishlist + Compare */}
+                                          <WishlistCompareButtons product={variantProduct} />
                   </Link>
                 </div>
               );
