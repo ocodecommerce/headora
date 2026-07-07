@@ -15,9 +15,13 @@
 
 } */
 
+.freeSpace{
+  height: 100px;
+}
+
 .updatedSortList {
   position: relative;
-  width: 280px;
+  width: 230px;
   font-family: inherit;
 }
 .updatedArrowRotate{
@@ -178,9 +182,10 @@
 
   margin: auto;
 
+
   /* padding: 100px 20px 0; */
-  padding: 0 60px !important;
-  margin-bottom: 20px !important;
+  padding: 0 20px !important;
+  /* margin-bottom: 20px !important; */
   width: 100%;
   max-width: 1440px;
   margin: auto;
@@ -204,14 +209,16 @@
   text-decoration: none;
   text-transform: capitalize;
   color:rgb(16 24 39); 
-  font-size: 10px;
+
+  font-size: 14px;
 }
 
 .cartegoryHeadeBreadcrumbs a {
   color: rgb(16 24 39);
   text-decoration: none;
   font-weight: 500;
-  font-size: 10px;
+  font-size: 14px;
+  text-decoration: underline;
 
   cursor: pointer;
   text-transform: capitalize;
@@ -288,7 +295,7 @@
 .sortContainer {
   display: flex;
   justify-content: space-between;
-  padding: 20px 60px 20px 60px;
+  padding: 20px 20px 20px 20px;
   width: 100%;
   max-width: 1440px;
   margin: auto;
@@ -474,10 +481,14 @@
   display: flex;
   gap: 5px;
   width: auto;
+  flex-direction: row-reverse;
   text-decoration: none;
-  border: solid 1px #ccc;
-  padding: 5px;
-  border-radius: 1px;
+  border: solid 1px #ccc;   
+  background: #374151;
+  padding: 10px;
+  border-radius: 6px;
+  color: white;
+
   font-size: 14px;
 
   @media screen and (max-width:1000px) {
@@ -488,7 +499,7 @@
 .filterGroupLabel button {
   background: none;
   border: none;
-
+  color: white;
 }
 
 .sliderContainer {
@@ -602,8 +613,8 @@
 
 .filterHeader label {
   font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 1px;
+  font-weight: 200;
+  /* letter-spacing: 1px; */
 
   @media screen and (max-width: 1000px) {
     font-size: 18px;
@@ -653,10 +664,10 @@
 
 /* Group title */
 .filterGroupTitle {
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 16px;
+  font-weight: 200;
   padding: 20px 0;
-  text-transform: uppercase;
+  text-transform: titlecase;
   color: #333;
   letter-spacing: 1px;
   display: flex;
@@ -671,12 +682,12 @@
 
 /* Grid container for options */
 .filterOptionsGrid {
-  display: grid;
+  display: flex;
   grid-template-columns: 1fr 1fr;
-  /* Two columns */
+  grid-gap: 12px;
   gap: 12px;
-  padding-bottom: 20px;
-  /* Spacing between options */
+  padding-bottom: 25px;
+  flex-direction: column;
 }
 
 /* Individual option styles */
@@ -685,12 +696,12 @@
   display: flex;
   align-items: flex-start;
   line-height: 16px;
-  font-size: 14px;
-  color: #111827;
+  font-size: 16px;
+  color: #111827e3;
 
 
   cursor: pointer;
-  align-items: center;
+  align-items: flex-end;
 
   @media screen and (max-width: 1000px) {
     font-size: 12px;
@@ -716,7 +727,7 @@
   border-radius:4px;
   background-color: #fff;
   /* border-radius: 3px; */
-  border: 2px solid #111827;
+  border: 2px solid #1118279a;
   display: inline-grid;
   height: 20px;
   min-width: 20px;
@@ -900,13 +911,13 @@
 
 /* ========================================================Main Products========================================================== */
 .allProductContainer {
-  padding: 0 60px;
-  margin-top: 50px;
+  padding: 0 20px;
+  /* margin-top: 50px; */
   width: 100%;
   max-width: 1440px;
   margin: auto;
-  margin-top: 50px;
-  gap: 50px;
+  /* margin-top: 50px; */
+  gap: 20px;
   gap: auto;
   margin-bottom: 50px;
   display: flex;
@@ -938,7 +949,7 @@
 
 .filterContainer {
   /* width: 30%; */
-  width: 325px;
+  width: 290px;
   margin-right: 20px;
 
   @media screen and (max-width:1000px) {
@@ -948,7 +959,7 @@
 }
 
 .products {
-  width: 70%;
+  width: 80%;
 
   @media screen and (max-width:1000px) {
     width: 100%;
@@ -1041,10 +1052,10 @@
 }
 
 .watchItem span {
-  font-size: 14px;
+  font-size: 16px;
   text-transform: capitalize;
   letter-spacing: 0.036em;
-  color: rgba(102, 102, 102, 0.9);
+  color: rgba(21, 21, 21, 0.9);
   padding: 0 5px;
   line-height: 22px;
   font-family: var(--sansSerif);
@@ -1072,8 +1083,8 @@
 }
 
 .price span {
-  font-size: 14px;
-  line-height: 22px;
+  font-size: 16px;
+  line-height: 30px;
   font-weight: 500;
 
 }

@@ -99,7 +99,7 @@ function ProductDescription({ currentVariant }: any) {
   return (
     <div className={styles.productDetailNewDescriptionContainer} >
 
-<p className={styles.sectionHeading}>Description</p>
+{/* <p className={styles.sectionHeading}>Description</p> */}
 
     
         {/* <div

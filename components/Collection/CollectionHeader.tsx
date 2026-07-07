@@ -58,7 +58,7 @@ function CollectionHeader({ Data }: any) {
 
   return (
     <>
-     <div className={styles.freeSpace}></div>
+
     <div className={styles.collectionHeaderContainer}
       style={{
         // backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 80%)), url(${Data?.image || "#1a1e25"})`,
@@ -72,7 +72,7 @@ function CollectionHeader({ Data }: any) {
       <div className={styles.textContainer}>
         <h1>{Data?.name}</h1>
         {/* <p dangerouslySetInnerHTML={{ __html:  HtmlData}} /> */}
-       {HtmlData ? <p>
+       {/* {HtmlData ? <p>
     {shortDescription}{" "}
     <button
     className={styles.read_more_btn_top}
@@ -96,7 +96,7 @@ function CollectionHeader({ Data }: any) {
     >
       Read More
     </button>
-  </p> : null}
+  </p> : null} */}
 
 
         {/* <div className={styles.underline}></div> */}

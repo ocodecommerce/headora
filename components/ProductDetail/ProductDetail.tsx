@@ -32,7 +32,8 @@ function ProductDetail({
   
   // breadcrumbs,
   ReturnDataCMSBlock,
-  showRibbon
+  showRibbon,
+  AllReviews
 }: any) {
 
   console.log("ProductDetail Data:", Data);
@@ -1135,7 +1136,7 @@ const handleAddToCompare = () => {
               className={`${styles.priceTitleWrapper} ${styles.desktopBlock}`}
             >
 
-              <div className={styles.outersubTitelWrapper}>
+          
               <div className={styles.subTitelWrapper}>
                 <h1>
                   {/* {Data.__typename === "ConfigurableProduct"
@@ -1146,41 +1147,11 @@ const handleAddToCompare = () => {
                 </h1>
     
               {/* <p onClick={scrollToBottom} className={styles.paymentInfo} style={{ cursor: 'pointer' }}>Be the first to review this product</p> */}
-              {/* <p className={styles.paymentInfo}>
-                <b>Item #:</b> {currentVariant ? currentVariant.sku : Data?.sku}
-                {isMounted && (
-                  <span className={styles.tooltipWrapper}>
-                    <span className={styles.tooltipIcon}>?</span>
-                    <div className={styles.tooltipContainer}>
-                      <div className={styles.tooltipContent}>
-                        <div className={styles.tooltipTitle}>OUR PRICING PROMISE</div>
-                        <div className={styles.tooltipText}>
-                          We're committed to offering the most transparent and fair pricing to you. We determine market
-                          pricing based on the type of item it is, brand, and model and measure that against all closest
-                          competitors.
-                        </div>
-                        <div className={styles.tooltipTitle}>CONTACT OUR CONCIERGE</div>
-                        <div className={styles.tooltipText}>support@headora.com or1-234-5623-9.</div>
-                      </div>
-                    </div>
-                  </span>
-                )}
-              </p> */}
-
+          
               </div>
 
-              <div className={styles.price}>
-                <span className={styles.special}>{finalPrice()}</span>
-                <span className={styles.regular}>{regularPrice()}</span>
-                {savingPrice() && (
-                  <span className={styles.mobilePriceDiscount}>
-                    {savingPrice()}
-                  </span>
-                )}
-                {/* <p className={styles.AnticipatedDeliveryText}>Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"} </p> */}
-              </div>
-              
-              </div>
+
+        
               {/* // Click location */}
               <p
                   onClick={() => {
@@ -1200,8 +1171,62 @@ const handleAddToCompare = () => {
                 >
                   Be the first to review this product.
                 </p>
+
+                <div className={styles.outersubTitelWrapper}>
+                <div className={styles.price}>
+                <span className={styles.special}>{finalPrice()}</span>
+                <span className={styles.regular}>{regularPrice()}</span>
+                {savingPrice() && (
+                  <span className={styles.mobilePriceDiscount}>
+                    {savingPrice()}
+                  </span>
+                )}
+                {/* <p className={styles.AnticipatedDeliveryText}>Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"} </p> */}
+              </div>
+
+
+                <div className={styles.paymentInfo}>
+               
+                {loadingStockStatus ? (
+                    
+                    <div className={styles.actionButtons}>
+                      <span className={styles.loadingButton}>
+                        Please wait...
+                      </span>
+                    </div>
+                
+                ) : stockStatus === "OUT_OF_STOCK" ? (
+                 
+                    <b >Out of Stock</b>
+                ) :( 
+                <b >In Stock</b>)}
+
+                  <p>SKU#: {currentVariant ? currentVariant.sku : Data?.sku}</p>
+                {/* {isMounted && (
+                  <span className={styles.tooltipWrapper}>
+                    <span className={styles.tooltipIcon}>?</span>
+                    <div className={styles.tooltipContainer}>
+                      <div className={styles.tooltipContent}>
+                        <div className={styles.tooltipTitle}>OUR PRICING PROMISE</div>
+                        <div className={styles.tooltipText}>
+                          We're committed to offering the most transparent and fair pricing to you. We determine market
+                          pricing based on the type of item it is, brand, and model and measure that against all closest
+                          competitors.
+                        </div>
+                        <div className={styles.tooltipTitle}>CONTACT OUR CONCIERGE</div>
+                        <div className={styles.tooltipText}>support@headora.com or1-234-5623-9.</div>
+                      </div>
+                    </div>
+                  </span>
+                )} */}
+              </div>
+
+
+              </div>
  
             </div>
+
+            
          
 
             {Data?.__typename === "ConfigurableProduct" && (
@@ -1261,7 +1286,13 @@ const handleAddToCompare = () => {
                         stockStatus === "OUT_OF_STOCK" || loadingStockStatus
                       }
                     >
-                      -
+                      <Image
+                        src="/Images/minus-sign.png"
+                        alt="Decrement"
+                        width={12}
+                        height={12}/>
+
+                        
                     </button>
                     <input
                       type="text"
@@ -1285,7 +1316,11 @@ const handleAddToCompare = () => {
                         stockStatus === "OUT_OF_STOCK" || loadingStockStatus
                       }
                     >
-                      +
+                     <Image
+                        src="/Images/add.png"
+                        alt="Decrement"
+                        width={12}
+                        height={12}/> 
                     </button>
                   </div>
                 </div>
@@ -1441,6 +1476,7 @@ const handleAddToCompare = () => {
               Data={Data}
               aggregations={aggregations}
               ReturnDataCMSBlock={ReturnDataCMSBlock}
+              AllReviews={AllReviews}
             />
       </div>
 

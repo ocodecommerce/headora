@@ -7,6 +7,7 @@ import MobileHeader from "@/components/Header/MobileHeader";
 import TopRibbon from "@/components/TopRibbon/TopRibbon";
 import { AuthProvider } from "../context/auth-context";
 import { Client } from "@/graphql/client";
+import Ribbon from "@/components/Ribbon/Ribbon";
 
 
 function App({ 
@@ -56,8 +57,8 @@ function App({
   return (
     <AuthProvider>
       <Layout>
-        {showRibbon && <TopRibbon ribbonResponce={ribbonResponce} />}
-        {/* {showRibbon && <Ribbon isMobile={isMobile} />} */}
+        {/* {showRibbon && <TopRibbon ribbonResponce={ribbonResponce} />} */}
+        {showRibbon && <Ribbon isMobile={isMobile} />}
 
         <MobileHeader 
           categoriesList={categoriesList} 

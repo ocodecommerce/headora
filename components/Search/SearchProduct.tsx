@@ -117,7 +117,7 @@ function SearchProduct({
           <div className={styles.filterContainer}>
             <div className={styles.filterModal} style={{ zIndex: "unset" }}>
               <div className={styles.filterHeader}>
-                <label>Filter By</label>
+                <label>Filters</label>
               </div>
               <div className={styles.filterContent}>
                 <div

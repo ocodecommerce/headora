@@ -1058,7 +1058,7 @@ button.next:focus-visible,
 .swiper-zoom-container img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* Adjust as needed */
+  /* object-fit: contain; Adjust as needed */
 }
 .cart_item_deleted {
   opacity: 0.3;
@@ -1533,7 +1533,9 @@ button.next:focus-visible,
   width: 100%;
   max-height: 100%;
   object-fit: scale-down;
-  aspect-ratio: 1 / 1;
+  /* aspect-ratio: 1 / 1; */
+  height: 75vh !important;
+  object-fit: contain;
   cursor: zoom-in !important;
   /* Ensures images are square */
 }

@@ -114,12 +114,34 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
   }, [categoriesData])
 
   // Initialize open groups
+  // useEffect(() => {
+  //   if (categoriesData?.products?.aggregations?.length > 0) {
+  //     const firstGroupLabel = categoriesData.products.aggregations[0].label
+  //     setOpenGroups({ [firstGroupLabel]: true })
+  //   }
+  // }, [categoriesData])
+
+
   useEffect(() => {
-    if (categoriesData?.products?.aggregations?.length > 0) {
-      const firstGroupLabel = categoriesData.products.aggregations[0].label
-      setOpenGroups({ [firstGroupLabel]: true })
-    }
-  }, [categoriesData])
+    if (!categoriesData?.products?.aggregations) return;
+  
+    const initialState: Record<string, boolean> = {};
+  
+    categoriesData.products.aggregations
+      .filter(
+        (aggregation: any) =>
+          aggregation.label !== "Category" &&
+          aggregation.label !== "Brand"
+      )
+      .reverse()
+      .slice(0, 3)
+      .forEach((aggregation: any) => {
+        initialState[aggregation.label] = true;
+      });
+  
+    setOpenGroups(initialState);
+  }, [categoriesData]);
+
 
   // Calculate price range
   useEffect(() => {
@@ -814,21 +836,11 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
 
   // Toggle group
   const toggleGroup = useCallback((groupLabel: string) => {
-    setOpenGroups((prev) => {
-      const isCurrentlyOpen = prev[groupLabel]
-      const newState: Record<string, boolean> = {}
-      
-      Object.keys(prev).forEach((key) => {
-        newState[key] = false
-      })
-      
-      if (!isCurrentlyOpen) {
-        newState[groupLabel] = true
-      }
-      
-      return newState
-    })
-  }, [])
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupLabel]: !prev[groupLabel],
+    }));
+  }, []);
 
   // Check if option is checked
   const isChecked = useCallback((label: string, value: string) => {
@@ -964,7 +976,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
           <div className={styles.filterContainer}>
             <div className={styles.filterModal_Desktop} style={{ zIndex: "unset" }}>
               <div className={styles.filterHeader}>
-                <label>Filter By</label>
+                <label>Filters</label>
               </div>
               <div className={styles.filterContent}>
                 <div className={styles.filterGroup} style={{ borderBottom: activeFilters.length === 0 ? "none" : "" }}>
@@ -977,9 +989,11 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                           .find((option: any) => option.value === filter.value)?.label
                         return (
                           <span key={`${filter.label}-${filter.value}-${index}`} className={styles.filterGroupLabel}>
-                            {`${filter.label}: ${label || "Unknown"}`}
+                            {`
+                         
+                            ${label || "Unknown"}`}
                             <button className="remove-filter" onClick={() => handleRemoveFilter(filter)}>
-                              ×
+                            ╳
                             </button>
                           </span>
                         )
@@ -988,8 +1002,10 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                 </div>
                 
                 {categoriesData?.products?.aggregations
-                  ?.filter((aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand")
-                  .map((aggregation: any) => (
+                  ?.filter((aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand" 
+                  // && aggregation.label.toLowerCase() !== "price"
+                )
+                  .reverse().map((aggregation: any) => (
                     <div key={aggregation.label} className={styles.filterGroup}>
                       <h5 className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
                         {aggregation.label.replace(/_/g, " ")}

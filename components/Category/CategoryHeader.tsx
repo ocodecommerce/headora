@@ -48,7 +48,7 @@ export default function CategoryHeader({ Data, categories }: any) {
                 <span>/</span>
               </>
             ) : (
-              <span style={{ fontSize: '10px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
+              <span style={{ fontSize: '14px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
             )}
           </React.Fragment>
         ))}

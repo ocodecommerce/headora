@@ -36,6 +36,7 @@ export default function CollectionBreadCrumbs({Data, categories}:any) {
 ];
   return (
     <>
+         <div className={styles.freeSpace}></div>
      <div className={styles.cartegoryHeadeBreadcrumbs} style={{padding:'20px 20px 0'}}>
      {breadcrumbs.map((crumb, index) => (
           <React.Fragment key={index}>
@@ -47,7 +48,7 @@ export default function CollectionBreadCrumbs({Data, categories}:any) {
                 <span>/</span>
               </>
             ) : (
-              <span style={{ fontSize: '10px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
+              <span style={{ fontSize: '14px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
             )}
           </React.Fragment>
         ))}

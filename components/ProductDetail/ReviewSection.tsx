@@ -167,14 +167,14 @@ function ReviewSection({ Data, AllReviews }: any) {
   if (reviews.length === 0) {
     return (
       <div className={styles.ReviewContainer}  id="reviews-section" >
-        <div className={styles.ReviewNavbarContainer}>
+        {/* <div className={styles.ReviewNavbarContainer}>
           <ul className={styles.ReviewNavList}>
             <li className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>
             Reviews
               <span className={styles.ReviewActiveUnderline}></span>
             </li>
           </ul>
-        </div>
+        </div> */}
 
         {!isReviewFormOpen && (
           <div>

@@ -677,6 +677,7 @@ font-size: 46px;
   width: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   @media screen and (max-width:1000px) {
     width: 100%;
   }
@@ -695,7 +696,7 @@ font-size: 46px;
   font-size: 26px;
 
   font-weight: 200;
-  line-height: 50px;
+  line-height: 30px;
 
   @media screen and (max-width:1000px) {
     line-height: 22px;
@@ -717,8 +718,8 @@ font-size: 46px;
 }
 
 .price {
-  font-size: 18px;
-  /* font-weight: 400; */
+  font-size: 26px;
+  font-weight: 600;
   color: #111827;
   width: auto;
   text-align: right;
@@ -788,6 +789,10 @@ font-size: 46px;
 .paymentInfo {
   font-size: 14px;
   color: #777;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: self-end;
 
 
   @media screen and (max-width:1000px) {
@@ -801,6 +806,15 @@ font-size: 46px;
   color: #000;
 }
 
+.paymentInfo p {
+
+  color: #000;
+}
+
+.paymentInfo b {
+  text-transform: uppercase;
+  color: #000;
+}
 .actionButtons {
   margin: unset;
   display: flex;
@@ -1629,9 +1643,9 @@ border-radius: 50px;
 .ReviewContainer {
   max-width: 1440px;
   margin: auto;
-  margin-top: 50px;
-  margin-bottom: 50px;
-  padding: 0 60px 0 60px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  /* padding: 0 60px 0 60px; */
 }
 
 /* Slide-down fade-in animation */

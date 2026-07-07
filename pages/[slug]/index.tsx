@@ -668,8 +668,9 @@ useEffect(() => {
                   position: "relative",
                 }}
               >
-                <CollectionHeader Data={collection} />
                 <CollectionBreadCrumbs Data={collection} />
+                <CollectionHeader Data={collection} />
+              
   
                 <CategoriesProducts
                   Data={{ name: category?.name }}
@@ -680,7 +681,7 @@ useEffect(() => {
                   isMobile={isMobile}
                 />
   
-                <Content description={category?.description} />
+                {/* <Content description={category?.description} /> */}
               </div>
             </>
           )}
@@ -799,12 +800,13 @@ useEffect(() => {
             setPrice={setPrice}
             ReturnDataCMSBlock={ReturnDataCMSBlock}
             showRibbon={showRibbon}
-          />
-  
-          <ReviewSection
-            Data={productData}
             AllReviews={reviews}
           />
+  
+          {/* <ReviewSection
+            Data={productData}
+            AllReviews={reviews}
+          /> */}
   
           <CrossSellProducts Data={productData} />
           <UpSellProducts Data={productData} />

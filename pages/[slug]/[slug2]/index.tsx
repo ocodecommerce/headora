@@ -357,8 +357,9 @@ const CollectionDescription = collection?.description || null
         </>
       ) : (
         <>
-        <CollectionHeader Data={collection} />
+        
         <CollectionBreadCrumbs Data={collection} />
+        <CollectionHeader Data={collection} />
           {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
           <CategoriesProducts
             Data={{ name: category?.name }}
@@ -368,7 +369,7 @@ const CollectionDescription = collection?.description || null
             showRibbon={showRibbon}
             isMobile={isMobile}
           />
-          <Content description={category?.description} />
+          {/* <Content description={category?.description} /> */}
         </>
       )}
     </>
