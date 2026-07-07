@@ -4,11 +4,11 @@
   margin: auto;
   max-width: 1440px;
   margin-top: 50px;
-  padding: 0 60px 0 60px;
+
   background-color: white;
   margin-bottom: 50px;
   @media (max-width: 1000px) {
-    padding: 0 20px 0 20px;
+    /* padding: 0 20px 0 20px; */
   }
 }
 
@@ -16,10 +16,14 @@
   max-width: 1440px;
   margin: 0 auto;
   display: grid;
+  padding: 0 60px 0 60px;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 2rem;
   padding-top: 32px;
   border-top: 1px solid #eee;
+  @media (max-width: 1000px) {
+    padding: 0 20px 0 20px;
+  }
 }
 
 .column {

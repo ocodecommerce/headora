@@ -51,7 +51,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, handle
                         <span>...</span>
                     ) : (
                         <a
-                            style={{ border: currentPage === page ? "solid 1px #000000" : "" }}
+                            // style={{ border: currentPage === page ? "solid 1px #000000" : "" }}
                             onClick={() => handlePageChange(page as number)}
                         >
                             {page}
