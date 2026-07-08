@@ -1005,7 +1005,7 @@ button.next:focus-visible,
   @media screen and (max-width:1000px) {
     font-size: 12px;
     padding: 5px 10px;
-    height: 30px;
+    height: 45px;
   }
 }
 
@@ -1082,7 +1082,7 @@ button.next:focus-visible,
 
 .swiper-button-prev:after,
 .swiper-button-next:after {
-  color: #D4A902;
+  color: #000000;
 
   @media screen and (max-width: 650px) {
     font-size: 26px;
@@ -1143,7 +1143,7 @@ button.next:focus-visible,
 }
 
 .swiper-pagination-bullet-active {
-  background: #D4A902 !important;
+  background: #000000 !important;
 }
 
 .img-zoom-lens {
@@ -1197,12 +1197,12 @@ button.next:focus-visible,
 
 .optionSelectorSwiper .swiper-button-next:hover,
 .optionSelectorSwiper .swiper-button-prev:hover {
-  background-color: #D4A902 !important;
+  background-color: #000000 !important;
 }
 
 .optionSelectorSwiper .swiper-button-prev:after,
 .optionSelectorSwiper .swiper-button-next:after {
-  color: #D4A902 !important;
+  color: #000000 !important;
   font-size: 26px !important;
 
   @media screen and (max-width: 650px) {
@@ -1538,6 +1538,10 @@ button.next:focus-visible,
   object-fit: contain;
   cursor: zoom-in !important;
   /* Ensures images are square */
+  @media screen and (max-width: 1000px) {
+    height: 57vh !important;
+    
+  }
 }
 
 

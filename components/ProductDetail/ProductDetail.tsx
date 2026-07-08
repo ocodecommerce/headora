@@ -957,7 +957,7 @@ const handleAddToCompare = () => {
           {/* Render Home link if no breadcrumbs are available */}
               {breadcrumbs.length === 0 && (
             <>
-              <Link href="/" style={{}}>
+              <Link href="/" title="Home" style={{}}>
                 Home
               </Link>
               {/* <span>/</span>
@@ -1004,7 +1004,10 @@ const handleAddToCompare = () => {
 
             return (
               <React.Fragment key={index}>
-                <Link href={path}>
+                <Link href={path} title={crumb.name.replace(".html", "").length > 60
+                    ? crumb.name.replace(".html", "").slice(0, 57) + "..."
+                    : crumb.name.replace(".html", "")}
+                    >
                   {crumb.name.replace(".html", "").length > 60
                     ? crumb.name.replace(".html", "").slice(0, 57) + "..."
                     : crumb.name.replace(".html", "")}
@@ -1067,23 +1070,24 @@ const handleAddToCompare = () => {
               )}
             </div>
           </div>
-          <div className={`${styles.priceTitleWrapper} ${styles.mobileBlock}`}>
+          {/* <div className={`${styles.priceTitleWrapper} ${styles.mobileBlock}`}>
             <div className={`${styles.subTitelWrapper}`}>
               <h1 className={styles.mobileViewProductTitle}>
-                {/* {Data.__typename === "ConfigurableProduct"
-                  ? currentVariant?.variant_name || Data?.name
-                  :  */}
+        
                   {Data?.name}
               </h1>
             </div>
-          </div>
+          </div> */}
 
           <div className={styles.productImages}>
             <GallerySection
               currentVariantData={currentVariant ? currentVariant : Data}
               Data={currentVariant ? Data : null}
+              isMobile={isMobile}
             />
           </div>
+
+          
 
           <div className={styles.productInfo}>
             <div className={styles.desktopBlock}>
@@ -1133,7 +1137,7 @@ const handleAddToCompare = () => {
               </div> */}
             </div>
             <div
-              className={`${styles.priceTitleWrapper} ${styles.desktopBlock}`}
+              className={`${styles.priceTitleWrapper} ${styles.desktopBlockREMOBED}`}
             >
 
           
@@ -1258,7 +1262,7 @@ const handleAddToCompare = () => {
                 data-amount={affirmPrice}
               />
             )}
-            <div className={styles.mobileBlock}>
+            {/* <div className={styles.mobileBlock}>
               <p className={`${styles.price} `}>
                 <span className={styles.special}>{finalPrice()}</span>
                 <span className={styles.regular}>{regularPrice()}</span>
@@ -1269,7 +1273,7 @@ const handleAddToCompare = () => {
                 )}
               </p>
               <p className={styles.AnticipatedDeliveryText}>Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"} </p>
-            </div>
+            </div> */}
 
             <div className={styles.quantityActionWrapper}>
               {/* Quantity Selector */}

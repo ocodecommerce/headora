@@ -1153,7 +1153,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                             </span>
                           </p>
 
-                          {!isMobile && (
+                          {/* {!isMobile && ( */}
                             <div className={styles.actionContainer}>
                               {stockStatus?.some((status: any) => status?.stock_status === "IN_STOCK") ? (
                                 <button
@@ -1168,11 +1168,29 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                                     }
                                   }}
                                 >
-                                  add to cart
+                                 {!isMobile ? ( "add to cart") : (
+                                  
+                                  <Image
+                                  src="/Images/cart.png"
+                                  height={20}
+                                  width={23}
+                                  alt="wishlist filled icon"
+                                />
+
+                                  )}
                                 </button>
                               ) : (
                                 <button className={styles.addToCartButton} >
-                                  add to cart
+                                  {!isMobile ? ( "add to cart") : (
+                                    
+                                    <Image
+                                    src="/Images/cart.png"
+                                    height={20}
+                                    width={23}
+                                    alt="wishlist filled icon"
+                                  />
+
+                                  )}
                                 </button>
                               )}
                                 {wishlistLoading[variantProduct.id] || wishlistItemsLoading ? (
@@ -1204,7 +1222,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                               </button>
                             )}
                             </div>
-                          )}
+                          {/* )} */}
 
                      
                           
@@ -1212,7 +1230,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                         </Link>
 
                         {/* ---- Insert Banner After 2nd Product (Index 2 = 3rd Position) ---- */}
-                        {index === 2 && isMobile == true && (
+                        {/* {index === 2 && isMobile == true && (
                           <div className={styles.smallBannerWrapper}>
                             <Image
                               src={categoryDetail.image ? categoryDetail.image : "/Images/miniBanner.jpg"}
@@ -1222,7 +1240,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                               className={styles.smallBannerImage}
                             />
                           </div>
-                        )}
+                        )} */}
                       </React.Fragment>
                     )
                   })}

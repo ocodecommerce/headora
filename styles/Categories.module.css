@@ -224,7 +224,7 @@
   text-transform: capitalize;
 
   @media screen and (max-width: 650px) {
-    font-size: 10px;
+    font-size: 14px;
 
   }
 }
@@ -570,15 +570,15 @@
 .MobileFilterNavbarItem {
   display: flex;
   justify-content: center;
-  border: 1px solid #1f1f1f;
+  /* border: 1px solid #1f1f1f; */
   border-radius: 0px;
 }
 
 .MobileFilterNavbarItem button {
-  padding: 5px 20px;
+  padding: 10px 20px;
   color: #000;
   background: none;
-  border: none;
+  border-radius: 50px;
 
   font-size: 12px;
   display: flex;
@@ -656,7 +656,7 @@
   padding-bottom: 10px;
 
   @media screen and (max-width: 1000px) {
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1.7;
 
   }
@@ -1045,9 +1045,9 @@
 
 .watchItem img {
   max-width: 98%;
-  margin: auto;
+  margin: 0;
   height: auto;
-  aspect-ratio: 3 / 4;
+  /* aspect-ratio: 3 / 4; */
   object-fit: scale-down;
 }
 
@@ -1189,6 +1189,11 @@
   gap: 6px;
 
   transition: all 0.25s ease;
+
+  @media screen and (max-width:600px) {
+    padding: 4px 10px;
+  }
+
 }
 
 /* Hover */
@@ -1685,8 +1690,11 @@ margin-bottom: 20px;
 
   /* ===================Products================ */
   .watchItem span {
-    font-size: 10px;
-    line-height: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 18px;
+    align-items: flex-start;
+    text-align: left;
   }
 
   /* =======Filter======= */

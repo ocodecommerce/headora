@@ -13,9 +13,10 @@ import 'swiper/css/pagination';
 import { getFilePath } from '../../components/ConfigureProduct';
 import { Navigation, Thumbs, FreeMode, Mousewheel, Zoom, Pagination } from 'swiper/modules';
 
-function GallerySection({ currentVariantData,Data }: any) {
+function GallerySection({ currentVariantData,Data,isMobile }: any) {
   console.log('currentVariantData', currentVariantData);
   console.log('data', Data);
+  
 
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
   const [currentVariantion, setCurrentVariantion] = useState<any>(null);
@@ -227,13 +228,13 @@ function GallerySection({ currentVariantData,Data }: any) {
         <Swiper
           zoom={{ maxRatio: 3 }}
           spaceBetween={0}
-          navigation={false}
+          navigation={isMobile}
           thumbs={{
             swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
           }}
           modules={[Zoom, FreeMode, Navigation, Thumbs, Pagination]}
           autoHeight={true}
-          pagination={false}
+          pagination={isMobile} 
           onClick={handleImageTap}
         >
           {sortedMediaGallery?.map((gallery: any, i: any) => (

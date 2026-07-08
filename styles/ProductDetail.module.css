@@ -518,7 +518,7 @@ padding: 10px 12px 10px 0px;
   gap: 5px;
 
   @media screen and (max-width: 1000px) {
-    display: none;
+    /* display: none; */
     max-width: 100%;
     padding: 0 5px;
     gap: 5px;
@@ -542,7 +542,7 @@ padding: 10px 12px 10px 0px;
     cursor: pointer;
     text-transform: capitalize;
   @media screen and (max-width: 650px) {
-    font-size: 10px;
+    font-size: 14px;
 
   }
 }
@@ -555,7 +555,7 @@ padding: 10px 12px 10px 0px;
   text-transform: capitalize;
 
   @media screen and (max-width: 650px) {
-    font-size: 10px;
+    font-size: 14px;
 
   }
 }
@@ -796,7 +796,7 @@ font-size: 46px;
 
 
   @media screen and (max-width:1000px) {
-    display: none;
+    /* display: none; */
   }
 
 }
@@ -1133,6 +1133,9 @@ font-size: 46px;
   height: 36px;
   width: 40px;
   color: gray;
+display: flex;
+  align-items: center;
+  justify-content: center;
 
   border: 2px solid rgb(90 92 97);
 }

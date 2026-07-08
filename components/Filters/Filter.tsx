@@ -322,9 +322,9 @@ const Filter: React.FC<FilterProps> = ({
       <div className={styles.MobileFilterSortContainer}>
         <div className={styles.MobileProductCount}>
           <p>
-            <strong>Total Products</strong>
-            <br />
-            {productCount}
+            {/* <strong>Total Products</strong> */}
+            {/* <br /> */}
+            {productCount} Results
           </p>
         </div>
         <div className={styles.MobileFilterNavbar}>

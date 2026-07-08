@@ -42,7 +42,7 @@ export default function CollectionBreadCrumbs({Data, categories}:any) {
           <React.Fragment key={index}>
             {index < breadcrumbs.length - 1 ? (
               <>
-                <Link href={crumb.path}>
+                <Link href={crumb.path} title= {crumb.name.replaceAll('.html','')}>
                   {crumb.name.replaceAll('.html','')}
                 </Link>
                 <span>/</span>
