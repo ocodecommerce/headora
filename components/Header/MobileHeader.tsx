@@ -159,7 +159,7 @@ const MobileHeader = ({ categoriesList }: any) => {
       
           const path = category.name.toLowerCase() === 'brands'
             ? `/${category.url_key}`
-            : `/${category.url_key}.html`;
+            : `/${category.url_key}`;
       
           router.push(path);
       
@@ -184,7 +184,7 @@ const MobileHeader = ({ categoriesList }: any) => {
   function handleTopCategoryOpen(category: any) {
     const path = category.name.toLowerCase() === 'brands'
       ? `/${category.url_key}`
-      : `/${category.url_key}.html`;
+      : `/${category.url_key}`;
   
     router.push(path);
   
@@ -330,7 +330,7 @@ const handleMouseLeave = () => {
                       key={subCategory.uid}
                       className={styles.navItem}
                       onClick={() => {
-                        handleSubCategoryOpen(`/${currentCategory.url_key}/${subCategory.url_key}.html`)
+                        handleSubCategoryOpen(`/${currentCategory.url_key}/${subCategory.url_key}`)
                       }}
                     >
                       {subCategory.name}

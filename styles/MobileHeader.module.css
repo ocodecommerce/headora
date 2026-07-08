@@ -176,10 +176,12 @@ font-size: 11px;
       display: flex;
       flex-wrap: wrap;
       position: absolute;
-      top: 4px;
-      right: 4px;
+      top: -4px;
+      right: -5px;
+      color: white;
       align-items: center;
       justify-content: center;
+      background: blue;
       text-decoration: none;
     }
   @media (max-width: 1000px) {
