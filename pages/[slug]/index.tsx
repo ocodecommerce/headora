@@ -706,7 +706,7 @@ useEffect(() => {
                   isMobile={isMobile}
                 />
   
-                {/* <Content description={category?.description} /> */}
+                <Content description={category?.description} />
               </div>
             </>
           )}

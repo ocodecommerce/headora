@@ -379,7 +379,7 @@ const CollectionDescription = collection?.description || null
             showRibbon={showRibbon}
             isMobile={isMobile}
           />
-          {/* <Content description={category?.description} /> */}
+          <Content description={category?.description} />
         </>
       )}
     </>
