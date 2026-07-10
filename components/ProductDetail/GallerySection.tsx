@@ -14,8 +14,8 @@ import { getFilePath } from '../../components/ConfigureProduct';
 import { Navigation, Thumbs, FreeMode, Mousewheel, Zoom, Pagination } from 'swiper/modules';
 
 function GallerySection({ currentVariantData,Data,isMobile }: any) {
-  console.log('currentVariantData', currentVariantData);
-  console.log('data', Data);
+  // console.log('currentVariantData', currentVariantData);
+  // console.log('data', Data);
   
 
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);

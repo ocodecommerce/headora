@@ -39,7 +39,7 @@ function Search() {
   const [displayedProducts, setDisplayedProducts] = useState<any>([])
   const [totalPages, setTotalPages] = useState(1)
 
-console.log(searchResults,'searchResults')
+// console.log(searchResults,'searchResults')
   // Extract the slug from the router query
   const slug: any = router.query?.query
   const page = Number(router.query?.page) || 1

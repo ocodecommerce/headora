@@ -1,0 +1,11 @@
+{
+  "type": "complete_application",
+  "pageUrls": "",
+  "commands": [
+    "rm -rf cacheM/static/*",
+    "rm -rf cacheM/category/*",
+    "npm run build"
+  ],
+  "startTime": 1768565453977,
+  "buildRunning": false
+}

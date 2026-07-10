@@ -1,0 +1,9 @@
+{
+  "gitBranch": "Nov7.0",
+  "baseURL": "",
+  "magentoHost": "",
+  "magentousername": "",
+  "magentoprivateKey": "",
+  "maxBackups": "15",
+  "maxLogs": "30"
+}

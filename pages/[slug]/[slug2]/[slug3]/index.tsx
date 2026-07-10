@@ -85,7 +85,6 @@ const ProductSchema = ({ products }: any) => {
 
 
 
-
 export const getStaticPaths: GetStaticPaths = async () => {
 
   const allCategoriesPathFile = path.resolve(`./cacheM/thirdLevelCategoriesPath.json`);
@@ -132,7 +131,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
               if (subSubCategory.url_path) {
                 let urlPath =subSubCategory.url_path.split('/')
                 paths.push({
-                  params: { slug: urlPath[0], slug2: urlPath[1], slug3: urlPath[2]+".html"  }
+                  params: { slug: urlPath[0], slug2: urlPath[1], slug3: urlPath[2]  }
                 });
               }
             })
@@ -153,21 +152,36 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params, query }: any) => {
   const { slug,slug2,slug3 } = params as { slug: string ,slug2: string,slug3: string;};
-  const urlPath=slug+'/'+slug2+'/'+slug3.replace(/\.html$/, '')
+  const urlPath=slug+'/'+slug2+'/'+slug3?.replace(/\.html$/, '')
 
-  //console.log('/////////////////////getStaticProps////////////slug3:-',urlPath)
+
     const cacheStaticProps= createHash('md5')
-      .update(urlPath+'.html')
+      .update(urlPath)
       .digest('hex')
-      const cacheStaticPropsPath= path.resolve(`./cacheM/category/${cacheStaticProps}.json`)
-      
+
+
+
+
+
+let cacheStaticPropsPath:any
+const isBuildTime = process.env.BUILD_MODE === 'build';
+
+// ====================== BUILD TIME ============================
+
+ if (isBuildTime) {
+
+      cacheStaticPropsPath= path.resolve(`./cacheM/category/${cacheStaticProps}.json`)
       try {
-        let responseData= JSON.parse(await fs.readFile(cacheStaticPropsPath, 'utf-8'));
-        return responseData;
+      let cachedProps = JSON.parse(await fs.readFile(cacheStaticPropsPath, 'utf-8'));
+      return {
+      ...cachedProps,
+        revalidate: 10,
+      };
+
       } catch (error) {
         
       }
-  
+    }
 
   const client = new Client();
 
@@ -178,6 +192,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
 
   // Fetch category data based on URL key
   const fetchCategoryByURLKey = async (urlKey: string, page: number) => {
+    console.log('Generating collection '+urlKey)
     try {
     const response = await client.fetchSubCategoryDataByUrlKey(urlKey, page);
     return response?.categoryList[0] || null;
@@ -186,7 +201,9 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
   }
   };
   try {
-  const category = await fetchCategoryByURLKey(urlPath as string, page);
+    const collectionData = await client.fetchCollectionPage(urlPath as string);
+    const collection = collectionData?.data?.categoryList?.[0] || null;
+    const category = await fetchCategoryByURLKey(urlPath as string, page);
 
 
   const uid = category.uid || null;
@@ -216,9 +233,12 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
           category,            // Category data
           currentPage: page,   // Current page number
           productsRes,         // Product response data
-        }
-      }
-      // await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));
+          collection,
+          collectionData
+        },
+        revalidate: 10,
+      };
+      if (isBuildTime) {await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));}
       return responseData;
 
   
@@ -230,9 +250,11 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
       currentPage: page,  // Current page number
       productsRes: null,  // Null product response
     },
+    revalidate: 10,
   };
 }
 };
+
 
 const Subcategory = ({ allProductList, category, productsRes,categories, showRibbon, isMobile }: any) => {
 

@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' NEXT_PRIVATE_BUILD_WORKERS=10 next build",
-    "start": "next start",
+    "build": "BUILD_MODE=build NODE_OPTIONS='--max-old-space-size=8192' NEXT_PRIVATE_BUILD_WORKERS=10 next build",
+    "start": "BUILD_MODE=false next start",
     "lint": "next lint",
     "prebuild": "rm -rf cacheM/category/* && node scripts/generate-sitemap.mjs"
   },

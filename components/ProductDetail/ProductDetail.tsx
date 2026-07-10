@@ -36,7 +36,7 @@ function ProductDetail({
   AllReviews
 }: any) {
 
-  console.log("ProductDetail Data:", Data);
+  // console.log("ProductDetail Data:", Data);
 
   if (!Data) return null;
   const router = useRouter();
