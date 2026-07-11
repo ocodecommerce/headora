@@ -36,7 +36,7 @@ function ProductDetail({
   AllReviews
 }: any) {
 
-  // console.log("ProductDetail Data:", Data);
+  console.log("ProductDetail Data:", Data);
 
   if (!Data) return null;
   const router = useRouter();
@@ -105,6 +105,20 @@ const isInCompare = () => {
   return items.some((item: any) => item.id === currentId);
 };
 
+const category = Data?.categories?.find(
+  (cat:any) =>  cat.id !== 35 && cat.id !== 2563
+);
+
+const Missingbreadcrumb = [
+  {
+    name: "Home",
+    path: "/",
+  },
+  {
+    name: category?.name || "Products",
+    path: `/${category?.url_key || ""}`,
+  },
+];
 
 
 const handleAddToCompare = () => {
@@ -159,6 +173,9 @@ const handleAddToCompare = () => {
         setBreadcrumbs(JSON.parse(storedBreadcrumbs));
         // Clear breadcrumbs from sessionStorage
         // sessionStorage.removeItem('breadcrumbs');
+      }else {
+        // If no breadcrumbs in sessionStorage, set it to the current category
+        setBreadcrumbs(Missingbreadcrumb);
       }
     }
   }, []);
@@ -999,7 +1016,7 @@ const handleAddToCompare = () => {
                 : "/" +
                   breadcrumbs
                     .slice(1, index + 1)
-                    .map((c: any) => toSlug(c.name))
+                    .map((c: any) => toSlug(c?.path || c.name))
                     .join("/");
 
             return (

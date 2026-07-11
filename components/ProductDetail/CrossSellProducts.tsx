@@ -50,7 +50,7 @@ function CrossSellProducts({ Data }: any) {
 
   return (
     <div className={styles.relatedProductsContainer}>
-      <h2 className={styles.title}>Cross Sell {level2CategoryName}</h2>
+      <h2 className={styles.title}>Other {level2CategoryName} you may like</h2>
 
       <div className={styles.Updated_slider}>
         {/* Prev Button - Visible only on desktop */}

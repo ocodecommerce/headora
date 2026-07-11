@@ -57,7 +57,9 @@ function App({
   return (
     <AuthProvider>
       <Layout>
-        {/* {showRibbon && <TopRibbon ribbonResponce={ribbonResponce} />} */}
+        {showRibbon && <TopRibbon 
+        // ribbonResponce={ribbonResponce}
+         />}
         {showRibbon && <Ribbon isMobile={isMobile} />}
 
         <MobileHeader 

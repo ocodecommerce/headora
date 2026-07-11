@@ -448,7 +448,7 @@ text-decoration: underline;
     display: flex;
     gap: 10px;
     align-items: flex-start;
-    width: 100%;
+    width: 1000px;
     max-width: 1440px;
   }
   .MegaMenuBrandsHeading{

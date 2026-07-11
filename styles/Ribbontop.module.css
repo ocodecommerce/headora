@@ -1,0 +1,103 @@
+
+
+.headerRibbon {
+    width: 100%;
+    min-height: 35px;
+    background: #1E1E1E;
+    display: flex;
+    position: relative;
+
+    @media screen and (max-width:1000px) {
+        min-height: 30px;
+        display: none;
+    }
+
+}
+
+.header_ribbon p {
+    font-size: 14px;
+    color: #ffffff;
+
+    @media screen and (max-width:1000px) {
+        font-size: 14px;
+    }
+}
+.tfLocation{
+    padding: 10px;
+}
+.tfLocation.active{
+    background-color: #fff;
+}
+.topLeft{
+    display: flex;
+    gap: 10px;
+}
+
+.topNav{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+}
+
+.topRight{
+    display: flex;
+    gap: 10px;
+}
+.centre a{
+    font-size: 14px;
+   
+color: #fff;
+}
+.row {
+    max-width: 1440px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 10px;
+  
+    @media screen and (max-width:768px) {
+      display: none;
+    }
+  }
+.tfLocation{
+    cursor: pointer;
+}
+.RibbonIcon{
+    display: flex;
+    padding-top: 5px;
+align-items: center;
+gap: 5px;
+}
+
+.closeButton {
+    font-size: 20px;
+    color: white;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    line-height: 1;
+  }
+
+  .topRightWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .closeButton {
+    font-size: 12px;
+    color: #fffffff2;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+  }

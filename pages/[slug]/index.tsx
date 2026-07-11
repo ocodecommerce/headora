@@ -832,7 +832,7 @@ useEffect(() => {
             Data={productData}
             AllReviews={reviews}
           /> */}
-         <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p>
+         {/* <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
           <CrossSellProducts Data={productData} />
           <UpSellProducts Data={productData} />
           <ReletedProducts Data={productData} />

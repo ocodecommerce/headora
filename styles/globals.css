@@ -1102,7 +1102,7 @@ button.next:focus-visible,
   align-items: center;
   align-content: center;
   justify-content: center;
-  height: 110px !important;
+  height: 140px !important;
   border: 2px solid #fff;
 }
 
@@ -1114,25 +1114,25 @@ button.next:focus-visible,
   align-items: center;
   align-content: center;
   justify-content: center;
-  height: 100px !important;
+  height: 140px !important;
 
 }
 
 .mySwiper .swiper-slide img {
-  max-height: 100px !important;
+  max-height: 130px !important;
   border: 2px solid #fff;
 }
 
 .mySwiper .swiper-slide-thumb-active img {
   /* max-height: 134px !important; */
-  aspect-ratio: 1/1;
+  /* aspect-ratio: 1/1; */
   box-shadow: 0px 1px 10px #1979c3;
   /* Soft shadow similar to the image */
   border: none;
   object-fit: contain;
   /* Ensure the border is removed */
-  filter: contrast(.98) brightness(.97);
-  background: hsla(0, 0%, 80%, .168);
+  /* filter: contrast(.98) brightness(.97); */
+  /* background: hsla(0, 0%, 80%, .168); */
   transition: box-shadow 0.3s ease;
   /* Smooth transition for shadow changes */
 }

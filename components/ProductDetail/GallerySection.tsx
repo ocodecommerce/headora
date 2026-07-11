@@ -194,7 +194,7 @@ function GallerySection({ currentVariantData,Data,isMobile }: any) {
             <SwiperSlide key={'thumb_' + i} onClick={() => handelThumbClick(i)}>
               <Image
                 src={getFilePath(gallery.url)}
-                height={100}
+                height={200}
                 width={100}
                 alt={currentVariantion?.variant_name || 'Gallery Image'}
               />
