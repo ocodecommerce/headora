@@ -126,6 +126,13 @@ function ReviewSection({ Data, AllReviews }: any) {
         setSuccessMessage('');
       }, 5000);
     }
+    else{
+      setSuccessMessage('Failed to submit your review. Please try again later.');
+      setTimeout(() => {
+        setSuccessMessage('');
+      }, 5000);
+      console.log('Failed to submit review. Response:', response);
+    }
   };
 
   const calculateOverallRating = (reviews: any[]) => {

@@ -37,6 +37,9 @@ function ProductDetail({
 }: any) {
 
   console.log("ProductDetail Data:", Data);
+  const reviewCount = Data?.reviews?.items?.length || 0;
+  const averageRating =
+  Data?.reviews?.items?.[0]?.average_rating || 0;
 
   if (!Data) return null;
   const router = useRouter();
@@ -1174,24 +1177,75 @@ const handleAddToCompare = () => {
 
         
               {/* // Click location */}
-              <p
-                  onClick={() => {
-                    window.dispatchEvent(new Event('openReviewForm'));
+              <div className={styles.productReviewSummary}>
+            {reviewCount > 0 ? (
+                    <>
+                            <span className={styles.reviewStars}>
+                              {[1, 2, 3, 4, 5].map((star) => {
+                                if (averageRating >= star) {
+                                  return (
+                                    <span key={star} className={styles.starFilled}>★</span>
+                                  );
+                                }
 
-                    const element = document.getElementById('reviews-section');
+                                if (averageRating >= star - 0.5) {
+                                  return (
+                                    <span key={star} className={styles.starHalf}>★</span>
+                                  );
+                                }
 
-                    if (element) {
-                      const offset = 100;
+                                return (
+                                  <span key={star} className={styles.starEmpty}>★</span>
+                                );
+                              })}
+                            </span>
 
-                      window.scrollTo({
-                        top: element.offsetTop - offset,
-                        behavior: 'smooth',
-                      });
-                    }
-                  }}
-                >
-                  Be the first to review this product.
-                </p>
+                      <span className={styles.reviewCount}>
+                        {reviewCount} {reviewCount === 1 ? 'Review' : 'Reviews'}
+                      </span>
+
+                      <span
+                        className={styles.writeReviewLink}
+                        onClick={() => {
+                          window.dispatchEvent(new Event('openReviewForm'));
+
+                          const element = document.getElementById('reviews-section');
+
+                          if (element) {
+                            const offset = 100;
+
+                            window.scrollTo({
+                              top: element.offsetTop - offset,
+                              behavior: 'smooth',
+                            });
+                          }
+                        }}
+                      >
+                        Write a Review
+                      </span>
+                    </>
+                  ) : (
+                    <p
+                      className={styles.writeReviewLink}
+                      onClick={() => {
+                        window.dispatchEvent(new Event('openReviewForm'));
+
+                        const element = document.getElementById('reviews-section');
+
+                        if (element) {
+                          const offset = 100;
+
+                          window.scrollTo({
+                            top: element.offsetTop - offset,
+                            behavior: 'smooth',
+                          });
+                        }
+                      }}
+                    >
+                      Be the first to review this product.
+                    </p>
+                  )}
+                </div>
 
                 <div className={styles.outersubTitelWrapper}>
                 <div className={styles.price}>

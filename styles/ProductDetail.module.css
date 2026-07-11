@@ -1,3 +1,52 @@
+
+.starHalf {
+  background: linear-gradient(90deg, #f5a623 50%, #d6d6d6 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.reviewStars {
+  display: inline-flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.starFilled {
+  color: #f5a623;
+  font-size: 16px;
+}
+
+.starEmpty {
+  color: #d6d6d6;
+  font-size: 16px;
+}
+
+.productReviewSummary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+}
+
+.reviewStars {
+  color: #f5a623;
+  font-weight: 600;
+}
+
+.reviewCount {
+  color: #666;
+}
+
+.writeReviewLink {
+  color: #1979c3;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.writeReviewLink:hover {
+  color: #005999;
+}
+
+
 /* UPdated Reviews */
 
 .reviewLoginAlert {
@@ -1682,6 +1731,8 @@ border-radius: 50px;
   opacity: 0;
   /* Initial hidden state */
   transform: translateY(-14px);
+  padding-top: 15px;
+
 }
 
 .AddReviewButton.hidden {
