@@ -83,7 +83,7 @@ function ReviewForm({AllReviews, reviewRatings, handleRatingClick, setReviewNick
                             type="submit"
                             className={styles.action_submit}
                             onClick={handleRatingSubmit}
-                            disabled={!reviewNickname || !reviewTitle || !reviewDetail || Object.keys(reviewRatings).length === 0}
+                            // disabled={!reviewNickname || !reviewTitle || !reviewDetail || Object.keys(reviewRatings).length === 0}
                         >
                             Submit Your Opinion
                         </button>
