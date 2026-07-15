@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { Client } from "@/graphql/client";
 import { useEffect, useRef, useState } from "react";
-
+import Hero from "@/components/HomePage/hero";
 export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any) {
 
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -61,568 +61,211 @@ export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any)
   // Transform the URLs in the HTML content
   const transformedHtml = transformProductUrls(sanitizedHtml)
 
+// ================== Hero Slider ==================
+useEffect(() => {
+  const container = sliderRef.current;
+  if (!container) return;
 
+  let timer: NodeJS.Timeout;
 
-  // ================== For Product Items Auto Slider =========================
-  useEffect(() => {
-    const container = sliderRef.current
-    if (!container) return
+  const timeout = setTimeout(() => {
+    const slides = Array.from(
+      container.querySelectorAll(".hero_section_slide")
+    ) as HTMLElement[];
 
-    setTimeout(() => {
-      const productGrid = container.querySelector(
-        ".hero_section_slide_right_container .product-items.widget-product-grid",
-      ) as HTMLElement
-      if (!productGrid) {
-        console.log("No product grid found")
-        return
+    const bulletsWrap = container.querySelector(".slider_bullets");
+    const prevBtn = container.querySelector(".hero_section .prev");
+    const nextBtn = container.querySelector(".hero_section .next");
+
+    if (!slides.length || !bulletsWrap) return;
+
+    bulletsWrap.innerHTML = "";
+
+    let index = 0;
+
+    const show = (i: number) => {
+      slides[index].classList.remove("active");
+      dots[index].classList.remove("active");
+
+      index = (i + slides.length) % slides.length;
+
+      slides[index].classList.add("active");
+      dots[index].classList.add("active");
+    };
+
+    const resetAutoplay = () => {
+      clearInterval(timer);
+      timer = setInterval(() => show(index + 1), 5000);
+    };
+
+    const goTo = (i: number) => {
+      show(i);
+      resetAutoplay();
+    };
+
+    const dots = slides.map((_, i) => {
+      const dot = document.createElement("button");
+      dot.className = "hero_dot" + (i === 0 ? " active" : "");
+      dot.setAttribute("aria-label", `Go to slide ${i + 1}`);
+      dot.addEventListener("click", () => goTo(i));
+      bulletsWrap.appendChild(dot);
+      return dot;
+    });
+
+    timer = setInterval(() => show(index + 1), 5000);
+
+    const prevHandler = () => goTo(index - 1);
+    const nextHandler = () => goTo(index + 1);
+
+    prevBtn?.addEventListener("click", prevHandler);
+    nextBtn?.addEventListener("click", nextHandler);
+
+    // -----------------------
+    // Mouse + Touch Drag
+    // -----------------------
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
+
+    const handlePointerDown = (e: PointerEvent) => {
+      startX = e.clientX;
+      currentX = e.clientX;
+      isDragging = true;
+      // container.style.cursor = "grabbing";
+    };
+
+    const handlePointerMove = (e: PointerEvent) => {
+      if (!isDragging) return;
+      currentX = e.clientX;
+    };
+
+    const handlePointerUp = () => {
+      if (!isDragging) return;
+
+      isDragging = false;
+      // container.style.cursor = "grab";
+
+      const diff = currentX - startX;
+
+      if (Math.abs(diff) < 60) return;
+
+      if (diff < 0) {
+        goTo(index + 1);
+      } else {
+        goTo(index - 1);
       }
-
-      let scrollPosition = 0
-      const itemWidth = window.innerWidth < 768 ? 260 : 310// Width to scroll each time
-      const scrollInterval = 3000 // 3 seconds
-
-      // Get the total scrollable width
-      const getMaxScroll = () => {
-        return productGrid.scrollWidth - productGrid.clientWidth
-      }
-
-      // Auto scroll function
-      const autoScroll = () => {
-        // If we've reached the end, reset to beginning
-        if (scrollPosition >= getMaxScroll()) {
-          scrollPosition = 0
-          productGrid.scrollTo({ left: 0, behavior: "auto" })
-        } else {
-          // Otherwise, scroll to the next position
-          scrollPosition += itemWidth
-          productGrid.scrollTo({ left: scrollPosition, behavior: "smooth" })
-        }
-      }
-
-      // Start auto scrolling
-      let intervalId = setInterval(autoScroll, scrollInterval)
-
-      // Pause auto scrolling when user interacts with the slider
-      const pauseAutoScroll = () => {
-        clearInterval(intervalId)
-      }
-
-      const resumeAutoScroll = () => {
-        // Update the current scroll position before resuming
-        scrollPosition = productGrid.scrollLeft
-        clearInterval(intervalId)
-        setTimeout(() => {
-          const newIntervalId = setInterval(autoScroll, scrollInterval)
-          // Update the intervalId reference
-          intervalId = newIntervalId
-        }, 2000) // Resume after 2 seconds of inactivity
-      }
-
-      // Add event listeners for user interaction
-      productGrid.addEventListener("mousedown", pauseAutoScroll)
-      productGrid.addEventListener("touchstart", pauseAutoScroll)
-      productGrid.addEventListener("mouseup", resumeAutoScroll)
-      productGrid.addEventListener("touchend", resumeAutoScroll)
-
-      // Clean up on component unmount
-      return () => {
-        clearInterval(intervalId)
-        productGrid.removeEventListener("mousedown", pauseAutoScroll)
-        productGrid.removeEventListener("touchstart", pauseAutoScroll)
-        productGrid.removeEventListener("mouseup", resumeAutoScroll)
-        productGrid.removeEventListener("touchend", resumeAutoScroll)
-      }
-    }, 2000) // Wait for 2 seconds for the DOM to be fully loaded
-  }, [transformedHtml, showRibbon])
-
-
-  // ========================For Testimonial Section Slider==================== 
-  useEffect(() => {
-    const sliderContainer = sliderRef.current;
-    if (!sliderContainer) return;
-    setTimeout(() => {
-      const testimonials = sliderContainer.querySelectorAll(".testimonial-change");
-      const nextBtn = sliderContainer.querySelector(".nav-next");
-      const prevBtn = sliderContainer.querySelector(".nav-prev");
-
-      let currentIndex = 0;
-
-      const showSlide = (index: number) => {
-        testimonials.forEach((testimonial, i) => {
-          if (i === index) {
-            (testimonial as HTMLElement).style.display = "block";
-          } else {
-            (testimonial as HTMLElement).style.display = "none";
-          }
-        });
-      };
-
-      // Initialize first slide
-      showSlide(currentIndex);
-
-      const handleNext = () => {
-        currentIndex = (currentIndex + 1) % testimonials.length;
-        showSlide(currentIndex);
-      };
-
-      const handlePrev = () => {
-        currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-        showSlide(currentIndex);
-      };
-
-      nextBtn?.addEventListener("click", handleNext);
-      prevBtn?.addEventListener("click", handlePrev);
-
-      // Cleanup on unmount
-      return () => {
-        nextBtn?.removeEventListener("click", handleNext);
-        prevBtn?.removeEventListener("click", handlePrev);
-      };
-    }, 1000)
-  }, [transformedHtml, showRibbon]);
-
-
-
-  // ===========================For the Trending Section Tab Change================= 
-  useEffect(() => {
-    const sliderContainer = sliderRef.current;
-
-    setTimeout(() => {
-      if (!sliderContainer) return;
-
-      const LatestSelector = sliderContainer.querySelector("#Latest-selector");
-      const WatchesSelector = sliderContainer.querySelector("#Watches-selector");
-      const JewelrySelector = sliderContainer.querySelector("#jewelry-selector");
-      const HandBagsSelector = sliderContainer.querySelector("#handbag-selector");
-
-      const TrendingSectionLatest: any = sliderContainer.querySelector(".trending-section-latest");
-      const TrendingSectionWatches: any = sliderContainer.querySelector(".trending-section-watches");
-      const TrendingSectionJewelry: any = sliderContainer.querySelector(".trending-section-jewelry");
-      const TrendingSectionHandbags: any = sliderContainer.querySelector(".trending-section-handbag");
-
-      // Helper to remove active tab class
-      const removeActiveTabClass = () => {
-        LatestSelector?.classList.remove("tab-active");
-        WatchesSelector?.classList.remove("tab-active");
-        JewelrySelector?.classList.remove("tab-active");
-        HandBagsSelector?.classList.remove("tab-active");
-      };
-
-      // ✅ Set default active tab (Latest)
-      removeActiveTabClass();
-      LatestSelector?.classList.add("tab-active");
-
-      if (LatestSelector) {
-        LatestSelector.addEventListener("click", () => {
-          TrendingSectionLatest.classList.add("trending-section-active");
-          TrendingSectionLatest.classList.remove("trending-section-latest-unactive");
-          TrendingSectionWatches.classList.remove("trending-section-active");
-          TrendingSectionJewelry.classList.remove("trending-section-active");
-
-
-          removeActiveTabClass();
-          LatestSelector.classList.add("tab-active");
-        });
-      }
-
-      if (WatchesSelector) {
-        WatchesSelector.addEventListener("click", () => {
-          TrendingSectionLatest.classList.remove("trending-section-active");
-          TrendingSectionLatest.classList.add("trending-section-latest-unactive");
-          TrendingSectionWatches.classList.add("trending-section-active");
-          TrendingSectionJewelry.classList.remove("trending-section-active");
-
-
-          removeActiveTabClass();
-          WatchesSelector.classList.add("tab-active");
-        });
-      }
-
-      if (JewelrySelector) {
-        JewelrySelector.addEventListener("click", () => {
-          TrendingSectionLatest.classList.remove("trending-section-active");
-          TrendingSectionLatest.classList.add("trending-section-latest-unactive");
-          TrendingSectionWatches.classList.remove("trending-section-active");
-          TrendingSectionJewelry.classList.add("trending-section-active");
-
-
-          removeActiveTabClass();
-          JewelrySelector.classList.add("tab-active");
-        });
-      }
-
-      if (HandBagsSelector) {
-        HandBagsSelector.addEventListener("click", () => {
-          TrendingSectionLatest.classList.remove("trending-section-active");
-          TrendingSectionLatest.classList.add("trending-section-latest-unactive");
-          TrendingSectionWatches.classList.remove("trending-section-active");
-          TrendingSectionJewelry.classList.remove("trending-section-active");
-          TrendingSectionHandbags.classList.add("trending-section-active");
-
-          removeActiveTabClass();
-          HandBagsSelector.classList.add("tab-active");
-        });
-      }
-    }, 1000);
-  }, [transformedHtml, showRibbon]);
-
-
-
-
-  // ===========================For Trending Section Slider=================
-  useEffect(() => {
-    const container = sliderRef.current
-    if (!container) return
-
-    setTimeout(() => {
-      // Get all trending sections
-      const trendingSections = [
-        container.querySelector(".trending-section-latest"),
-        container.querySelector(".trending-section-watches"),
-        container.querySelector(".trending-section-jewelry"),
-        container.querySelector(".trending-section-handbag"),
-      ]
-
-      trendingSections.forEach((section) => {
-        if (!section) return
-
-        // Find the product grid in this section
-        const productGrid = section.querySelector(".product-items.widget-product-grid") as HTMLElement
-        if (!productGrid) return
-
-        // Check if buttons already exist to avoid duplicates
-        if (section.querySelector(".trending-prev") || section.querySelector(".trending-next")) {
-          return
-        }
-
-        // Create wrapper for the section if not already wrapped
-        const sectionWrapper = document.createElement("div")
-        sectionWrapper.style.position = "relative"
-        sectionWrapper.classList.add("trending-slider-wrapper")
-
-        // Create prev button
-        const prevButton = document.createElement("button")
-        prevButton.innerHTML = "&#10094;" // Left arrow
-        prevButton.className = "trending-prev"
-        prevButton.style.position = "absolute"
-        prevButton.style.left = "0"
-        prevButton.style.top = "50%"
-        prevButton.style.transform = "translateY(-50%)"
-        prevButton.style.zIndex = "10"
-        prevButton.style.background = "#fff"
-        prevButton.style.border = "1px solid #ddd"
-        prevButton.style.borderRadius = "50%"
-        prevButton.style.width = "40px"
-        prevButton.style.height = "40px"
-        prevButton.style.cursor = "pointer"
-        prevButton.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)"
-
-        // Create next button
-        const nextButton = document.createElement("button")
-        nextButton.innerHTML = "&#10095;" // Right arrow
-        nextButton.className = "trending-next"
-        nextButton.style.position = "absolute"
-        nextButton.style.right = "0"
-        nextButton.style.top = "50%"
-        nextButton.style.transform = "translateY(-50%)"
-        nextButton.style.zIndex = "10"
-        nextButton.style.background = "#fff"
-        nextButton.style.border = "1px solid #ddd"
-        nextButton.style.borderRadius = "50%"
-        nextButton.style.width = "40px"
-        nextButton.style.height = "40px"
-        nextButton.style.cursor = "pointer"
-        nextButton.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)"
-
-        // Wrap the product grid
-        const gridParent = productGrid.parentElement
-        if (gridParent) {
-          // Create a container for the product grid
-          const gridContainer = document.createElement("div")
-          gridContainer.style.position = "relative"
-          gridContainer.style.overflow = "hidden"
-          gridContainer.style.width = "100%"
-
-          // Insert the wrapper before the product grid
-          gridParent.insertBefore(gridContainer, productGrid)
-
-          // Move the product grid inside the container
-          gridContainer.appendChild(productGrid)
-
-          // Add buttons to the container
-          gridContainer.appendChild(prevButton)
-          gridContainer.appendChild(nextButton)
-        }
-
-        // Scroll amount
-        const scrollAmount = 300 // Slightly more than product width to account for gap
-
-        // Scroll functions
-        const scrollLeft = () => {
-          productGrid.scrollBy({ left: -scrollAmount, behavior: "smooth" })
-        }
-
-        const scrollRight = () => {
-          productGrid.scrollBy({ left: scrollAmount, behavior: "smooth" })
-        }
-
-        // Add event listeners
-        prevButton.addEventListener("click", scrollLeft)
-        nextButton.addEventListener("click", scrollRight)
-
-        // Update button visibility based on scroll position
-        const updateButtonVisibility = () => {
-          prevButton.style.opacity = productGrid.scrollLeft <= 0 ? "0.5" : "1"
-          prevButton.style.cursor = productGrid.scrollLeft <= 0 ? "default" : "pointer"
-
-          const maxScrollLeft = productGrid.scrollWidth - productGrid.clientWidth
-          nextButton.style.opacity = productGrid.scrollLeft >= maxScrollLeft ? "0.5" : "1"
-          nextButton.style.cursor = productGrid.scrollLeft >= maxScrollLeft ? "default" : "pointer"
-        }
-
-        // Initial button visibility
-        updateButtonVisibility()
-
-        // Update button visibility on scroll
-        productGrid.addEventListener("scroll", updateButtonVisibility)
-
-        // Cleanup
-        return () => {
-          prevButton.removeEventListener("click", scrollLeft)
-          nextButton.removeEventListener("click", scrollRight)
-          productGrid.removeEventListener("scroll", updateButtonVisibility)
-        }
-      })
-    }, 1000)
-  }, [transformedHtml, showRibbon])
-
-
-  // ================== For Social Media Section Auto Slider =========================
-  useEffect(() => {
-    const container = sliderRef.current
-    if (!container) return
-
-    setTimeout(() => {
-      const featuredCategory = container.querySelector(".featured_category") as HTMLElement
-      if (!featuredCategory) {
-        console.log("No .featured_category found")
-        return
-      }
-
-      // Ensure parent of .featured_category is position: relative
-      const wrapper = document.createElement("div")
-      wrapper.style.position = "relative"
-
-      // Move .featured_category inside wrapper if not already wrapped
-      if (!featuredCategory.parentElement?.classList.contains("auto-slider-wrapper")) {
-        featuredCategory.parentElement?.insertBefore(wrapper, featuredCategory)
-        wrapper.appendChild(featuredCategory)
-        wrapper.classList.add("auto-slider-wrapper")
-      }
-
-      // Scroll Amount and Interval
-      const scrollAmount = 400
-      const scrollInterval = 3000 // 3 seconds
-
-      let scrollPosition = 0
-
-      // Get the total scrollable width
-      const getMaxScroll = () => {
-        return featuredCategory.scrollWidth - featuredCategory.clientWidth
-      }
-
-      // Auto scroll function
-      const autoScroll = () => {
-        // If we've reached the end, reset to beginning
-        if (scrollPosition >= getMaxScroll()) {
-          scrollPosition = 0
-          featuredCategory.scrollTo({ left: 0, behavior: "auto" })
-        } else {
-          // Otherwise, scroll to the next position
-          scrollPosition += scrollAmount
-          featuredCategory.scrollTo({ left: scrollPosition, behavior: "smooth" })
-        }
-      }
-
-      // Start auto scrolling
-      let intervalId = setInterval(autoScroll, scrollInterval)
-
-      // Pause auto scrolling when user interacts with the slider
-      const pauseAutoScroll = () => {
-        clearInterval(intervalId)
-      }
-
-      const resumeAutoScroll = () => {
-        // Update the current scroll position before resuming
-        scrollPosition = featuredCategory.scrollLeft
-        clearInterval(intervalId)
-        setTimeout(() => {
-          intervalId = setInterval(autoScroll, scrollInterval)
-        }, 2000) // Resume after 2 seconds of inactivity
-      }
-
-      // Add event listeners for user interaction
-      featuredCategory.addEventListener("mousedown", pauseAutoScroll)
-      featuredCategory.addEventListener("touchstart", pauseAutoScroll)
-      featuredCategory.addEventListener("mouseup", resumeAutoScroll)
-      featuredCategory.addEventListener("touchend", resumeAutoScroll)
-
-      // Clean up on component unmount
-      return () => {
-        clearInterval(intervalId)
-        featuredCategory.removeEventListener("mousedown", pauseAutoScroll)
-        featuredCategory.removeEventListener("touchstart", pauseAutoScroll)
-        featuredCategory.removeEventListener("mouseup", resumeAutoScroll)
-        featuredCategory.removeEventListener("touchend", resumeAutoScroll)
-      }
-    }, 2000)
-  }, [transformedHtml, showRibbon])
-
-  // ================== For Product Items Auto Slider =========================
-  useEffect(() => {
-    const container = sliderRef.current;
-    if (!container) return;
-
-    // Original product slider code (keep this part)
-    setTimeout(() => {
-      const productGrid = container.querySelector(
-        ".hero_section_slide_right_container .product-items.widget-product-grid",
-      ) as HTMLElement;
-      if (!productGrid) {
-        console.log("No product grid found");
-        return;
-      }
-
-      // Your existing product slider code...
-      // [Keep all the existing product slider logic]
-
-    }, 2000);
-
-    // ================== Popular Brands Slider =========================
-    setTimeout(() => {
-      // Get elements for the brands slider
-      const brandsList = container.querySelector(".popular_brands_list") as HTMLElement;
-      const prevBtn = container.querySelector(".popular_brands_prv_btn") as HTMLElement;
-      const nextBtn = container.querySelector(".popular_brands_next_btn") as HTMLElement;
-      const brandItems = container.querySelectorAll(".popular_brands_item");
-
-      if (!brandsList || !prevBtn || !nextBtn || brandItems.length === 0) {
-        console.log("Brand slider elements not found");
-        return;
-      }
-
-      // Initialize variables
-      let currentIndex = 0;
-      const totalItems = brandItems.length;
-      const itemWidth = 300; // Width of each brand item with padding
-      let isDragging = false;
-      let startPos = 0;
-      let scrollLeft = 0;
-
-      // Function to scroll to a specific item
-      const scrollToItem = (index: number) => {
-        // Ensure the index loops around
-        if (index < 0) index = totalItems - 1;
-        if (index >= totalItems) index = 0;
-
-        currentIndex = index;
-        brandsList.scrollTo({
-          left: itemWidth * currentIndex,
-          behavior: "smooth"
-        });
-      };
-
-      // Next button click handler
-      nextBtn.addEventListener("click", () => {
-        scrollToItem(currentIndex + 1);
-      });
-
-      // Previous button click handler
-      prevBtn.addEventListener("click", () => {
-        scrollToItem(currentIndex - 1);
-      });
-
-      // Mouse/touch drag functionality
-      brandsList.addEventListener("mousedown", (e) => {
-        isDragging = true;
-        startPos = e.pageX - brandsList.offsetLeft;
-        scrollLeft = brandsList.scrollLeft;
-        brandsList.style.cursor = "grabbing";
-      });
-
-      brandsList.addEventListener("mouseleave", () => {
-        isDragging = false;
-        brandsList.style.cursor = "grab";
-      });
-
-      brandsList.addEventListener("mouseup", () => {
-        isDragging = false;
-        brandsList.style.cursor = "grab";
-
-        // Snap to closest item
-        const itemIndex = Math.round(brandsList.scrollLeft / itemWidth);
-        scrollToItem(itemIndex);
-      });
-
-      brandsList.addEventListener("mousemove", (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const x = e.pageX - brandsList.offsetLeft;
-        const walk = (x - startPos) * 2; // Speed multiplier
-        brandsList.scrollLeft = scrollLeft - walk;
-      });
-
-      // Touch events for mobile
-      brandsList.addEventListener("touchstart", (e) => {
-        isDragging = true;
-        startPos = e.touches[0].pageX - brandsList.offsetLeft;
-        scrollLeft = brandsList.scrollLeft;
-      });
-
-      brandsList.addEventListener("touchend", () => {
-        isDragging = false;
-
-        // Snap to closest item
-        const itemIndex = Math.round(brandsList.scrollLeft / itemWidth);
-        scrollToItem(itemIndex);
-      });
-
-      brandsList.addEventListener("touchmove", (e) => {
-        if (!isDragging) return;
-        const x = e.touches[0].pageX - brandsList.offsetLeft;
-        const walk = (x - startPos) * 2;
-        brandsList.scrollLeft = scrollLeft - walk;
-      });
-
-      // Add additional CSS to ensure proper scrolling behavior
-      brandsList.style.scrollBehavior = "smooth";
-      brandsList.style.scrollSnapType = "x mandatory";
-
-      // Add scroll-snap-align to each item
-      brandItems.forEach((item) => {
-        (item as HTMLElement).style.scrollSnapAlign = "center";
-        (item as HTMLElement).style.flexShrink = "0";
-      });
-
-      // Prevent scrolling issues
-      brandsList.addEventListener("scroll", () => {
-        // Check if we've reached the end and need to loop back
-        if (brandsList.scrollLeft + brandsList.clientWidth >= brandsList.scrollWidth) {
-          currentIndex = 0;
-          setTimeout(() => {
-            brandsList.scrollTo({ left: 0, behavior: "auto" });
-          }, 500);
-        }
-
-        // Check if we've scrolled to the beginning and need to loop to the end
-        if (brandsList.scrollLeft <= 0 && currentIndex === 0) {
-          currentIndex = totalItems - 1;
-        }
-      });
-
-    }, 2000); // Wait for DOM to be fully loaded
-  }, [transformedHtml, showRibbon]);
-
+    };
+
+    // container.style.cursor = "grab";
+    container.style.userSelect = "none";
+
+    container.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", handlePointerUp);
+
+    // Store cleanup on the container so the effect cleanup can call it
+    (container as any).__sliderCleanup = () => {
+      clearInterval(timer);
+
+      prevBtn?.removeEventListener("click", prevHandler);
+      nextBtn?.removeEventListener("click", nextHandler);
+
+      container.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, 100);
+
+  return () => {
+    clearTimeout(timeout);
+
+    if ((container as any).__sliderCleanup) {
+      (container as any).__sliderCleanup();
+      delete (container as any).__sliderCleanup;
+    }
+  };
+}, [transformedHtml, showRibbon]);
+
+
+
+// ================== New Products Widget Slider ==================
+useEffect(() => {
+  const container = sliderRef.current;
+  if (!container) return;
+
+  setTimeout(() => {
+    const grid = container.querySelector(
+      ".block.widget.block-new-products .products-grid"
+    ) as HTMLElement;
+    const track = grid?.querySelector(".product-items") as HTMLElement;
+    if (!grid || !track) return;
+
+    // avoid double-wiring on re-render
+    if (grid.querySelector(".products-slider-prev")) return;
+
+    const prevBtn = document.createElement("button");
+    prevBtn.className = "products-slider-prev";
+    prevBtn.setAttribute("aria-label", "Previous products");
+    prevBtn.innerHTML = "&#8592;";
+
+    const nextBtn = document.createElement("button");
+    nextBtn.className = "products-slider-next";
+    nextBtn.setAttribute("aria-label", "Next products");
+    nextBtn.innerHTML = "&#8594;";
+
+    grid.style.position = "relative";
+    grid.appendChild(prevBtn);
+    grid.appendChild(nextBtn);
+
+    // scroll by however many cards are currently visible (5 desktop / 3 tablet / 2 mobile)
+    const getStep = () => {
+      const card = track.querySelector(".product-item") as HTMLElement;
+      if (!card) return track.clientWidth;
+      const gap = parseFloat(getComputedStyle(track).columnGap || "24");
+      return card.getBoundingClientRect().width + gap;
+    };
+
+    const updateDisabled = () => {
+      const max = track.scrollWidth - track.clientWidth - 1;
+      prevBtn.setAttribute("data-disabled", String(track.scrollLeft <= 0));
+      nextBtn.setAttribute("data-disabled", String(track.scrollLeft >= max));
+    };
+
+    const scrollByStep = (dir: 1 | -1) => {
+      track.scrollBy({ left: getStep() * dir, behavior: "smooth" });
+    };
+
+    prevBtn.addEventListener("click", () => scrollByStep(-1));
+    nextBtn.addEventListener("click", () => scrollByStep(1));
+    track.addEventListener("scroll", updateDisabled);
+    window.addEventListener("resize", updateDisabled);
+    updateDisabled();
+
+    // drag-to-scroll on desktop
+    let isDown = false;
+    let startX = 0;
+    let startScroll = 0;
+    track.addEventListener("mousedown", (e) => {
+      isDown = true;
+      startX = e.pageX;
+      startScroll = track.scrollLeft;
+    });
+    window.addEventListener("mouseup", () => (isDown = false));
+    track.addEventListener("mousemove", (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      track.scrollLeft = startScroll - (e.pageX - startX);
+    });
+
+    return () => {
+      prevBtn.removeEventListener("click", () => scrollByStep(-1));
+      nextBtn.removeEventListener("click", () => scrollByStep(1));
+      track.removeEventListener("scroll", updateDisabled);
+      window.removeEventListener("resize", updateDisabled);
+    };
+  }, 1000);
+}, [transformedHtml, showRibbon]);
+  
 
   // ===========================Meta Tags==================================== 
   const heroImage = transformedHtml?.match(/background-image.*?url\(['"]?(.*?)['"]?\)/)?.[1] || ""
@@ -677,7 +320,7 @@ export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any)
       <OrganizationSchema />
       <HomePageSchema HeroBanner={heroImage} metaDescription={metaDescription} />
       {/* Entire Home Page Content is Coming from CMS (Here ↓)  */}
-
+      {/* <Hero/> */}
       <div ref={sliderRef}>
         <div dangerouslySetInnerHTML={{ __html: transformedHtml }} />
       </div>
@@ -686,6 +329,8 @@ export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any)
 }
 
 // ==============Schema Functions==============
+
+
 
 const HomePageSchema = ({ HeroBanner, metaDescription }: any) => {
 

@@ -197,10 +197,16 @@ h6 {
 
 /* ===================Home Page styling================  */
 /* ==================== HERO SECTION ==================== */
+
+.hero_section-out{
+  position: relative;;
+}
 .hero_section {
   position: relative;
   overflow: hidden;
   padding-top: 0;
+  max-width: 1440px;
+margin: 0 auto;
   padding-top: 80px;
 }
 
@@ -214,6 +220,7 @@ h6 {
   display: flex;
   flex-direction: row;
   position: relative;
+  
 }
 
 @media screen and (max-width: 768px) {
@@ -350,6 +357,7 @@ h6 {
   font-family: var(--font-body);
   color: rgba(255, 255, 255, 0.9);
   margin: 0;
+
 }
 
 @media screen and (max-width: 1000px) {
@@ -398,6 +406,10 @@ h6 {
   border-radius: var(--radius-md);
   transition: all var(--transition-base);
   cursor: pointer;
+  border: 1px solid blue(255, 255, 255, 0.2);
+  background-color: blue;
+  border-radius: 50px;
+  font-weight: 600;
 }
 
 .solid_button:hover {
@@ -419,6 +431,7 @@ h6 {
   background: var(--text-light);
   color: var(--text-primary);
   border-color: var(--text-light);
+
 }
 
 .solid_button.light:hover {
@@ -452,22 +465,23 @@ h6 {
   box-shadow: var(--shadow-md);
 }
 
-.border_button.secondary {
+/* .border_button.secondary {
   border-color: var(--border-color);
   color: var(--text-secondary);
-}
+} */
 
-.border_button.secondary:hover {
+/* .border_button.secondary:hover {
   border-color: var(--text-primary);
   background: var(--text-primary);
   color: var(--text-light);
-}
+} */
 
 @media screen and (max-width: 768px) {
   .solid_button,
   .border_button {
     padding: 12px 24px;
     font-size: 11px;
+    
   }
 }
 
@@ -562,7 +576,7 @@ button.next {
 
 /* ==================== FEATURED CATEGORIES SECTION ==================== */
 .featured_section {
-  padding: 60px 20px;
+  /* padding: 60px 20px; */
   background: var(--bg-light);
 }
 
@@ -637,8 +651,28 @@ button.next {
   text-decoration: none;
   display: block;
   transition: transform var(--transition-base);
-  background-image: url('/Images/clothes.jpg');
+  /* background-image: url('/Images/clothes.jpg'); */
 }
+
+
+ .featured_box_overlay {
+  
+  /* background: linear-gradient(180deg, transparent 20%, rgba(255, 255, 255, 0.9) 100%); */
+  /* background-image: url('/Images/clothes.jpg'); */
+}
+
+.featured_box_overlay {
+  position: absolute;
+  inset: 0;
+  margin-bottom: 15px;
+  /* background: linear-gradient(180deg, transparent 40%, rgba(164, 164, 168, 0.85) 100%); */
+  /* background-image: url('/Images/clothes.jpg'); */
+  background-size: cover;
+  background-position: center;
+  transition: background var(--transition-base);
+  transition: background 0.4s ease, transform 0.4s ease;
+}
+
 
 .featured_box:hover {
   transform: translateY(-4px);
@@ -657,23 +691,16 @@ button.next {
   }
 }
 
-.featured_box_overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(164, 164, 168, 0.85) 100%);
-  transition: background var(--transition-base);
-  transition: background 0.4s ease, transform 0.4s ease;
-}
 
-.featured_box:hover .featured_box_overlay {
+/* .featured_box:hover .featured_box_overlay {
   
   background: linear-gradient(180deg, transparent 20%, rgba(255, 255, 255, 0.9) 100%);
-}
+} */
 
 .featured_box_content {
   position: absolute;
   bottom: 0;
-  left: 0;
+  /* left: 0; */
   right: 0;
   padding: 28px;
   color: var(--text-light);
@@ -689,7 +716,7 @@ button.next {
   font-size: 26px;
   font-weight: 500;
   font-family: var(--font-heading);
-  margin: 0 0 8px;
+  /* margin: 0 0 8px; */
   line-height: 1.2;
 }
 
@@ -707,7 +734,7 @@ button.next {
 
 .featured_box:hover .featured_box_cta {
   opacity: 1;
-  transform: translateY(0);
+  /* transform: translateY(0); */
 }
 
 /* Navigation buttons */
@@ -1609,112 +1636,13 @@ button.next:focus-visible,
   margin-right: 100px;
 }
 
-/* Product Grid Layout */
-.product-items.widget-product-grid {
-  display: flex;
-  gap: 20px;
-  overflow-x: auto;
-  /* Changed from scroll to auto for better behavior */
-  position: relative;
-  transition: transform 0.5s ease-in-out;
-  max-width: 100%;
-  /* Changed from fixed width to 100% */
-  margin: auto;
-  cursor: grab;
-  user-select: none;
-  margin-bottom: 20px;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  /* Smooth scrolling on iOS */
-  padding-bottom: 10px;
-  /* Add padding for scrollbar space */
 
-  @media screen and (max-width:650px){
-    margin-bottom: 0px;
-    gap: 10px;
-  }
-}
 
-/* Hide scrollbar but keep functionality */
-.product-items.widget-product-grid::-webkit-scrollbar {
-  display: none;
-}
-
-.product-item {
-  background-color: #fff;
-  width: 300px;
-  list-style-type: none;
-  flex-shrink: 0;
-  /* Prevent items from shrinking */
-}
-
-.toolbar-amount,
-.reviews-actions,
-.action.tocart.primary,
-.actions-secondary {
-  display: none;
-}
-
-/* Product Item */
-.product-item-info {
-  background: #fff;
-  padding: 15px;
-  border-radius: 1px;
-  transition: transform 0.3s ease-in-out;
-  width: 100%;
-  /* Changed from fixed width to 100% */
-  max-width: 300px;
-  margin: 0 auto;
-}
-
-.product-item-info:hover {
-  transform: translateY(-5px);
-}
-
-/* Product Image Styling */
-.product-item-photo {
-  display: block;
-  text-align: center;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.product-item-photo img {
-  width: 100%;
-  height: 300px;
-  object-fit: scale-down;
-  transition: transform 0.3s ease-in-out;
-
-  @media screen and (max-width: 1000px) {
-    height: 200px;
-
-  }
-    @media screen and (max-width: 650px) {
-    height: 120px;
-    
-  }
-}
-
-.product-item-photo:hover img {
+/* .product-item-photo:hover img {
   transform: scale(1.05);
 }
 
-/* Product Details */
-.product-item-details {
-  padding: 10px 0;
-  text-align: center;
-}
 
-.product-item-name {
-  font-size: 14px;
-  font-weight: 100;
-
-  @media screen and (max-width: 1000px) {
-    font-size: 10px;
-
-
-  }
-}
 
 .product-item-name a {
   text-decoration: none;
@@ -4204,14 +4132,14 @@ margin-bottom: 20px;
 
 }
 
-.price-label {
+/* .price-label {
   display: none;
 }
 
 .old-price>.price-container.price-final_price.tax.weee>.price-wrapper>.price {
   color: #777;
   text-decoration: line-through;
-}
+} */
 
 /* ==================================Authenticity Promise=============================================  */
 
@@ -6629,3 +6557,979 @@ margin-bottom: 20px;
 @keyframes l24 {
   100% {transform: rotate(1turn)}
 }
+
+
+/* UPDATED HOME PAGE */
+
+/* =========================================================
+   VENIA HOMEPAGE — styles for Magento CMS markup
+   Drop this into your Next.js global stylesheet (or a CSS module
+   imported on the page that renders the CMS content). Targets the
+   exact class names coming out of the Magento CMS block, so no
+   HTML changes are required.
+   ========================================================= */
+
+   :root {
+    --blue: rgb(41 84 255);
+    --blue-dark: #2f31c2;
+    --navy: #1c1f2b;
+    --text-dark: #1a1a1a;
+    --text-muted: #5c5c5c;
+    --hero-bg: #efefee;
+    /* --font-display: "Playfair Display", Georgia, serif; */
+    --font-body: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+  
+  /* =========================================================
+     HERO SLIDER
+     ========================================================= */
+  .hero_section {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: var(--hero-bg);
+  }
+  
+  .hero_section_slider {
+    position: relative;
+    width: 100%;
+    height: 620px;
+  }
+  
+  .hero_section_slide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.7s ease;
+    z-index: 1;
+  }
+  
+  .hero_section_slide.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+  }
+  
+  /* Light-to-transparent scrim so the left-side copy stays readable
+     over any hero photo, and the image still shows through on the right,
+     mirroring the light-panel / bleeding-photo look of the reference design */
+  .hero_overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      var(--hero-bg) 0%,
+      rgba(239, 239, 238, 0.92) 32%,
+      rgba(239, 239, 238, 0.55) 55%,
+      rgba(239, 239, 238, 0) 75%
+    );
+    z-index: 1;
+  }
+  
+  .hero_section_slide_left {
+    position: relative;
+    z-index: 2;
+    max-width: 550px;
+    height: 50vh;
+    padding: 0 0 0 64px;
+  }
+  
+  .hero_badge {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 16px;
+    border-radius: 20px;
+    margin-bottom: 22px;
+  }
+  
+  .hero_section_slide_left h1,
+  .hero_section_slide_left h2 {
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: 42px;
+    line-height: 1.2;
+    color: var(--text-dark);
+    /* margin-bottom: 22px; */
+    letter-spacing: -0.01em;
+  }
+  
+  .hero_section_slide_left p {
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 420px;
+    /* margin-bottom: 30px; */
+  }
+  
+  .hero_section_slide_right {
+    flex: 1;
+  }
+  
+  /* Buttons -------------------------------------------------- */
+  .buttons_section,
+  .buttons_section_3 {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .solid_button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 26px;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  
+  .solid_button:hover {
+    background: var(--blue-dark);
+    transform: translateX(2px);
+  }
+  
+  .solid_button svg {
+    stroke: currentColor;
+  }
+  
+  .solid_button.light {
+    border: 1px solid white;
+    color: white;
+  }
+  
+  .solid_button.light:hover {
+    background: #e9e9e9;
+  }
+  
+  .border_button {
+    display: inline-flex;
+    align-items: center;
+    background: transparent;
+    color: var(--blue);
+    border: 2px solid var(--blue);
+    padding: 13px 28px;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 24px;
+    transition: all 0.2s ease;
+  }
+  
+  .border_button:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+/*   
+  .border_button.secondary {
+    color: var(--text-dark);
+    border-color: #cfcfcf;
+  } */
+/*   
+  .border_button.secondary:hover {
+    background: var(--text-dark);
+    border-color: var(--text-dark);
+    color: #fff;
+  } */
+  
+  /* Prev / next arrows ---------------------------------------- */
+  .hero_section .prev,
+  .hero_section .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .hero_section .prev {
+    left: 24px;
+  }
+  
+  .hero_section .next {
+    right: 24px;
+  }
+  
+  .hero_section .prev:hover,
+  .hero_section .next:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+  
+  /* Dot bullets (injected by JS — see hero-slider script) ------ */
+  .slider_bullets {
+    position: absolute;
+    bottom: 22px;
+    left: 0;
+    right: 0;
+    z-index: 5;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .hero_dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #c7c7c7;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+  
+  .hero_dot.active {
+    background: var(--text-dark);
+    transform: scale(1.2);
+  }
+  
+  /* =========================================================
+     FEATURED CATEGORIES
+     ========================================================= */
+  .featured_section {
+    max-width: 1440px;
+    margin: 0 auto;
+    margin-top: -20px;
+    position: relative;
+    z-index: 9;
+    /* padding: 80px 40px 40px; */
+  }
+  
+  .section_header {
+    text-align: center;
+    margin-bottom: 44px;
+  }
+  
+  .section_title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+  }
+  
+  .section_subtitle {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+  
+  /* Horizontally scrollable track — matches the auto-slider JS,
+     which measures scrollWidth/clientWidth on this element */
+  .featured_category {
+    /* display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none; */
+  }
+  
+  .featured_category::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .featured_box {
+    position: relative;
+    flex: 0 0 400px;
+    height: 280px;
+    overflow: hidden;
+    border-radius: 4px;
+    /* background: #ddd center / cover no-repeat; */
+    scroll-snap-align: start;
+  }
+  
+
+  
+  /* .featured_box:hover .featured_box_overlay { */
+    /* background: linear-gradient(
+      180deg,
+      rgba(15, 15, 20, 0.1) 20%,
+      rgba(15, 15, 20, 0.9) 100%
+    ); */
+  /* } */
+  
+  .featured_box_content {
+    position: absolute;
+    /* left: 0; */
+    bottom: 0 ;
+    right: 1px;
+    z-index: 9999999;
+    color: white;
+    background: black;
+    border-bottom: 5px solid blue;
+    padding: 15px 75px 50px 15px;
+  }
+  
+  .featured_box_content h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 20px;
+    /* margin-bottom: 8px; */
+  }
+  
+  .featured_box_cta {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: #e8e8e8;
+    opacity: 0.9;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  
+  /* .featured_box:hover .featured_box_cta {
+    opacity: 1;
+    transform: translateX(3px);
+  } */
+  
+  /* =========================================================
+     SIGNATURE HEELS / STATEMENT ROW
+     ========================================================= */
+  .section_row {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 100px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 48px;
+  }
+  
+  .section_label {
+    display: inline-block;
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 16px;
+  }
+  
+  .section_row_left h4 {
+    font-family: var(--font-display);
+    font-weight: 200;
+    font-size: 34px;
+    line-height: 1.25;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+  }
+  
+  .section_row_left h5 {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-dark);
+    margin-bottom: 14px;
+  }
+  
+  .section_row_left p {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    max-width: 420px;
+    margin-bottom: 32px;
+  }
+  
+  .section_row_right {
+    min-height: 420px;
+  }
+  
+  /* =========================================================
+     VACATION / SUMMER PROMO ROW
+     ========================================================= */
+  .section_row_left_large_2 {
+    max-width: 1320px;
+    margin: 0 auto 100px;
+    padding: 0 40px;
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    min-height: 400px;
+    align-items: center;
+  }
+  
+  .section_row_left_2 {
+    min-height: 400px;
+    height: 400px;
+  }
+  
+  .section_row_right_2 {
+    background: var(--navy);
+    color: #fff;
+    height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 56px;
+  }
+  
+  .promo_badge {
+    display: inline-block;
+    align-self: flex-start;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .section_row_right_2 h4 {
+    font-family: var(--font-display);
+    /* font-weight: 600; */
+    font-size: 30px;
+    line-height: 1.28;
+    margin-bottom: 14px;
+  }
+  
+  .section_row_right_2 p {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: #c7c9d4;
+    margin-bottom: 28px;
+  }
+  
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 1100px) {
+    .featured_box {
+      flex-basis: 340px;
+    }
+  }
+  
+  @media (max-width: 860px) {
+    .hero_section_slider {
+      height: 520px;
+    }
+  
+    .hero_overlay {
+      background: linear-gradient(
+        180deg,
+        rgba(239, 239, 238, 0.35) 0%,
+        rgba(239, 239, 238, 0.95) 55%,
+        var(--hero-bg) 100%
+      );
+    }
+  
+    .hero_section_slide {
+      align-items: flex-end;
+    }
+  
+    .hero_section_slide_left {
+      padding: 0 24px 56px;
+      max-width: 100%;
+    }
+  
+    .hero_section_slide_left h1,
+    .hero_section_slide_left h2 {
+      font-size: 30px;
+    }
+  
+    .hero_section .prev,
+    .hero_section .next {
+      display: none;
+    }
+  
+    .featured_section {
+      padding: 56px 24px 24px;
+    }
+  
+    .featured_box {
+      flex-basis: 82vw;
+      height: 220px;
+    }
+  
+    .section_row {
+      grid-template-columns: 1fr;
+      padding: 56px 24px;
+      gap: 32px;
+    }
+  
+    .section_row_right {
+      min-height: 280px;
+      order: -1;
+    }
+  
+    .section_row_left_large_2 {
+      grid-template-columns: 1fr;
+      padding: 0 24px;
+      margin-bottom: 56px;
+    }
+  
+    .section_row_left_2 {
+      min-height: 260px;
+    }
+  
+    .section_row_right_2 {
+      padding: 40px 24px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .buttons_section,
+    .buttons_section_3 {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+
+
+
+/* =========================================================
+   NEW PRODUCTS WIDGET  (Magento\Catalog\Block\Product\Widget\NewWidget
+   — template="product/widget/new/content/new_grid.phtml")
+   Targets Magento's default markup for this widget, no template
+   overrides required. Uses the same design tokens as the rest
+   of the homepage.
+   ========================================================= */
+
+   :root {
+    --blue: #3d3fe0;
+    --blue-dark: #2f31c2;
+    --text-dark: #1a1a1a;
+    --text-muted: #5c5c5c;
+    --border-grey: #ececec;
+    --font-display: "Playfair Display", Georgia, serif;
+    --font-body: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+  
+  /* Widget wrapper -------------------------------------------- */
+  .block.widget.block-new-products {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 22px 20px 30px;
+  }
+  
+  .block.widget.block-new-products .block-title {
+    text-align: center;
+    /* margin-bottom: 48px; */
+  }
+  
+  .block.widget.block-new-products .block-title strong,
+  .block.widget.block-new-products .block-title h2,
+  .block.widget.block-new-products .block-title h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    color: var(--text-dark);
+  }
+
+  .section_topsellers h2{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 40px;
+    color: var(--text-dark);
+  }
+  
+  /* Slider track --------------------------------------------------
+     Magento renders <ol class="product-items">, not a real grid by
+     default (widths come from inline "x%" columns in some themes) —
+     override that and turn it into a horizontally-scrolling, snapping
+     track: 5 cards visible on desktop, 2 on mobile. The JS in
+     products-slider.js adds prev/next buttons and drag support. */
+  .block.widget.block-new-products .products-grid {
+    position: relative;
+  }
+  
+  .block.widget.block-new-products .product-items {
+    display: flex !important;
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0 0 4px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    cursor: grab;
+  }
+  
+  .block.widget.block-new-products .product-items:active {
+    cursor: grabbing;
+  }
+  
+  .block.widget.block-new-products .product-items::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .block.widget.block-new-products .product-item {
+    /* 5 up on desktop: subtract the 4 gaps between 5 cards, divide by 5 */
+    flex: 0 0 calc((100% - 24px * 4) / 5) !important;
+    width: auto !important; /* override Magento's inline width:20% etc. */
+    margin: 0 !important;
+    padding: 0 !important;
+    scroll-snap-align: start;
+  }
+  
+  .block.widget.block-new-products .product-item-info {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  /* Image -------------------------------------------------------- */
+  .block.widget.block-new-products .product-item-photo {
+    display: block;
+    margin-bottom: 16px;
+  }
+  
+  .block.widget.block-new-products .product-image-container {
+    display: block;
+    width: 100% !important;
+  }
+  
+  .block.widget.block-new-products .product-image-wrapper {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    padding-bottom: 0 !important; /* override Magento's padding-bottom hack */
+    background: #f4f4f4;
+    overflow: hidden;
+  }
+  
+  .block.widget.block-new-products .product-image-photo {
+    position: static !important;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  
+  .block.widget.block-new-products .product-item-info:hover .product-image-photo {
+    transform: scale(1.04);
+  }
+  
+  /* Details -------------------------------------------------------- */
+  .block.widget.block-new-products .product-item-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 10px;
+  }
+  
+  .block.widget.block-new-products .product-item-name {
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 14px;
+    margin: 0 0 6px;
+  }
+  
+  .block.widget.block-new-products .product-item-link {
+    color: var(--text-dark);
+    text-decoration: none;
+  }
+  
+  .block.widget.block-new-products .product-item-link:hover {
+    color: var(--blue);
+  }
+  
+  .block.widget.block-new-products .price-box {
+    margin: 0 0 16px;
+  }
+  
+  .block.widget.block-new-products .price-box .price {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  
+  .block.widget.block-new-products .old-price .price {
+    text-decoration: line-through;
+    color: #aaaaaa;
+    margin-right: 8px;
+  }
+  
+  .block.widget.block-new-products .special-price .price {
+    color: var(--blue);
+    font-weight: 600;
+  }
+  
+  /* Actions — always-visible "Add to Cart" pill, secondary icons hidden
+     to match the clean card look (remove the two rules below if you
+     want wishlist/compare visible) --------------------------------- */
+  .block.widget.block-new-products .product-item-inner {
+    position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin-top: auto;
+  }
+  
+  .block.widget.block-new-products .product-item-actions {
+    display: block;
+  }
+  
+  .block.widget.block-new-products .actions-secondary {
+    display: none;
+  }
+  
+  .block.widget.block-new-products .actions-primary {
+    width: 100%;
+  }
+  
+  .block.widget.block-new-products .action.tocart {
+    width: 100%;
+    background: var(--blue);
+    color: #fff;
+    border: none;
+    padding: 11px 12px;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 20px;
+    transition: background 0.2s ease;
+  }
+  
+  .block.widget.block-new-products .action.tocart:hover {
+    background: var(--blue-dark);
+  }
+  
+  .block.widget.block-new-products .action.tocart:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  
+  /* Rating (if enabled in the theme) -------------------------------- */
+  .block.widget.block-new-products .product-reviews-summary {
+    margin: 0 0 8px;
+  }
+  
+  .block.widget.block-new-products .rating-summary .rating-result:before {
+    color: var(--border-grey);
+  }
+  
+  .block.widget.block-new-products .rating-summary .rating-result > span:before {
+    color: var(--blue);
+  }
+  
+  /* =========================================================
+     SLIDER ARROWS
+     (injected by products-slider.js next to .products-grid)
+     ========================================================= */
+  .products-slider-prev,
+  .products-slider-next {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    z-index: 5;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-grey);
+    background: #fff;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+    transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
+  }
+  
+  .products-slider-prev {
+    left: -20px;
+  }
+  
+  .products-slider-next {
+    right: -20px;
+  }
+  
+  .products-slider-prev:hover,
+  .products-slider-next:hover {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+  
+  .products-slider-prev[data-disabled="true"],
+  .products-slider-next[data-disabled="true"] {
+    opacity: 0.4;
+    cursor: default;
+  }
+  
+  .products-slider-prev[data-disabled="true"]:hover,
+  .products-slider-next[data-disabled="true"]:hover {
+    background: #fff;
+    color: var(--text-dark);
+    border-color: var(--border-grey);
+  }
+  
+  /* =========================================================
+     PAGER  (show_pager="1")
+     Hidden — arrows replace it. If you'd rather not render it at
+     all, set show_pager="0" on the widget instead of hiding it here.
+     ========================================================= */
+  .block.widget.block-new-products .pager {
+    display: none;
+  }
+  
+  .block.widget.block-new-products .pager--unused {
+    margin-top: 48px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .block.widget.block-new-products .pager .pages-label,
+  .block.widget.block-new-products .pager .toolbar-amount {
+    display: none;
+  }
+  
+  .block.widget.block-new-products .pager .items.pages-items {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .block.widget.block-new-products .pager .item {
+    display: flex;
+  }
+  
+  .block.widget.block-new-products .pager .page,
+  .block.widget.block-new-products .pager .action {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 34px;
+    padding: 0 6px;
+    border-radius: 50%;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  
+  .block.widget.block-new-products .pager .page:hover,
+  .block.widget.block-new-products .pager .action:hover {
+    background: var(--border-grey);
+    color: var(--text-dark);
+  }
+  
+  .block.widget.block-new-products .pager .item.current .page {
+    background: var(--blue);
+    color: #fff;
+  }
+  
+  .block.widget.block-new-products .pager .action.next span,
+  .block.widget.block-new-products .pager .action.previous span {
+    /* Magento hides these labels visually by default; keep them
+       screen-reader only and rely on the arrow glyphs below */
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  .block.widget.block-new-products .pager .action.next:before,
+  .block.widget.block-new-products .pager .action.previous:before {
+    font-family: var(--font-body);
+    font-size: 15px;
+    content: "\2192"; /* → */
+  }
+  
+  .block.widget.block-new-products .pager .action.previous:before {
+    content: "\2190"; /* ← */
+  }
+  
+  /* =========================================================
+     RESPONSIVE
+     ========================================================= */
+  @media (max-width: 1100px) {
+    .block.widget.block-new-products .product-item {
+      /* 3 up on tablet */
+      flex-basis: calc((100% - 24px * 2) / 3) !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .block.widget.block-new-products {
+      padding: 40px 24px 56px;
+    }
+  
+    .block.widget.block-new-products .product-items {
+      gap: 16px;
+    }
+  
+    .block.widget.block-new-products .product-item {
+      /* 2 up on mobile */
+      flex-basis: calc((100% - 16px) / 2) !important;
+    }
+  
+    .block.widget.block-new-products .block-title strong,
+    .block.widget.block-new-products .block-title h2,
+    .block.widget.block-new-products .block-title h3 {
+      font-size: 26px;
+    }
+  
+    .products-slider-prev,
+    .products-slider-next {
+      width: 34px;
+      height: 34px;
+      top: 32%;
+    }
+  
+    .products-slider-prev {
+      left: -8px;
+    }
+  
+    .products-slider-next {
+      right: -8px;
+    }
+  }

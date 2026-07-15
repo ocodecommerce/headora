@@ -777,44 +777,46 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
       return updatedFilters
     })
   }, [])
+    // Handle price range change - FIXED: Proper state updates
+    const handlePriceRangeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const value = Number(event.target.value)
+      setPriceRange((prev) => {
+        const newRange: [number, number] = [...prev] as [number, number];
+      
+        if (index === 0) {
+          if (value < newRange[1]) {
+          newRange[0] = Math.min(value, newRange[1]);}
+        } else {
+          if (value > newRange[0]) {
+          newRange[1] = Math.max(value, newRange[0]);
+          }
+        }
+      
+        return newRange;
+      });
+        
 
-  // Handle price range change - FIXED: Proper state updates
-  const handlePriceRangeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const value = Number(event.target.value)
-    
-    setPriceRange((prev) => {
-      const newRange: [number, number] = [...prev] as [number, number]
-      newRange[index] = value
       
-      if (index === 0 && newRange[0] > newRange[1]) {
-        newRange[0] = newRange[1]
-      } else if (index === 1 && newRange[1] < newRange[0]) {
-        newRange[1] = newRange[0]
-      }
+      // Update filters with new price range
+      setFilters((prevFilters) => {
+        const newFilters = { ...prevFilters }
+        const newRange: [number, number] = index === 0 
+          ? [value, Math.max(value, priceRange[1])]
+          : [Math.min(priceRange[0], value), value]
+        
+        newFilters.price = newRange
+        return newFilters
+      })
       
-      return newRange
-    })
-    
-    // Update filters with new price range
-    setFilters((prevFilters) => {
-      const newFilters = { ...prevFilters }
-      const newRange: [number, number] = index === 0 
-        ? [value, Math.max(value, priceRange[1])]
-        : [Math.min(priceRange[0], value), value]
-      
-      newFilters.price = newRange
-      return newFilters
-    })
-    
-    // Update active filters
-    setActiveFilters((prev) => {
-      const otherFilters = prev.filter((filter) => filter.label !== "Price")
-      const newRange: [number, number] = index === 0 
-        ? [value, Math.max(value, priceRange[1])]
-        : [Math.min(priceRange[0], value), value]
-      return [...otherFilters, { label: "Price", value: `${newRange[0]}_${newRange[1]}` }]
-    })
-  }, [priceRange])
+      // Update active filters
+      setActiveFilters((prev) => {
+        const otherFilters = prev.filter((filter) => filter.label !== "Price")
+        const newRange: [number, number] = index === 0 
+          ? [value, Math.max(value, priceRange[1])]
+          : [Math.min(priceRange[0], value), value]
+        return [...otherFilters, { label: "Price", value: `${newRange[0]}_${newRange[1]}` }]
+      })
+    }, [priceRange])
 
   // Handle sort option click
   const handleSortOptionClick = useCallback((value: string) => {
@@ -1019,31 +1021,48 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                       </h5>
 
                       {openGroups[aggregation.label] && (
-                        aggregation.label.toLowerCase() === "price" ? (
-                          <div className={styles.priceSliderContainer}>
-                            <div className={styles.priceRangeLabels}>
+                        aggregation.label.toLowerCase() === "price" ? ( <div className={styles.priceSliderContainer}>
+
+                          <div className={styles.priceRangeLabels}>
                               <span>{Currency.USD}{priceRange[0]}</span>
                               <span>{Currency.USD}{priceRange[1]}</span>
                             </div>
-                            <div className={styles.sliderWrapper}>
-                              <input
-                                type="range"
-                                min={lowestPrice}
-                                max={highestPrice}
-                                value={priceRange[0]}
-                                onChange={(e) => handlePriceRangeChange(e, 0)}
-                                className={styles.priceSlider}
-                              />
-                              <input
-                                type="range"
-                                min={lowestPrice}
-                                max={highestPrice}
-                                value={priceRange[1]}
-                                onChange={(e) => handlePriceRangeChange(e, 1)}
-                                className={styles.priceSlider}
-                              />
-                            </div>
-                          </div>
+                              <div
+                                className={styles.sliderWrapper}
+                                style={{
+                                  background: `linear-gradient(
+                                    to right,
+                                    #ddd 0%,
+                                    #ddd ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                                    #1979c3 ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                                    #1979c3 ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                                    #ddd ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                                    #ddd 100%
+                                  )`,
+                                }}
+                              >
+                                <input
+                                  type="range"
+                                  min={lowestPrice}
+                                  max={highestPrice}
+                                  step={Math.max(1, Math.round((highestPrice - lowestPrice) / 10))}
+                                  value={priceRange[0]}
+                                  onChange={(e) => handlePriceRangeChange(e, 0)}
+                                  className={styles.priceSlider}
+                                />
+
+                                <input
+                                  type="range"
+                                  min={lowestPrice}
+                                  max={highestPrice}
+                                  step={Math.max(1, Math.round((highestPrice - lowestPrice) / 10))}
+                                  value={priceRange[1]}
+                                  onChange={(e) => handlePriceRangeChange(e, 1)}
+                                  className={styles.priceSlider}
+                                />
+                              </div>
+                              </div>
+  
                         ) : (
                           <div className={styles.filterOptionsGrid}>
                             {aggregation.options.map((option: any) => (

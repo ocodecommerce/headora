@@ -458,27 +458,30 @@ const Filter: React.FC<FilterProps> = ({
                         </div>
 
                         <div className={styles.sliderWrapper}>
-                          {priceRange && (
-                            <>
-                              <input
-                                type="range"
-                                min={lowestPrice}
-                                max={highestPrice}
-                                value={priceRange[0]}
-                                onChange={(e) => handlePriceRangeChange(e, 0)}
-                                className={styles.priceSlider}
-                              />
-                              <input
-                                type="range"
-                                min={lowestPrice}
-                                max={highestPrice}
-                                value={priceRange[1]}
-                                onChange={(e) => handlePriceRangeChange(e, 1)}
-                                className={styles.priceSlider}
-                              />
-                            </>
-                          )}
-                        </div>
+                                {priceRange && (
+                                  <>
+                                    <input
+                                      type="range"
+                                      min={lowestPrice}
+                                      max={highestPrice}
+                                      step={(highestPrice - lowestPrice) / 10}
+                                      value={priceRange[0]}
+                                      onChange={(e) => handlePriceRangeChange(e, 0)}
+                                      className={styles.priceSlider}
+                                    />
+
+                                    <input
+                                      type="range"
+                                      min={lowestPrice}
+                                      max={highestPrice}
+                                      step={(highestPrice - lowestPrice) / 10}
+                                      value={priceRange[1]}
+                                      onChange={(e) => handlePriceRangeChange(e, 1)}
+                                      className={styles.priceSlider}
+                                    />
+                                  </>
+                                )}
+                              </div>
                       </div>
                     ) : (
                       <div className={styles.filterOptionsGrid}>

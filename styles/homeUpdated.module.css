@@ -1,0 +1,477 @@
+.page {
+  --blue: #3d3fe0;
+  --blue-dark: #2f31c2;
+  --navy: #1c1f2b;
+  --text-dark: #1a1a1a;
+  --text-muted: #5c5c5c;
+  --border-grey: #e2e2e2;
+  --hero-bg: #efefee;
+
+  width: 100%;
+  overflow-x: hidden;
+  /* font-family: "Poppins", sans-serif; */
+  color: var(--text-dark);
+}
+
+.page h1,
+.page h2,
+.page h3,
+.page h4 {
+  font-family: "Playfair Display", serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+ margin-top: 81px;
+  position: relative;
+  padding-bottom: 56px;
+}
+
+.heroInner {
+  background: var(--hero-bg);
+  max-width: 1440px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-height: 560px;
+}
+
+.heroText {
+  padding: 64px 32px 64px 40px;
+  max-width: 480px;
+}
+
+.heroHeading {
+  font-size: 40px;
+  line-height: 1.2;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+}
+
+.heroCopy {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  max-width: 420px;
+}
+
+.heroImageWrap {
+  height: 560px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.heroDots {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c7c7c7;
+  display: inline-block;
+}
+
+.dotActive {
+  background: #171717;
+}
+
+/* Buttons -------------------------------------------------- */
+.btnPrimary {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 15px 36px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 24px;
+  transition: background 0.2s ease;
+}
+
+.btnPrimary:hover {
+  background: var(--blue-dark);
+}
+
+.btnPrimarySmall {
+  width: 100%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 11px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 20px;
+  transition: background 0.2s ease;
+}
+
+.btnPrimarySmall:hover {
+  background: var(--blue-dark);
+}
+
+.btnOutline {
+  background: transparent;
+  color: var(--blue);
+  border: 1.5px solid var(--blue);
+  padding: 13px 28px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 24px;
+  transition: all 0.2s ease;
+}
+
+.btnOutline:hover {
+  background: var(--blue);
+  color: #fff;
+}
+
+.btnOutlineLight {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid #fff;
+  padding: 13px 30px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: 24px;
+  transition: all 0.2s ease;
+}
+
+.btnOutlineLight:hover {
+  background: #fff;
+  color: var(--navy);
+}
+
+/* =========================================================
+   CATEGORY GRID
+   ========================================================= */
+.categoryGrid {
+  max-width: 1320px;
+  margin: -16px auto 0;
+  /* padding: 0 40px; */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.categoryCard {
+  position: relative;
+  display: block;
+  height: 300px;
+  overflow: hidden;
+  background: #ddd;
+}
+
+.categoryCard img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.categoryCard:hover img {
+  transform: scale(1.05);
+}
+
+.categoryCaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 40%;
+  background: rgba(15, 15, 20, 0.82);
+  color: #fff;
+  padding: 18px 24px 22px;
+  border-bottom: 5px solid var(--blue);
+}
+
+.categoryCaption h3 {
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.categoryCaption p {
+  font-size: 12.5px;
+  color: #d8d8d8;
+  font-family: "Poppins", sans-serif;
+}
+
+/* =========================================================
+   SIGNATURE HEELS / STATEMENT SECTION
+   ========================================================= */
+.statement {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 110px 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 40px;
+}
+
+.statementText h2 {
+  font-size: 34px;
+  line-height: 1.25;
+  margin-bottom: 28px;
+  color: var(--text-dark);
+}
+
+.statementText h4 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--text-dark);
+}
+
+.statementText p {
+  font-size: 13.5px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: 34px;
+  max-width: 420px;
+}
+
+.statementButtons {
+  display: flex;
+  gap: 16px;
+}
+
+.statementImageWrap {
+  display: flex;
+  justify-content: center;
+}
+
+.statementImageWrap img {
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* =========================================================
+   VACATION BANNER
+   ========================================================= */
+.vacation {
+  max-width: 1320px;
+  margin: 0 auto 0;
+  padding: 0 40px 100px;
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  min-height: 380px;
+}
+
+.vacationImageWrap {
+  overflow: hidden;
+}
+
+.vacationImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vacationPanel {
+  background: var(--navy);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 56px;
+}
+
+.vacationPanel h2 {
+  font-size: 30px;
+  line-height: 1.28;
+  margin-bottom: 16px;
+}
+
+.vacationPanel p {
+  font-size: 13px;
+  color: #c7c9d4;
+  margin-bottom: 28px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* =========================================================
+   TOP SELLERS
+   ========================================================= */
+.topSellers {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 40px 60px;
+}
+
+.topSellersHeading {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 48px;
+  color: var(--text-dark);
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 24px;
+}
+
+.productCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.productImageWrap {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #f2f2f2;
+  margin-bottom: 16px;
+}
+
+.productImageWrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.productCard:hover .productImageWrap img {
+  transform: scale(1.04);
+}
+
+.productName {
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+}
+
+.productPrice {
+  font-size: 13.5px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.scrollTrack {
+  margin-top: 40px;
+  height: 3px;
+  background: #e6e6e6;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.scrollThumb {
+  width: 26%;
+  height: 100%;
+  background: #9a9a9a;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 1100px) {
+  .productGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .categoryGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 860px) {
+  .heroInner {
+    grid-template-columns: 1fr;
+    min-height: unset;
+  }
+
+  .heroText {
+    padding: 48px 24px 32px;
+    max-width: 100%;
+    text-align: left;
+  }
+
+  .heroImageWrap {
+    height: 380px;
+  }
+
+  .categoryGrid {
+    grid-template-columns: 1fr;
+    padding: 0 24px;
+  }
+
+  .statement {
+    grid-template-columns: 1fr;
+    padding: 64px 24px;
+    text-align: left;
+  }
+
+  .statementImageWrap {
+    order: -1;
+  }
+
+  .vacation {
+    grid-template-columns: 1fr;
+    padding: 0 24px 64px;
+  }
+
+  .vacationImageWrap {
+    height: 300px;
+  }
+
+  .vacationPanel {
+    padding: 40px 28px;
+  }
+
+  .productGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .topSellers {
+    padding: 0 24px 48px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroHeading {
+    font-size: 30px;
+  }
+
+  .productGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .statementButtons {
+    flex-direction: column;
+  }
+}

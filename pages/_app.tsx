@@ -30,13 +30,16 @@ function App({
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setShowRibbon(window.scrollY === 0);
+    const handleScroll = () => {
+      setShowRibbon(window.scrollY === 0); // Hide Ribbon if the user has scrolled
+    };
+
     window.addEventListener("scroll", handleScroll);
-    
-    const timer = setTimeout(() => setShowRibbon(true), 800);
-    
+    const timer = setTimeout(() => {
+      setShowRibbon(true);
+    }, 1000);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll); // Cleanup on unmount
       clearTimeout(timer);
     };
   }, []);
