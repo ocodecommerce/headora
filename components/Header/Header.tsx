@@ -377,16 +377,11 @@ const refinedCategories = (categories || []).map((category: any) => {
                       {category.name.toLowerCase() == "brands" ? (<h3 className={styles.MegaMenuBrandsHeading}>Brands</h3>) : (null)}
                       <div className={styles.megaMenuContainer}>
 
-                        <div
-                          className={`${styles.categoryGrid} ${category.children.length <= 5
-                              ? styles.fewCategories
-                              : ""
-                            }`}
+                      <div
+                          className={styles.categoryGrid}
                           style={{
-                            gap:
-                              category.name.toLowerCase() == "brands"
-                                ? "10px"
-                                : undefined,
+                            gridTemplateColumns: `repeat(${Math.min(category.children.length, 4)}, 1fr)`,
+                            gap: category.name.toLowerCase() === "brands" ? "10px" : undefined,
                           }}
                         >
                           {category.children.map((subCategory: any) => (
@@ -439,13 +434,13 @@ const refinedCategories = (categories || []).map((category: any) => {
                             </div>
                           ))}
                         </div>
-                        {/* <div className={styles.bannerColumn}>
+                        <div className={styles.bannerColumn}>
                           <img
                             src={category.image || "/Images/Affirm banner.png"}
                             alt={`${category.name} Banner`}
                             className={styles.bannerImage}
                           />
-                        </div> */}
+                        </div>
                       </div>
                     </div>
                   ) : category.children

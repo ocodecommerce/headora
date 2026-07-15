@@ -305,8 +305,8 @@ text-decoration: underline;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 .bannerImage{
-  height: 300px;
-  width: 250px;
+  height: 200px;
+  width: 200px;
   object-fit: cover;
 }
 
@@ -425,9 +425,10 @@ text-decoration: underline;
     text-decoration: none;
   }
   .categoryGrid {
-    display: flex;
+    display: grid;
     /* grid-template-columns: repeat(4, 1fr); */
     gap: 20px;
+    flex-wrap: wrap;
     /* flex: 1 1; */
     justify-content: space-around;
     width: 100%;
@@ -446,9 +447,9 @@ text-decoration: underline;
   }
   .megaMenuContainer{
     display: flex;
-    gap: 10px;
+    gap: 40px;
     align-items: flex-start;
-    width: 1000px;
+    min-width: 1000px;
     max-width: 1440px;
   }
   .MegaMenuBrandsHeading{
