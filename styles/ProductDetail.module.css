@@ -339,7 +339,7 @@
   /* margin-top: 15px; */
   width: 100%;
   @media screen and (max-width: 1000px) {
-    display: none;
+    /* display: none; */
     
   }
 }
@@ -377,7 +377,7 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-text-transform: capitalize;
+  text-transform: capitalize;
   padding: 10px 16px;
   border: none;
   border-radius: 4px;
@@ -390,7 +390,7 @@ text-transform: capitalize;
   letter-spacing: 0.02em;
 
   @media screen and (max-width:650px) {
-     font-size: 12px;
+     font-size: 16px;
   }
   
 }
@@ -414,7 +414,8 @@ text-transform: capitalize;
   letter-spacing: 0.02em;
 
   @media screen and (max-width:650px) {
-     font-size: 12px;
+     font-size: 16px;
+     padding: 10px  0px;
   }
   
 }
@@ -795,7 +796,7 @@ font-size: 46px;
 
 .price span {
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 200;
   /* color: red; */
 }
 
@@ -1145,8 +1146,8 @@ font-size: 46px;
 
   @media screen and (max-width:1000px) {
     margin-top: 0px;
-    gap: 10px;
-    flex-direction: unset;
+    gap: 20px;
+    /* flex-direction: unset; */
     align-items: baseline;
     padding-top: 18px;
   }
@@ -1170,6 +1171,9 @@ font-size: 46px;
   gap: 5px;
   border-radius: 1px;
 
+  @media screen and (max-width:1000px) {
+    margin-bottom: 12px;
+  }
 
 }
 
@@ -2598,7 +2602,7 @@ border-radius: 6px;
 
   @media screen and (max-width: 650px) {
     width: 100%;
-    border-bottom: 1px solid #e5e5e5;
+    /* border-bottom: 1px solid #e5e5e5; */
   }
 
   @media screen and (min-width: 650px) and (max-width: 1000px) {
@@ -3065,9 +3069,9 @@ margin-top: 50px;
   }
 
   .ConfigurableSelectorWrapper {
-    border-bottom: none;
+    /* border-bottom: none; */
     gap: 10px;
-    padding-bottom: 0;
+    /* padding-bottom: 0; */
   }
 
 
@@ -3164,9 +3168,9 @@ margin-top: 50px;
   }
 
   .ConfigurableSelectorWrapper {
-    border-bottom: none;
-    gap: 10px;
-    padding-bottom: 0;
+    /* border-bottom: none; */
+    gap: 20px;
+    /* padding-bottom: 0; */
     padding-top: 18px;
   }
 
@@ -3199,7 +3203,7 @@ margin-top: 50px;
   .sizeSelector label,
   .colorSelector label,
   .quantitySelector label {
-    font-size: 12px;
+    font-size: 16px;
   }
 
   .wishlist_container img {
@@ -3262,7 +3266,7 @@ margin-top: 50px;
 
   .detailContainer {
     width: 100%;
-    padding: 0 10px;
+    padding: 0 20px;
 
   }
 
@@ -3322,7 +3326,7 @@ margin-top: 50px;
   }
 
   .ConfigurableWrapper label {
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .productName {
@@ -3339,7 +3343,7 @@ margin-top: 50px;
 
   .priceTitleWrapper {
     flex-direction: column;
-    gap: unset;
+    gap: 10px;
   }
 
   .quantityActionWrapper {
@@ -3352,8 +3356,8 @@ margin-top: 50px;
   }
 
   .quantityInput {
-    width: 35px;
-    height: 30px;
+    width: 62px;
+    height: 38px;
     font-size: 12px;
   }
 
@@ -3361,8 +3365,8 @@ margin-top: 50px;
   .incrementButton {
     padding: 10px 10px;
     font-size: 10px;
-    height: 30px;
-    width: 30px;
+    height: 35px;
+    width: 35px;
   }
 
   /* =================Related Product================  */
@@ -3507,4 +3511,53 @@ margin-top: 50px;
 @keyframes slideDown {
   from { transform: translate(-50%, -50px); opacity: 0; }
   to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+
+
+/* mobileAccordion */
+/* Desktop */
+.mobileAccordion {
+  display: none;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .desktopData {
+    display: none;
+  }
+
+  .mobileAccordion {
+    display: block;
+  }
+
+  .accordionItem {
+    border-bottom: 1px solid #e5e5e5;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .accordionHeader {
+    width: 100%;
+    padding: 16px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 200;
+    cursor: pointer;
+  }
+.accordionHeader span{
+  text-transform: capitalize;
+}
+  .accordionContent {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+  }
+
+  .accordionContent.open {
+    max-height: 2000px; /* large enough for content */
+  }
 }

@@ -342,9 +342,9 @@ const refinedCategories = (categories || []).map((category: any) => {
               <li
                 key={category.uid}
                 className={styles.navItem}
-                // style={
-                //   category.children.length < 5 ? { position: "relative" } : { position: "unset" }
-                // }
+                style={
+                  category.children.length < 5 ? { position: "relative" } : { position: "unset" }
+                }
               >
                 <Link href={`/${category.url_path?.replace(/^\/+/, "")}`}>{category.name}</Link>
 
@@ -369,10 +369,12 @@ const refinedCategories = (categories || []).map((category: any) => {
 
                   {/* {category.children?.some((subCategory: any) => subCategory.product_count ? ( */}
 
-                  {category.children.length > 5 || category.children.some((child: any) => child.children 
-                  // && child.children.length > 0
-                ) ? (
+                 
+                  {category.children.length > 5 || category.children.some((child: any) => child.children && child.children.length > 0) ? (
 
+// {category.children.length > 5 || category.children.some((child: any) => child.children 
+
+// ) ? (
                     <div className={styles.dropdown}>
                       {category.name.toLowerCase() == "brands" ? (<h3 className={styles.MegaMenuBrandsHeading}>Brands</h3>) : (null)}
                       <div className={styles.megaMenuContainer}>
@@ -448,7 +450,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                       // ------------------start -------------------
 
                       <div
-                        className={styles.dropdown}
+                      className={`${styles.dropdown} ${styles.dropdownShort}`}
                         style={{ minWidth: "140px", width: 'unset', 
                           padding: category.children?.length === 0 ? "0" : "10px 10px", 
                           borderBottom: category.children?.length === 0 ? 'unset' :'', 
@@ -456,7 +458,7 @@ const refinedCategories = (categories || []).map((category: any) => {
                           borderTop:category.children?.length === 0 ? 'unset' :''
                            }}
                       >
-                        <div className={styles.megaMenuContainer}>
+                        <div className={styles.megaMenuContainerShort}>
                           <div
                             className={`${styles.categoryGrid} ${category.children.length >= 5
                                 ? styles.fewCategories

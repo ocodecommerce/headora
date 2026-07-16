@@ -228,7 +228,7 @@ function GallerySection({ currentVariantData,Data,isMobile }: any) {
         <Swiper
           zoom={{ maxRatio: 3 }}
           spaceBetween={0}
-          navigation={isMobile}
+          navigation={false}
           thumbs={{
             swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null,
           }}

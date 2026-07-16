@@ -116,10 +116,14 @@ text-decoration: underline;
     cursor: pointer;
     display: flex;
     align-items: center;
+    
     justify-content: center;
     text-transform: capitalize;
     letter-spacing: 0.02em;
     
+  }
+  .navItemShort{
+    position: relative;
   }
   .navItem > a{
   height: 5rem;
@@ -138,7 +142,7 @@ text-decoration: underline;
     display: none; /* Hidden by default */
     position: absolute;
     top: 70px; /* Position the dropdown below the parent */
-    left: 0; /* Align the dropdown to the left edge */
+    left: 0; 
     width: 100vw; /* Make the dropdown span the entire viewport width */
     background-color: white;
     border-top: 1px solid #ddd; /* Optional: Border for better separation */
@@ -153,6 +157,18 @@ text-decoration: underline;
     scrollbar-width: none;
   
   }
+
+
+  .dropdownShort {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 75px !important;
+    /* left: unset !important; */
+    width: unset !important; 
+
+  }
+
+
   .navItem:hover .dropdown {
     display: flex;
     flex-wrap: wrap;
@@ -432,6 +448,8 @@ text-decoration: underline;
     /* flex: 1 1; */
     justify-content: space-around;
     width: 100%;
+    min-width: 140px;
+    justify-content: start;
   }
   .categoryGrid span a:hover {
 text-decoration: underline;
@@ -452,6 +470,12 @@ text-decoration: underline;
     min-width: 1000px;
     max-width: 1440px;
   }
+
+  .megaMenuContainerShort{
+    min-width: unset !important;
+    max-width: unset !important;
+  }
+
   .MegaMenuBrandsHeading{
     font-size: 18px;
     text-align: center;
