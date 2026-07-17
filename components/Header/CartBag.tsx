@@ -349,7 +349,7 @@ function CartBag({ toggleCartBag, updateCartCount }: CartBagProps) {
             alt="Close Cart"
             className="cursor-pointer"
           />
-          <h3>My Cart</h3>
+          <h3>Cart</h3>
           <span className={styles.icon}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -489,12 +489,12 @@ function CartBag({ toggleCartBag, updateCartCount }: CartBagProps) {
 {!isLoading && cartItems.length === 0 && (
   <div className={styles.cart_empty}>
     <div className={styles.cart_empty_inner}>
-      <ShoppingCart size={160} strokeWidth={1.5} color="#999" />
-      <h3>Your Cart is Empty</h3>
-      <p>Add some items to your cart to see them here.</p>
-      <button onClick={handleShopRedirect} className={styles.shop_button}>
+      {/* <ShoppingCart size={160} strokeWidth={1.5} color="#999" /> */}
+      <h3>There are no items in your cart.</h3>
+      {/* <p>Add some items to your cart to see them here.</p> */}
+      {/* <button onClick={handleShopRedirect} className={styles.shop_button}>
         Start Shopping
-      </button>
+      </button> */}
     </div>
   </div>
 )}

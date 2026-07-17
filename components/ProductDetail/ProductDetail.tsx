@@ -730,6 +730,7 @@ const handleAddToCompare = () => {
   };
 
   const handleAddToCart = async (redirect: any) => {
+    console.log("CLICK")
     let errorCount = 0;
     if (Data.__typename != "SimpleProduct") {
       Object.keys(selectedOptions).forEach(function (key) {
@@ -748,7 +749,7 @@ const handleAddToCompare = () => {
       if (!formKey) {
         formKey = await fetchFormKey();
         if (!formKey) {
-          return; // Stop execution if form key fetching fails
+          // return; // Stop execution if form key fetching fails
         }
       }
       setAddToLoading(true);
@@ -1405,34 +1406,41 @@ const handleAddToCompare = () => {
               <div className={styles.border}></div>
 
               {/* Action Buttons */}
-              <div className={styles.actionButtonsWrapper}>
-                {loadingStockStatus ? (
-                  <div className={styles.actionButtons}>
-                    <span className={styles.loadingButton}>
-                      Please wait...
-                    </span>
-                  </div>
-                ) : stockStatus === "OUT_OF_STOCK" ? (
-                  <div className={styles.actionButtons}>
-                    <span className={styles.outOfStockText}>Out of Stock</span>
-                  </div>
-                ) : addToLoading ? (
-                  <div className={styles.actionButtons}>
-                    <span className={styles.loadingButton}>
-                      Please wait...
-                    </span>
-                  </div>
-                ) : (
-                  <div className={styles.inlineActions}>
-                    <button
-                      className={styles.shopNow}
-                      onClick={() => handleAddToCart(false)}
-                    >
-                      Add To Cart
-                    </button>
-                  </div>
-                )}
-              </div>
+                    <div className={styles.actionButtonsWrapper}>
+                      {loadingStockStatus ? (
+                        <div className={styles.actionButtons}>
+                          <span className={styles.loadingButton}>Please wait...</span>
+                        </div>
+                      ) : stockStatus === "OUT_OF_STOCK" ? (
+                        <div className={styles.actionButtons}>
+                          <span className={styles.outOfStockText}>Out of Stock</span>
+                        </div>
+                      ) : (
+                        <div className={styles.inlineActions}>
+                          <button
+                            className={`${styles.shopNow} ${
+                              addToLoading ? styles.loading : ""
+                            }`}
+                            onClick={() => handleAddToCart(false)}
+                            disabled={
+                              addToLoading ||
+                              (SelectedOptionsID &&
+                                Object.keys(SelectedOptionsID).length !==
+                                  Data?.configurable_options?.length)
+                            }
+                          >
+                            {addToLoading ? (
+                              <>
+                                <span className={styles.spinner}></span>
+                                Adding...
+                              </>
+                            ) : (
+                              "Add To Cart"
+                            )}
+                          </button>
+                        </div>
+                      )}
+                    </div>
 
             <div  className={styles.AdditionalButtonsBox}>
   

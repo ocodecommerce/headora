@@ -24,6 +24,9 @@
   @media (max-width: 1000px) {
     padding: 40px 20px 0 20px;
   }
+  @media (max-width: 370px) {
+    padding: 40px 10px 0 10px;
+  }
 }
 
 .column {
@@ -35,10 +38,12 @@
 .expand {
   grid-column: span 3 / span 3;
 }
-
+.expandDesktop{
+  grid-column: span 3 / span 3;
+}
 .column span {
 
-  color: rgb(17 24 39 / 1);
+  /* color: rgb(17 24 39 / 1); */
   font-weight: 600;
 }
 .footerDescription{
@@ -66,6 +71,13 @@
   display: flex;
   min-height:36px ;
   align-items: center;
+  @media screen and (max-width:1000px) {
+    display: flex;
+    min-height: 36px;
+    align-items: center;
+    gap: 20px;
+    flex-direction: column;
+  }
 }
 
 .subscribeInput {
@@ -76,6 +88,13 @@
   border-radius: 5px 0 0 5px;
   padding: 5px;
   font-family: var(--Muli);
+  width: 100%;
+  @media screen and (max-width:1000px) {
+ padding: 12px;
+ border-right: 2px solid rgb(17 24 39 / 1);
+ border-radius: 6px;
+  }
+
 }
 
 .subscribeButton {
@@ -89,6 +108,21 @@
   display: flex;
   text-align: center;
   align-items: center;
+  @media screen and (max-width:1000px) {
+    padding: 12px 50px;
+    background-color: white;
+    border: 2px solid blue;
+    text-transform: uppercase;
+    border-radius: 50px;
+    cursor: pointer;
+    border-left: 2px solid blue;
+    height: 100%;
+    display: flex;
+    color: blue;
+    text-align: center;
+    align-items: center;
+    
+  }
 }
 
 
@@ -101,12 +135,19 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
+  @media screen and (max-width:1000px) {
+    flex-direction: column-reverse;
+    text-align: center;
+    gap: 1rem;
+    margin: 10px;
+    
+  }
 }
 
 
 .copyright {
   color: #666;
-  font-size: 0.875rem;
+  /* font-size: 0.875rem; */
 }
 
 .legalLinks {
@@ -124,25 +165,27 @@
 }
 .footerLogo{
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 200;
+  @media screen and (max-width:1000px) {
+    font-size: 24px;
+    font-weight: 200;
+margin-top: 30px;    
+  }
 }
 @media (max-width: 1000px) {
 
 
-  .bottomSection {
-    flex-direction: column;
-    text-align: center;
-    gap: 1rem;
-  }
   .column {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    grid-column: span 4 / span 4;
+    grid-column: span 6 / span 6;
   }
   .expand {
     grid-column: span 12 / span 12;
+    padding: 10px 30px;
   }
+
   .legalLinks {
     margin-top: 1rem;
   }

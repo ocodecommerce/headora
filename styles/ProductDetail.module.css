@@ -1,3 +1,32 @@
+.shopNow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 170px;
+  transition: all 0.25s ease;
+}
+
+.shopNow.loading {
+  transform: scale(0.96);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 
 .starHalf {
   background: linear-gradient(90deg, #f5a623 50%, #d6d6d6 50%);
@@ -1379,7 +1408,7 @@ display: flex;
   height: 44px;
   padding: 0 16px;
 
-  background-color: rgb(41 84 255); /* strong CTA yellow */
+  background-color: rgb(48, 89, 252); /* strong CTA yellow */
   color: white;
 
   border: none;
@@ -1403,14 +1432,15 @@ border-radius: 50px;
 }
 
 .shopNow:hover {
-  background-color: unset;
-  background-color: rgb(0, 51, 255);
+  /* background-color: #0970be67; */
+  /* background-color: unset; */
+  /* background-color: rgb(0, 51, 255); */
   transform: translateY(-1px);
 }
 
 /* Active – click feedback */
 .shopNow:active {
-  background-color: rgb(0, 51, 255);
+  background-color: rgb(0, 38, 192);
   transform: translateY(0);
 }
 
@@ -1422,13 +1452,13 @@ border-radius: 50px;
 
 /* Disabled (out of stock etc.) */
 .shopNow:disabled {
-  background-color: #0970be67;
-  color: #777;
+  background-color: #809eb567;
+  /* color: #777; */
   cursor: not-allowed;
 }
 
 .shopNow:hover {
-  background-color:  rgb(0, 51, 255);
+  /* background-color:  rgb(0, 51, 255); */
   color: white;
 
 }

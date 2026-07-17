@@ -98,11 +98,24 @@ const Filter: React.FC<FilterProps> = ({
 
   // Open first group by default
   useEffect(() => {
-    if (categoriesData?.products?.aggregations?.length > 0) {
-      const firstGroupLabel = categoriesData.products.aggregations[0].label
-      setOpenGroups({ [firstGroupLabel]: true })
-    }
-  }, [categoriesData])
+    if (!categoriesData?.products?.aggregations) return;
+  
+    const initialState: Record<string, boolean> = {};
+  
+    // categoriesData.products.aggregations
+    //   .filter(
+    //     (aggregation: any) =>
+    //       aggregation.label !== "Category" &&
+    //       aggregation.label !== "Brand"
+    //   )
+    //   .reverse()
+    //   .slice(0, 3)
+    //   .forEach((aggregation: any) => {
+    //     initialState[aggregation.label] = true;
+    //   });
+  
+    setOpenGroups(initialState);
+  }, [categoriesData]);
 
   const toggleGroup = useCallback((groupLabel: string) => {
     setOpenGroups((prev) => {
@@ -388,7 +401,7 @@ const Filter: React.FC<FilterProps> = ({
       >
         <div className={styles.filterModal} style={{ zIndex: "unset" }}>
           <div className={styles.filterHeader}>
-            <h4>Filter By</h4>
+            <p>Filters</p>
           </div>
 
           <div className={styles.filterContent}>
@@ -427,7 +440,7 @@ const Filter: React.FC<FilterProps> = ({
             {categoriesData?.products?.aggregations
               ?.filter((aggregation: any) => 
                 aggregation.label !== "Category" && aggregation.label !== "Brand"
-              )
+              ).reverse()
               .map((aggregation: any) => (
                 <div key={aggregation.label} className={styles.filterGroup}>
                   <h5 
@@ -457,7 +470,17 @@ const Filter: React.FC<FilterProps> = ({
                           </span>
                         </div>
 
-                        <div className={styles.sliderWrapper}>
+                        <div className={styles.sliderWrapper}
+                        style={{
+                          background: `linear-gradient(
+                            to right,
+                            #ddd 0%,
+                            #ddd ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                            #1979c3 ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                            #1979c3 ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                            #ddd ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
+                            #ddd 100%
+                          )`,}}>
                                 {priceRange && (
                                   <>
                                     <input

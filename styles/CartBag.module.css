@@ -327,11 +327,11 @@ body.body-no-scroll {
 
 .buy_now {
   padding: 12px;
-  background-color: #ffda46;
+  background-color: blue;
   font-weight: 600;
-  color: #1f2937;
+  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 50px;
   font-size: 1rem;
   cursor: pointer;
   text-align: center;
@@ -550,7 +550,7 @@ body.body-no-scroll {
     align-items: flex-start;
   }
   .item_thumbnail {
-    width: 80px;
+    width: 100px;
   }
   .cart_empty {
     padding: 30px 15px;

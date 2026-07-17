@@ -71,6 +71,7 @@
     @media screen and (max-width:1000px) {
        padding: 0 10px;
         font-size: 8px;
+        display: flow;
         justify-content: center;
     }
 }

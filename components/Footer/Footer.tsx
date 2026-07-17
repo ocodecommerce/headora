@@ -35,7 +35,7 @@ function Footer() {
         </div>
 
         {/* Follow Us Section */}
-        <div className={`${styles.column} ${styles.expand}`}>
+        <div className={`${styles.column} ${styles.expandDesktop}`}>
           <span>Follow Us!</span>
           <p className={styles.footerDescription}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.</p>
           <div className={styles.socialLinks}>
