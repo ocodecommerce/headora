@@ -1423,7 +1423,7 @@ const handleAddToCompare = () => {
                             onClick={() => handleAddToCart(false)}
                             disabled={
                               addToLoading ||
-                              (SelectedOptionsID &&
+                              Data?.__typename === "ConfigurableProduct" && (SelectedOptionsID &&
                                 Object.keys(SelectedOptionsID).length !==
                                   Data?.configurable_options?.length)
                             }
