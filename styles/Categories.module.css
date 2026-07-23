@@ -1,6 +1,29 @@
 /* =================================================Category Header================================================= */
 
+.breadcrumbList {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
+.breadcrumbList li {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumbList li:not(:last-child)::after {
+  content: "/";
+  margin: 0 8px;
+  color: #999;
+}
+
+.ProductDisplayName {
+  font-size: 14px;
+  color: rgb(16 24 39);
+}
 /* .cartegoryHeaderContainer {
 
   margin-top: 10px;
@@ -1392,10 +1415,11 @@
 }
 
 
-.content h3 {
-  font-size: 1.8rem;
+.content h2 {
+  /* font-size: 1.8rem; */
   font-weight: 600;
   color: #333;
+  margin-top: 15px;
   margin-bottom: 15px;
   font-family: var(--SourceSerifPro);
 }

@@ -19,8 +19,41 @@ function GallerySection({ currentVariantData,Data,isMobile }: any) {
   
 
   const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null);
-  const [currentVariantion, setCurrentVariantion] = useState<any>(null);
-  const [sortedMediaGallery, setSortedMediaGallery] = useState<any[]>([]);
+const initialVariant = {
+  ...currentVariantData,
+  media_gallery: [
+    ...(currentVariantData?.media_gallery || []),
+    ...(Data?.media_gallery || []),
+  ],
+};
+
+const [currentVariantion, setCurrentVariantion] = useState(initialVariant);
+const [sortedMediaGallery, setSortedMediaGallery] = useState(() => {
+  if (!initialVariant?.media_gallery?.length || !initialVariant?.image?.url) {
+    return initialVariant?.media_gallery || [];
+  }
+
+  const originalUrl = initialVariant.image.url.includes("cache")
+    ? initialVariant.image.url.replace(/\/cache\/.*?\//, "/")
+    : initialVariant.image.url;
+
+  const reordered = [...initialVariant.media_gallery];
+
+  const index = reordered.findIndex((img: any) => {
+    const imgUrl = img.url.includes("cache")
+      ? img.url.replace(/\/cache\/.*?\//, "/")
+      : img.url;
+
+    return imgUrl === originalUrl;
+  });
+
+  if (index > -1) {
+    const [match] = reordered.splice(index, 1);
+    reordered.unshift(match);
+  }
+
+  return reordered;
+});
 
 
 

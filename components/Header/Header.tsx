@@ -437,7 +437,8 @@ const refinedCategories = (categories || []).map((category: any) => {
                           ))}
                         </div>
                         <div className={styles.bannerColumn}>
-                          <img
+                          <Image
+                             height={20} width={23}
                             src={category.image || "/Images/Affirm banner.png"}
                             alt={`${category.name} Banner`}
                             className={styles.bannerImage}

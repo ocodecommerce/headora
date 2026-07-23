@@ -931,7 +931,7 @@ const handleAddToCompare = () => {
           />
         )}
 
-{isMounted && (isInCompare() || loading === null )&& (
+      {isMounted && (isInCompare() || loading === null )&& (
           <div 
             className={styles.compareNotification}
             dangerouslySetInnerHTML={{ __html: `You added product <strong>${currentVariant?.variant_name || Data?.name}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.` }}
@@ -973,74 +973,62 @@ const handleAddToCompare = () => {
       </nav> */}
 
 
-<div className={styles.cartegoryHeadeBreadcrumbs}>
-          {/* Render Home link if no breadcrumbs are available */}
-              {breadcrumbs.length === 0 && (
-            <>
-              <Link href="/" title="Home" style={{}}>
-                Home
-              </Link>
-              {/* <span>/</span>
-              <Link
-                href={`${Data?.categories?.[0]?.name === "brands" && Data?.categories?.[0]?.url_key
-                    ? Data?.categories?.[0]?.url_key
-                    : Data?.categories?.[0]?.url_key || ""
-                  }.html`}
-              >
+                  <nav
+                    className={styles.cartegoryHeadeBreadcrumbs}
+                    aria-label="Breadcrumb"
+                  >
+                    <ol className={styles.breadcrumbList}>
+                      {/* Render Home link if no breadcrumbs are available */}
+                      {breadcrumbs.length === 0 && (
+                        <>
+                          <li>
+                            <Link href="/" title="Home">
+                              Home
+                            </Link>
+                          </li>
 
-                {
-                  Data?.categories?.[0]?.name === "brands" &&
-                    Data?.categories?.[0]?.name
-                    ? Data?.categories?.[0]?.name
-                    : Data?.categories?.[0]?.name || ""}
-              </Link> */}
-              
+                          <li aria-current="page" className={styles.ProductDisplayName}>
+                            {displayName}
+                          </li>
+                        </>
+                      )}
 
-              <span>/</span>
-              {/* <span className={styles.ProductDisplayName}>{displayName}</span> */}
-              
-            </>
-            )}
-              {/* Map through breadcrumbs */}
-          {/* {breadcrumbs.map((crumb: any, index: number) => (
-            <React.Fragment key={index}>
-              <Link href={crumb.path == "/" ? crumb.path : crumb.name.replace(".html", "")+'.html'} >{crumb.name.replace(".html", "").length > 60
-                ? crumb.name.replace(".html", "").slice(0, 57) + "..."
-                : crumb.name.replace(".html", "")}
-              </Link>
+                      {/* Render breadcrumbs */}
+                      {breadcrumbs.map((crumb: any, index: number) => {
+                        const path =
+                          index === 0
+                            ? "/"
+                            : "/" +
+                              breadcrumbs
+                                .slice(1, index + 1)
+                                .map((c: any) => toSlug(c?.path || c.name))
+                                .join("/");
 
-              { <span>/</span>}
-            </React.Fragment>
-          ))} */}
-          {breadcrumbs.map((crumb: any, index: number) => {
-            const path =
-              index === 0
-                ? "/"
-                : "/" +
-                  breadcrumbs
-                    .slice(1, index + 1)
-                    .map((c: any) => toSlug(c?.path || c.name))
-                    .join("/");
+                        const label =
+                          crumb.name.replace(".html", "").length > 60
+                            ? crumb.name.replace(".html", "").slice(0, 57) + "..."
+                            : crumb.name.replace(".html", "");
 
-            return (
-              <React.Fragment key={index}>
-                <Link href={path} title={crumb.name.replace(".html", "").length > 60
-                    ? crumb.name.replace(".html", "").slice(0, 57) + "..."
-                    : crumb.name.replace(".html", "")}
-                    >
-                  {crumb.name.replace(".html", "").length > 60
-                    ? crumb.name.replace(".html", "").slice(0, 57) + "..."
-                    : crumb.name.replace(".html", "")}
-                </Link>
-                <span>/</span>
-              </React.Fragment>
-            );
-          })}
+                        return (
+                          <li key={index}>
+                            <Link href={path} title={label}>
+                              {label}
+                            </Link>
+                          </li>
+                        );
+                      })}
 
-
-          {/* Display the last breadcrumb as a styled span */}
-          <span className={styles.ProductDisplayName}>{displayName}</span>
-        </div>
+                      {/* Current page */}
+                      {breadcrumbs.length > 0 && (
+                        <li
+                          aria-current="page"
+                          className={styles.ProductDisplayName}
+                        >
+                          {displayName}
+                        </li>
+                      )}
+                    </ol>
+                  </nav>
 
 
         <div className={styles.productDetail}>

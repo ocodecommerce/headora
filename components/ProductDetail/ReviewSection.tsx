@@ -173,7 +173,9 @@ function ReviewSection({ Data, AllReviews }: any) {
   // Case 2: No reviews yet
   if (reviews.length === 0) {
     return (
-      <div className={styles.ReviewContainer}  id="reviews-section" >
+      <div className={styles.ReviewContainer} 
+      //  id="reviews-section"
+        >
         {/* <div className={styles.ReviewNavbarContainer}>
           <ul className={styles.ReviewNavList}>
             <li className={`${styles.ReviewNavItem} ${styles.ActiveItem}`}>

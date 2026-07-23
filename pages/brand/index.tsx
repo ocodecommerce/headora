@@ -4,7 +4,7 @@ import { useState, useMemo } from "react"
 import Link from "next/link"
 import styles from "../../styles/Brand.module.css"
 import Head from "next/head"
-
+import Image from "next/image";
 const FEATURED_BRAND_NAMES = ["Chanel", "Rolex", "Cartier", "David Yurman", "Bulgari", "Breitling"]
 
 function Brand({ categoriesList }: any) {
@@ -137,7 +137,8 @@ function Brand({ categoriesList }: any) {
           <div key={brand?.uid || index} className={styles.brandCard}>
             <Link href={brand?.url_path+'.html'} className={styles.brandLink}>
               <div className={styles.imageContainer}>
-                <img
+                <Image
+                height={200} width={200}
                   src={brand.imageSrc || "/placeholder.svg"}
                   alt={`${brand.displayName} product`}
                   className={styles.brandImage}

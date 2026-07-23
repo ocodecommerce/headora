@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthenticityPromiseDescription from "./AuthenticityPromiseDescription";
-import ReturnsBlock from "./ReturnsBlock";
+
 import ShortDescription from "./ShortDescription";
 import ProductItemDetails from "./ProductDetails";
 import ReviewSection from '../../components/ProductDetail/ReviewSection';
@@ -69,7 +69,7 @@ function ShortDescriptionNavBars({ currentVariant, configurableOptions, Data, ag
         <li
           className={activeTab == "reviews" ? styles.ShortDescriptionActiveTab : ""}
           key={`reviews`}
-          id={`tab-details`}
+          id={`reviews`}
           onClick={() => handleTabClick("reviews")}
         >
           Reviews

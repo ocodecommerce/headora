@@ -15,7 +15,7 @@ function App({
   pageProps, 
   categoriesList, 
   MegaMenu, 
-  BoutiqueCategoriesList, 
+  // BoutiqueCategoriesList, 
   ribbonResponce 
 }: any) {
 
@@ -67,13 +67,13 @@ function App({
 
         <MobileHeader 
           categoriesList={categoriesList} 
-          BoutiqueCategoriesList={BoutiqueCategoriesList} 
+          // BoutiqueCategoriesList={BoutiqueCategoriesList} 
         />
 
         <Header 
           categoriesList={categoriesList} 
           megamenu={MegaMenu} 
-          BoutiqueCategoriesList={BoutiqueCategoriesList} 
+          // BoutiqueCategoriesList={BoutiqueCategoriesList} 
         />
 
         <Component 
@@ -107,7 +107,7 @@ App.getInitialProps = async (ctx: any) => {
     categoriesList,
     MegaMenu,
     ribbonResponce,
-    BoutiqueCategoriesList
+    // BoutiqueCategoriesList
   };
 };
 

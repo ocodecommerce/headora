@@ -90,7 +90,7 @@ const CategoryProductSchema = ({ products }: any) => {
       "url": `${process.env.baseURLForSchema}/${product.url_key}/`,
       "offers": {
         "@type": "Offer",
-        "url": `${process.env.baseURLForSchema}/${product.url_key}/`,
+        "url": `${process.env.baseURLForSchema}/${product.url_key}.html/`,
         "price": price,
         "priceCurrency": currency,
         "availability": availability,
@@ -506,7 +506,7 @@ const Collection = ({
 
 const breadcrumbsProducts = [
   { name: 'Home', path: '' },
-  { name: 'Watches', path: '/watches' },
+  { name: 'Dresses', path: '/venia-dresses' },
   ...slugs.map((slugPart: any, index) => ({
     name: findCategoryName(slugPart, categories?.data?.categories?.items) || slugPart.replace(/-/g, ' '),
     path: `/${slugs.slice(0, index + 1).join('/')}`,
@@ -570,21 +570,26 @@ useEffect(() => {
   }
 
 
-  const metaDiscription = productData 
-  ? typeof productData.meta_description === "string" && productData.meta_description.trim() !== ""
-    ? productData.meta_description
-    : getMetaDescription(
-        typeof productData.short_description === "string"
-          ? productData.short_description
-          : typeof productData.short_description?.html === "string"
-            ? productData.short_description.html
-            : typeof productData.description === "string"
-              ? productData.description
-              : typeof productData.description?.html === "string"
-                ? productData.description.html
-                : ""
-      )
-  : "";
+const descriptionSource =
+    productData?.short_description?.html?.trim()
+      ? productData.short_description.html
+      : typeof productData?.short_description === "string" &&
+        productData.short_description.trim()
+      ? productData.short_description
+      : productData?.description?.html?.trim()
+      ? productData.description.html
+      : typeof productData?.description === "string" &&
+        productData.description.trim()
+      ? productData.description
+      : "";
+  
+  const metaDiscription =
+    typeof productData?.meta_description === "string" &&
+    productData.meta_description.trim()
+      ? productData.meta_description
+      : getMetaDescription(descriptionSource);
+
+    console.log(metaDiscription,"metaDiscription")
 
   const isCollection = view === "collection";
   const isProduct = view === "product";
@@ -596,8 +601,8 @@ useEffect(() => {
   const schemaImage = isProduct
     ? (
         productData?.__typename === "ConfigurableProduct"
-          ? productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, "/")
-          : productData?.image?.url?.replace(/\/cache\/.*?\//, "/")
+          ?productData?.image?.url?.replace(/\/cache\/.*?\//, "/")  
+          :productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, "/")
       ) || `${process.env.baseURL}media/catalog/product/placeholder/default/coming-soon-sign_3.jpg`
     : null;
   
@@ -766,7 +771,7 @@ useEffect(() => {
   
             <meta
               property="og:url"
-              content={`${process.env.baseURL}/${productData?.url_key}.html`}
+              content={`${process.env.baseURL}${productData?.url_key}.html`}
             />
   
             <meta property="og:site_name" content="Headora" />
@@ -833,6 +838,7 @@ useEffect(() => {
             AllReviews={reviews}
           /> */}
          {/* <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
+
           <CrossSellProducts Data={productData} />
           <UpSellProducts Data={productData} />
           <ReletedProducts Data={productData} />

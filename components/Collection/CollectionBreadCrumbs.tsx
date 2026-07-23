@@ -37,22 +37,34 @@ export default function CollectionBreadCrumbs({Data, categories}:any) {
   return (
     <>
          <div className={styles.freeSpace}></div>
-     <div className={styles.cartegoryHeadeBreadcrumbs} style={{padding:'20px 20px 0'}}>
-     {breadcrumbs.map((crumb, index) => (
-          <React.Fragment key={index}>
-            {index < breadcrumbs.length - 1 ? (
-              <>
-                <Link href={crumb.path} title= {crumb.name.replaceAll('.html','')}>
-                  {crumb.name.replaceAll('.html','')}
-                </Link>
-                <span>/</span>
-              </>
-            ) : (
-              <span style={{ fontSize: '14px', color: 'rgb(16 24 39)' }}>{crumb.name.replaceAll('.html','')}</span>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+         <nav
+  className={styles.cartegoryHeadeBreadcrumbs}
+  aria-label="Breadcrumb"
+  style={{ padding: "20px 20px 0" }}
+>
+  <ol className={styles.breadcrumbList}>
+    {breadcrumbs.map((crumb, index) => {
+      const isLast = index === breadcrumbs.length - 1;
+      const label = crumb.name.replaceAll(".html", "");
+
+      return (
+        <li
+          key={index}
+          className={isLast ? styles.ProductDisplayName : undefined}
+          aria-current={isLast ? "page" : undefined}
+        >
+          {isLast ? (
+            <span>{label}</span>
+          ) : (
+            <Link href={crumb.path} title={label}>
+              {label}
+            </Link>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
     </>
   )
 }
