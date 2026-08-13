@@ -1118,7 +1118,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
 
         <div className={hasValidAggregations ? styles.products : styles.productsFullWidth}>
           {isLoading ? (
-            <div className={styles.watchGrid}>
+            <div className={styles.grid}>
               {Array.from({ length: productsPerPage }).map((_, i) => (
                 <ProductSkeleton key={i} />
               ))}
@@ -1126,7 +1126,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
           ) : (
             <>
               {displayedProducts && displayedProducts.length > 0 ? (
-                <div className={hasValidAggregations ? styles.watchGrid : styles.watch}>
+                <div className={hasValidAggregations ? styles.grid : styles.watch}>
                   {displayedProducts.map((productItem: any, index: number) => {
                     let selectedVariant: any = null
                     let product: any = productItem

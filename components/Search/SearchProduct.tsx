@@ -209,7 +209,7 @@ function SearchProduct({
           ) : (
             <>
               {productsData.length > 0 ? (
-                <div className={styles.SearchWatchGrid}>
+                <div className={styles.Searchgrid}>
                   {productsData?.map((product: any, index: any) => {
                     let selectedVariant = null
                     if (product?.__typename === "ConfigurableProduct") {

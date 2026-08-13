@@ -1069,13 +1069,13 @@
   }
 }
 
-.watchGrid {
+.grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
 }
 
-.SearchWatchGrid {
+.Searchgrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 15px;
@@ -1744,7 +1744,7 @@ margin-bottom: 20px;
     padding: 60px 0px;
   }
 
-  .watchGrid {
+  .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
 
@@ -1822,7 +1822,7 @@ margin-bottom: 20px;
 
 
 
-  .watchGrid {
+  .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     display: flex;
