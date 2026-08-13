@@ -924,7 +924,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
 
   // Product skeleton
   const ProductSkeleton = useCallback(() => (
-    <div className={styles.watchItem}>
+    <div className={styles.item}>
       <div className={styles.skeletonImage}></div>
       <div className={styles.skeletonTitle}></div>
       <div className={styles.skeletonPrice}></div>
@@ -1143,7 +1143,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                     return (
                       <React.Fragment key={index}>
                         {/* ---- Main Product Item ---- */}
-                        <Link href={`/${product.url_key}.html`} key={variantProduct.id} className={styles.watchItem}>
+                        <Link href={`/${product.url_key}.html`} key={variantProduct.id} className={styles.item}>
                           {(() => {
                             const isOutOfStock = stockStatus?.every((status: any) => status?.stock_status !== "IN_STOCK")
                             const isOnSale =

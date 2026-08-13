@@ -226,7 +226,7 @@ function SearchProduct({
                         <Link
                           href={`/${product.url_key}.html`}
                           key={product.id}
-                          className={`${styles.watchItem} ${styles.search}`}
+                          className={`${styles.item} ${styles.search}`}
                         >
                           <Image
                             src={
