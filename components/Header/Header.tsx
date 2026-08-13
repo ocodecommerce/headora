@@ -141,6 +141,22 @@ const handleSignIn = async (e: React.FormEvent) => {
   }
 };
 
+// CHECK"
+
+useEffect(() => {
+  const userDataString = sessionStorage.getItem("userSyncData");
+  if (userDataString) {
+    try {
+      const userData = JSON.parse(userDataString);
+      setUserLoggedIn(userData.logged_in ?? false);
+    } catch (error) {
+      console.error("Failed to parse userSyncData:", error);
+      setUserLoggedIn(false);
+    }
+  } else {
+    setUserLoggedIn(false);
+  }
+}, []);
 
 // ========== CREATE ACCOUNT (createCustomerV2) ==========
 const handleCreateAccount = async (e: React.FormEvent) => {
