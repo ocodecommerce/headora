@@ -41,7 +41,8 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
   const [activeFilters, setActiveFilters] = useState<any[]>([])
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
   const [selectedSortOption, setSelectedSortOption] = useState<string>("")
-  
+  const [showAllFilters, setShowAllFilters] = useState<Record<string, boolean>>({});
+
   // Loading states
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [addToLoading, setAddToLoading] = useState<boolean>(false)
@@ -1063,22 +1064,47 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                               </div>
                               </div>
   
-                        ) : (
-                          <div className={styles.filterOptionsGrid}>
-                            {aggregation.options.map((option: any) => (
-                              <label key={option.value} className={styles.filterOption}>
-                                <input
-                                  type="checkbox"
-                                  value={option.value}
-                                  checked={isChecked(aggregation.label, option.value)}
-                                  onChange={(e) => {
-                                    handleCheckboxChange(aggregation.label, option.value, e.target.checked)
-                                  }}
-                                />
-                                {option.label.replace(/_/g, " ")}
-                              </label>
-                            ))}
-                          </div>
+                        ) : (<>
+<div className={styles.filterOptionsGrid}>
+  {(showAllFilters[aggregation.label]
+    ? aggregation.options
+    : aggregation.options.slice(0, 5)
+  ).map((option: any) => (
+    <label key={option.value} className={styles.filterOption}>
+      <input
+        type="checkbox"
+        value={option.value}
+        checked={isChecked(aggregation.label, option.value)}
+        onChange={(e) => {
+          handleCheckboxChange(
+            aggregation.label,
+            option.value,
+            e.target.checked
+          );
+        }}
+      />
+      {option.label.replace(/_/g, " ")}
+    </label>
+  ))}
+
+{aggregation.options.length > 5 && (
+  <button
+    type="button"
+    className={styles.showMoreButton}
+    onClick={() =>
+      setShowAllFilters((prev) => ({
+        ...prev,
+        [aggregation.label]: !prev[aggregation.label],
+      }))
+    }
+  >
+    {showAllFilters[aggregation.label] ? "Show Less" : "Show More"}
+  </button>
+)}
+
+
+</div>
+</>
                         )
                       )}
                     </div>

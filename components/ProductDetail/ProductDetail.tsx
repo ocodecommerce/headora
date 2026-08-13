@@ -729,6 +729,7 @@ const handleAddToCompare = () => {
     }
   };
 
+  
   const handleAddToCart = async (redirect: any) => {
     let errorCount = 0;
     if (Data.__typename != "SimpleProduct") {
@@ -748,7 +749,7 @@ const handleAddToCompare = () => {
       if (!formKey) {
         formKey = await fetchFormKey();
         if (!formKey) {
-          // return; // Stop execution if form key fetching fails
+          return; // Stop execution if form key fetching fails
         }
       }
       setAddToLoading(true);
@@ -780,10 +781,10 @@ const handleAddToCompare = () => {
 
         if (result.success) {
           localStorage.setItem("cartCount", result.profile.cart_qty);
-          // localStorage.setItem("showcartBag", "true");
+          localStorage.setItem("showcartBag", "true");
           window.dispatchEvent(new Event("storage"));
           // NEW: Proper same-tab communication
-          // window.dispatchEvent(new CustomEvent("openCartBag"));
+          window.dispatchEvent(new CustomEvent("openCartBag"));
 
           setAddToLoading(false);
           if (redirect) {

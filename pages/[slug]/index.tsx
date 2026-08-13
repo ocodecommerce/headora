@@ -11,23 +11,21 @@ import { Client } from '@/graphql/client'
 import { GetStaticPaths, GetStaticProps } from 'next'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
-import React, { useEffect ,useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import CrossSellProducts from '@/components/ProductDetail/CrossSellProducts'
 import UpSellProducts from '@/components/ProductDetail/UpSellProducts'
 import StaticReview from '@/components/ProductDetail/StaticReview'
 
 import ProductDetail from '../../components/ProductDetail/ProductDetail';
 import ReviewSection from '../../components/ProductDetail/ReviewSection';
-
 import ReletedProducts from '../../components/ProductDetail/ReletedProducts';
-
 
 import { createFiltersFromAggregations, createProductsFromMagProducts } from '../../components/ConfigureProduct';
 import fs from 'fs/promises';
-  import path from 'path';
-  import { createHash } from 'crypto';
+import path from 'path';
+import { createHash } from 'crypto';
 import RelatedBrands from '@/components/ProductDetail/RelatedBrands'
-// Define the types for the collection data
+
 interface CollectionProps {
   collection: {
     name: string;
@@ -36,61 +34,133 @@ interface CollectionProps {
   };
 }
 
+// ==================== HELPERS ====================
+
+const getBaseUrl = () =>
+  (process.env.baseURLForSchema || process.env.baseURLWithoutTrailingSlash || '').replace(/\/$/, '');
+
+function getMetaDescription(description: any): string {
+  if (!description) return '';
+
+  let htmlData =
+    typeof description === 'object' && description.html
+      ? description.html
+      : String(description);
+
+  return htmlData
+    .replace(/<style[^>]*>.*?<\/style>/gi, '')
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/([\r\n]+ +)+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
+}
 
 // ==================== SCHEMA COMPONENTS ====================
 
-// 1. Collection / Category Schema
 const CategorySchema = ({ category, url }: any) => {
   if (!category) return null;
+
+  const base = getBaseUrl();
+  const pageUrl = `${base}/${url}`.replace(/\/+$/, '') + '/';
+
+  const image = category?.image
+    ? category.image.startsWith('http')
+      ? category.image
+      : `${base}${category.image.startsWith('/') ? '' : '/'}${category.image}`
+    : undefined;
+
+  const description =
+    category?.meta_description?.trim() ||
+    getMetaDescription(category?.description) ||
+    getMetaDescription(category?.short_description) ||
+    '';
+
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": category?.meta_title || category?.name,
-    "description": category?.meta_description || "",
-    "image": category?.image || "",
-    "url": `${process.env.baseURLForSchema}/${url}/`,
+    "name": category?.meta_title || category?.name || "",
+    "description": description,
+    ...(image && { image }),
+    "url": pageUrl,
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+    />
+  );
 };
 
-// 2. BreadcrumbList Schema
 const BreadcrumbSchema = ({ breadcrumbs }: any) => {
   if (!breadcrumbs?.length) return null;
+
+  const base = getBaseUrl();
+
   const breadcrumbList = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbs.map((breadcrumb: any, index: number) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": breadcrumb?.name,
-      "item": `${process.env.baseURLForSchema}${breadcrumb?.path}/`,
-    })),
+    "itemListElement": breadcrumbs.map((breadcrumb: any, index: number) => {
+      const path = (breadcrumb?.path || '').replace(/^\/+/, '').replace(/\/+$/, '');
+      const itemUrl = path ? `${base}/${path}/` : `${base}/`;
+
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": breadcrumb?.name || "",
+        "item": itemUrl,
+      };
+    }),
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
+    />
+  );
 };
 
-// 3. Product Schema for each product
 const CategoryProductSchema = ({ products }: any) => {
   if (!products?.length) return null;
 
+  const base = getBaseUrl();
+
   const schemaList = products.map((product: any) => {
-    const mainImage = product.image?.url || product.media_gallery?.[0]?.url || "";
-    const price = product.price_range?.minimum_price?.regular_price?.value || product.price?.regularPrice?.value || 0;
-    const currency = product.price_range?.minimum_price?.regular_price?.currency || product.price?.regularPrice?.currency || "USD";
-    const availability = product.stock_status === "IN_STOCK" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+    const mainImage =
+      product.image?.url ||
+      product.media_gallery?.[0]?.url ||
+      "";
+
+    const price =
+      product.price_range?.minimum_price?.regular_price?.value ??
+      product.price?.regularPrice?.value ??
+      0;
+
+    const currency =
+      product.price_range?.minimum_price?.regular_price?.currency ||
+      product.price?.regularPrice?.currency ||
+      "USD";
+
+    const availability =
+      product.stock_status === "IN_STOCK"
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
+
+    const productUrl = `${base}/${product.url_key}/`;
 
     return {
-      "@context": "https://schema.org",
       "@type": "Product",
       "name": product.name,
       "sku": product.sku,
       "image": mainImage,
-      "description": product.description || "",
-      "category": product.categories?.map((cat: any) => cat.name).join(" > ") || "",
-      "url": `${process.env.baseURLForSchema}/${product.url_key}/`,
+      "description": product.short_description || product.description || "",
+      "url": productUrl,
       "offers": {
         "@type": "Offer",
-        "url": `${process.env.baseURLForSchema}/${product.url_key}.html/`,
+        "url": productUrl,
         "price": price,
         "priceCurrency": currency,
         "availability": availability,
@@ -98,19 +168,30 @@ const CategoryProductSchema = ({ products }: any) => {
     };
   });
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaList) }} />;
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": schemaList,
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+    />
+  );
 };
 
-
-
-
-
-// ============================Product Schema Component======================================
-// ================== Product Schema ==================
-const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscription }: any) => {
+const ProductSchema = ({
+  product,
+  aggregations,
+  schemaImage,
+  price,
+  metaDiscription,
+}: any) => {
   if (!product) return null;
 
-  // ✅ Extract Brand
+  const base = getBaseUrl();
+
   const getBrandName = () => {
     const brandAttr =
       aggregations?.find((a: any) => a.attribute_code === "br_1_brand") ||
@@ -118,31 +199,32 @@ const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscript
     return brandAttr?.options?.[0]?.label || "Headora";
   };
 
-  // ✅ Extract Category Breadcrumbs (for Google hierarchy)
   const categories = product?.categories || [];
-  const categoryPath = categories.map((c: any) => c?.name).join(" > ");
+  const categoryPath = categories.map((c: any) => c?.name).filter(Boolean).join(" > ");
 
-  // ✅ Collect Product Images
   const images =
-    product?.media_gallery?.map((img: any) => img?.url) ||
-    (product?.image?.url ? [product?.image?.url] : []);
+    product?.media_gallery?.map((img: any) => img?.url).filter(Boolean) ||
+    (product?.image?.url ? [product.image.url] : []);
 
-  // ✅ Extract Attributes for extra details
+  const finalImages = schemaImage
+    ? [schemaImage, ...images.filter((i: string) => i !== schemaImage)]
+    : images;
+
   const getAttr = (code: string) => {
     const attr = aggregations?.find((a: any) => a.attribute_code === code);
     return attr?.options?.map((opt: any) => opt?.label) || [];
   };
 
-  const material = getAttr("br_1_case_material")[0] || getAttr("br_1_band_material")[0];
+  const material =
+    getAttr("br_1_case_material")[0] || getAttr("br_1_band_material")[0];
   const color = getAttr("br_1_dial_color")[0];
   const features = getAttr("br_1_features");
 
-  // ✅ Rating & Reviews
   const reviews = product?.reviews?.items || [];
   const averageRating =
     reviews.length > 0
-      ? (reviews.reduce((sum: number, r: any) => sum + (r?.average_rating || 0), 0) /
-          reviews.length) /
+      ? reviews.reduce((sum: number, r: any) => sum + (r?.average_rating || 0), 0) /
+          reviews.length /
         20
       : null;
 
@@ -150,10 +232,10 @@ const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscript
     averageRating !== null
       ? {
           "@type": "AggregateRating",
-          ratingValue: averageRating.toFixed(1),
+          ratingValue: Number(averageRating.toFixed(1)),
           reviewCount: reviews.length,
-          bestRating: "5",
-          worstRating: "1",
+          bestRating: 5,
+          worstRating: 1,
         }
       : undefined;
 
@@ -165,9 +247,9 @@ const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscript
           reviewBody: r?.text || "",
           reviewRating: {
             "@type": "Rating",
-            ratingValue: (r?.average_rating / 20).toFixed(1),
-            bestRating: "5",
-            worstRating: "1",
+            ratingValue: Number(((r?.average_rating || 0) / 20).toFixed(1)),
+            bestRating: 5,
+            worstRating: 1,
           },
           datePublished: r?.created_at || undefined,
           author: {
@@ -177,40 +259,47 @@ const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscript
         }))
       : undefined;
 
-  // ✅ Offers (Price + Stock)
-  const offerPrice = price || product?.price?.regularPrice?.amount?.value || product?.price_range?.minimum_price?.final_price?.value;
-  const offerCurrency = product?.price?.regularPrice?.amount?.currency || "USD";
+  const offerPrice =
+    price ??
+    product?.price?.regularPrice?.amount?.value ??
+    product?.price_range?.minimum_price?.final_price?.value ??
+    product?.price_range?.minimum_price?.regular_price?.value;
+
+  const offerCurrency =
+    product?.price?.regularPrice?.amount?.currency ||
+    product?.price_range?.minimum_price?.final_price?.currency ||
+    "USD";
 
   const oneYearLater = new Date();
   oneYearLater.setFullYear(oneYearLater.getFullYear() + 1);
 
+  const productUrl = `${base}/${product?.url_key}/`;
+
   const offer = {
     "@type": "Offer",
-    url: `${process.env.baseURLForSchema}/${product?.url_key}/`,
+    url: productUrl,
     priceCurrency: offerCurrency,
     price: offerPrice,
     availability:
       product?.stock_status === "OUT_OF_STOCK"
         ? "https://schema.org/OutOfStock"
         : "https://schema.org/InStock",
-    priceValidUntil: oneYearLater.toISOString(),
+    priceValidUntil: oneYearLater.toISOString().split('T')[0],
     seller: {
       "@type": "Organization",
-      name: "Headora", // TODO: set actual store name
+      name: "Headora",
     },
   };
 
-  // ✅ Schema Data
   const schemaData: any = {
     "@context": "https://schema.org/",
     "@type": "Product",
     name: product?.meta_title || product?.name,
     sku: product?.sku,
     mpn: product?.sku,
-    gtin13: product?.gtin || undefined, // TODO: add GTIN/EAN/UPC if available
     description: metaDiscription || product?.meta_description || product?.short_description || "",
-    url: `${process.env.baseURLForSchema}/${product?.url_key}/`,
-    image: images,
+    url: productUrl,
+    image: finalImages.length ? finalImages : undefined,
     brand: {
       "@type": "Brand",
       name: getBrandName(),
@@ -218,156 +307,141 @@ const ProductSchema = ({ product, aggregations, schemaImage, price, metaDiscript
     category: categoryPath || undefined,
     ...(material && { material }),
     ...(color && { color }),
-    ...(features?.length > 0 && { additionalProperty: features.map((f: string) => ({ "@type": "PropertyValue", name: "Feature", value: f })) }),
+    ...(features?.length > 0 && {
+      additionalProperty: features.map((f: string) => ({
+        "@type": "PropertyValue",
+        name: "Feature",
+        value: f,
+      })),
+    }),
     offers: offer,
     ...(aggregateRating && { aggregateRating }),
     ...(reviewSchema && { review: reviewSchema }),
   };
 
+  Object.keys(schemaData).forEach((key) => {
+    if (schemaData[key] === undefined) delete schemaData[key];
+  });
+
   return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+    />
   );
 };
 
-
-
-// ==========================================Static Paths =======================================
-
+// ========================================== Static Paths =======================================
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const client = new Client();
   const allCategoriesPathFile = path.resolve(`./cacheM/topLevelCategoriesPath.json`);
   const allProductsPathFile = path.resolve(`./cacheM/allProductsPath.json`);
-  try {
-    let allCategories = JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8')).map((item:any) => item.replace(/\.html$/, ''));
-    let allProducts = JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
 
+  try {
+    let allCategories = JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8')).map(
+      (item: any) => item.replace(/\.html$/, '')
+    );
+    let allProducts = JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
 
     const combinedPaths = [...allCategories, ...allProducts];
 
-    const paths = combinedPaths.map((url: any) => {
-      return { params: { slug: url } }
-    });
-    let responseData = {
+    const paths = combinedPaths.map((url: any) => ({
+      params: { slug: url },
+    }));
+
+    return {
       paths,
       fallback: false,
-    }
-
-    return responseData;
-
+    };
   } catch (error) {
-
+    // fallback
   }
+
   try {
-    
     const response = await client.fetchCategories();
     const allUrl = response?.data?.categories?.items?.[0];
-    const paths = allUrl.children.map((item: { url_path: string }) => {
-      // Ensure the slug is an array of values
-      return {
-        params: {
-          slug: item.url_path, // Split slug by '/' to get an array (e.g., ['product', 'green-t-shirt'])
-        },
-      };
-    });
+    const paths = allUrl.children.map((item: { url_path: string }) => ({
+      params: {
+        slug: item.url_path,
+      },
+    }));
 
-
-    let responseData = {
+    return {
       paths,
       fallback: false,
-    }
-
-    return responseData;
+    };
   } catch (error) {
     return {
       paths: [],
       fallback: false,
     };
   }
-}
+};
 
 // Static Props
 export const getStaticProps: GetStaticProps = async ({ params, query }: any) => {
-
-  const { slug } = params as { slug: string; };
-  // const urlPath = slug.replace(/\.html$/, '')
+  const { slug } = params as { slug: string };
   const urlPath = slug.replace(/\.html$/, '');
-  // const urlPath = slug.replace(/^\/+/, '').replace(/\/+$/, '');
-  
 
-  
-  const cacheStaticProps = createHash('md5')
-    .update(slug)
-    .digest('hex');
+  const cacheStaticProps = createHash('md5').update(slug).digest('hex');
 
-    
+  let cacheStaticPropsPath: any;
+  let cacheProductPropsPath: any;
 
-let cacheStaticPropsPath:any
-let cacheProductPropsPath:any
+  const isBuildTime = process.env.BUILD_MODE === 'build';
 
- const isBuildTime = process.env.BUILD_MODE === 'build';
-
-
-
-// ====================== BUILD TIME ============================
-
+  // ====================== BUILD TIME ============================
   if (isBuildTime) {
-     cacheStaticPropsPath = path.resolve(`./cacheM/category/${cacheStaticProps}.json`)
-     cacheProductPropsPath = path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
+    cacheStaticPropsPath = path.resolve(`./cacheM/category/${cacheStaticProps}.json`);
+    cacheProductPropsPath = path.resolve(`./cacheM/product/${cacheStaticProps}.json`);
 
     const cachePaths = [
       path.resolve(`./cacheM/category/${cacheStaticProps}.json`),
-      path.resolve(`./cacheM/product/${cacheStaticProps}.json`)
+      path.resolve(`./cacheM/product/${cacheStaticProps}.json`),
     ];
 
     console.log(`[BUILD] Using cache for: ${urlPath}`);
-  for (const cachePath of cachePaths) {
-    try {
 
-      let cachedProps = JSON.parse(await fs.readFile(cachePath, "utf-8"));
-
-          return {
+    for (const cachePath of cachePaths) {
+      try {
+        let cachedProps = JSON.parse(await fs.readFile(cachePath, 'utf-8'));
+        return {
           ...cachedProps,
-            revalidate: 10,
-          };
-
-      // return JSON.parse(await fs.readFile(cachePath, 'utf-8'));
-    } catch (error) {
-
+          revalidate: 10,
+        };
+      } catch (error) {
+        // continue
+      }
     }
   }
-}
 
-// ====================== ISR / RUNTIME - ALWAYS FETCH FRESH ======================
-
-console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
+  // ====================== ISR / RUNTIME ======================
+  console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
 
   const client = new Client();
-
-  const page = query?.page ? parseInt(query.page as string, 10) : 1; // Get page from query or default to 1
+  const page = query?.page ? parseInt(query.page as string, 10) : 1;
 
   const fetchCategoryByURLKey = async (urlKey: string, page: number) => {
     try {
       const response = await client.fetchSubCategoryDataByUrlKey(urlKey, page);
       return response?.categoryList[0] || null;
     } catch (error) {
-
+      return null;
     }
   };
 
   try {
-
     const collectionData = await client.fetchCollectionPage(urlPath as string);
     const collection = collectionData?.data?.categoryList?.[0] || null;
 
     if (collection) {
-      console.log('Generating collection '+urlPath)
-      const category = await fetchCategoryByURLKey(urlPath as string, page) || null;
-
+      console.log('Generating collection ' + urlPath);
+      const category = (await fetchCategoryByURLKey(urlPath as string, page)) || null;
       const uid = category?.uid || null;
 
-      // Fetch products for the category by UID and page
-      let allProductList: any[] = []
+      let allProductList: any[] = [];
+
       const fetchProductsByUID = async (uid: string, currentPage: number) => {
         try {
           const response = await client.fetchSubCategoryData(uid, currentPage);
@@ -379,11 +453,10 @@ console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
 
       let productsRes = uid ? await fetchProductsByUID(uid, page) : null;
 
-      if (productsRes.products) {
-
+      if (productsRes?.products) {
         productsRes.products.items.forEach((item: any) => {
-          allProductList.push(item)
-        })
+          allProductList.push(item);
+        });
       }
 
       let responseData = {
@@ -395,26 +468,33 @@ console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
           collection,
           generatedAt: new Date().toISOString(),
           view: 'collection',
-          urlPath: urlPath
-
+          urlPath: urlPath,
         },
         revalidate: 10,
-      }
+      };
 
-      
-      if (isBuildTime) {await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));}
+      if (isBuildTime) {
+        await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));
+      }
       return responseData;
     } else {
-
       const product = await client.fetchProductDetail(urlPath);
-      let productsResult = product.data.products || null
-      if(productsResult){
-        console.log('Generating Product...'+urlPath)
+      let productsResult = product.data.products || null;
+
+      if (productsResult) {
+        console.log('Generating Product...' + urlPath);
       }
-      const reviews = await client.fetchAllReviewValue() || null
-      const ReturnDataCMSBlock = await client.fetchPDPReturnCMSBlock() || null;
+
+      const reviews = (await client.fetchAllReviewValue()) || null;
+      const ReturnDataCMSBlock = (await client.fetchPDPReturnCMSBlock()) || null;
+
       let { filters, optionValueMap } = createFiltersFromAggregations(productsResult.aggregations);
-      let configuredProducts = createProductsFromMagProducts(productsResult.items, filters, optionValueMap);
+      let configuredProducts = createProductsFromMagProducts(
+        productsResult.items,
+        filters,
+        optionValueMap
+      );
+
       const productData = configuredProducts[0] || null;
       const aggregations = productsResult.aggregations || [];
 
@@ -429,13 +509,14 @@ console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
           generatedAt: new Date().toISOString(),
         },
         revalidate: 10,
-      }
+      };
 
-      if (isBuildTime) { await fs.writeFile(cacheProductPropsPath, JSON.stringify(responseData));}
+      if (isBuildTime) {
+        await fs.writeFile(cacheProductPropsPath, JSON.stringify(responseData));
+      }
       return responseData;
     }
-  } catch (error:any) {
-// console.log("ERROR --" + error.message)
+  } catch (error: any) {
     return {
       props: {
         allProductList: [],
@@ -448,39 +529,35 @@ console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
     };
   }
 };
-// Collection Component test
-const Collection = ({ 
-          view,
-          urlPath,
-          allProductList, 
-          category, 
-          productsRes, 
-          collection,
-          categories,
-          productData, 
-          aggregations, 
-          reviews, 
-          ReturnDataCMSBlock, 
-          categoriesList, 
-          showRibbon, 
-          isMobile,
-          generatedAt}: any) => {
 
+// ==================== PAGE COMPONENT ====================
 
-  const [price, setPrice] = useState<any>()
+const Collection = ({
+  view,
+  urlPath,
+  allProductList,
+  category,
+  productsRes,
+  collection,
+  categories,
+  productData,
+  aggregations,
+  reviews,
+  ReturnDataCMSBlock,
+  categoriesList,
+  showRibbon,
+  isMobile,
+  generatedAt,
+}: any) => {
+  const [price, setPrice] = useState<any>();
   const [productBbreadcrumbs, setProductBbreadcrumbs] = useState<any>([]);
-  const router = useRouter()
-  const url = router.query
-  
-  // ===========================BreadCrumbs Management=======================================
+  const router = useRouter();
 
   const { slug, slug2, slug3, ...rest } = router.query;
-
-  // Get all slugs from query
   const slugs = [slug, slug2, slug3, ...Object.values(rest)].filter(Boolean);
 
   const findCategoryName = (key: string, items?: any): string | null => {
-    if (!Array.isArray(items)) return null; // Ensure items is an array
+    if (!Array.isArray(items)) return null;
 
     for (const item of items) {
       if (item.url_key === key) {
@@ -493,356 +570,255 @@ const Collection = ({
     }
     return null;
   };
-  
- // Create breadcrumb array dynamically by matching slugs to category names
- const breadcrumbs = [
-  { name: 'Home', path: '' },
-  ...slugs.map((slugPart: any, index) => ({
-    name: findCategoryName(slugPart, categories?.data?.categories?.items) || slugPart.replace(/-/g, ' '),
-    path: `/${slugs.slice(0, index + 1).join('/')}`,
-  })),
-];
 
+  const breadcrumbs = [
+    { name: 'Home', path: '' },
+    ...slugs.map((slugPart: any, index) => ({
+      name:
+        findCategoryName(slugPart, categories?.data?.categories?.items) ||
+        String(slugPart).replace(/-/g, ' '),
+      path: `/${slugs.slice(0, index + 1).join('/')}`,
+    })),
+  ];
 
-const breadcrumbsProducts = [
-  { name: 'Home', path: '' },
-  { name: 'Dresses', path: '/venia-dresses' },
-  ...slugs.map((slugPart: any, index) => ({
-    name: findCategoryName(slugPart, categories?.data?.categories?.items) || slugPart.replace(/-/g, ' '),
-    path: `/${slugs.slice(0, index + 1).join('/')}`,
-  })),
-];
-
-useEffect(() => {
-  console.log("=== CURRENT VIEW ===", view, "urlPath",urlPath, "URL:", router.asPath);
-}, [view, router.asPath]);
-
-
-useEffect(() => {
-  setPrice(null);
-  setProductBbreadcrumbs([]);
-  
-  if (typeof window !== 'undefined') {
-    sessionStorage.removeItem('breadcrumbs');
-  }
-}, [router.asPath]); // or [urlPath]
-
+  // Product breadcrumbs – use sessionStorage if available, otherwise dynamic
+  const productBreadcrumbs =
+    productBbreadcrumbs?.length > 0 ? productBbreadcrumbs : breadcrumbs;
 
   useEffect(() => {
+    console.log('=== CURRENT VIEW ===', view, 'urlPath', urlPath, 'URL:', router.asPath);
+  }, [view, router.asPath]);
 
-    // Retrieve breadcrumbs data from sessionStorage on the first render
+  useEffect(() => {
+    setPrice(null);
+    setProductBbreadcrumbs([]);
+
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('breadcrumbs');
+    }
+  }, [router.asPath]);
+
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedBreadcrumbs = sessionStorage.getItem('breadcrumbs');
       if (storedBreadcrumbs) {
         setProductBbreadcrumbs(JSON.parse(storedBreadcrumbs));
-        // Clear breadcrumbs from sessionStorage
         sessionStorage.removeItem('breadcrumbs');
       }
     }
   }, [router.asPath]);
 
-// ---------------------CategoriesProducts and Collection Meta Details------------------------------------
+  // --------------------- Collection Meta ---------------------
+  const rawCategoryImage = collection?.image || '/Logo/Logo.png' || '/default-image.jpg';
+  const CategoryImage = rawCategoryImage.startsWith('http')
+    ? rawCategoryImage
+    : `${process.env.baseURLWithoutTrailingSlash}${rawCategoryImage.startsWith('/') ? '' : '/'}${rawCategoryImage}`;
 
-  const CategoryImage = collection?.image || '/default-image.jpg'
-  const fileExtension = CategoryImage.split('.').pop()?.toLowerCase() || "jpg";
+  const fileExtension =
+    CategoryImage.split('.').pop()?.toLowerCase()?.split('?')[0] || 'jpg';
 
-  const description = collection?.description || null
-  const shortDescription = collection?.short_description || null
-  const CollectionDescription = collection?.description || null
+  const CollectionDescription = collection?.description || null;
 
+  const collectionTitle = collection?.meta_title || collection?.name || '';
+  const collectionDescription =
+    collection?.meta_description?.trim() ||
+    getMetaDescription(collection?.description) ||
+    getMetaDescription(collection?.short_description) ||
+    '';
 
-  // -------------------------------------Product Detail Meta Details-------------------------------------------
-  function getMetaDescription(description: any) {
-    let htmlData = description.html ? description.html : description
-    htmlData = htmlData + ' '
-    htmlData = htmlData.replaceAll(/(?:\r\n|\r|\n)/g, '<br>')
-    htmlData = htmlData.replaceAll('<br><br>', '<br>')
-    htmlData = htmlData.replaceAll('</p><br><p>', '</p><p>')
-    htmlData = htmlData.replace(/<style[^>]*>.*<\/style>/g, '')
-      // Remove script tags and content
-      .replace(/<script[^>]*>.*<\/script>/g, '')
-      // Remove all opening, closing and orphan HTML tags
-      .replace(/<[^>]+>/g, '')
-      // Remove leading spaces and repeated CR/LF
-      .replace(/([\r\n]+ +)+/g, '');
-
-    return htmlData.slice(0, 160)
-  }
-
-
-const descriptionSource =
+  // --------------------- Product Meta ---------------------
+  const descriptionSource =
     productData?.short_description?.html?.trim()
       ? productData.short_description.html
-      : typeof productData?.short_description === "string" &&
-        productData.short_description.trim()
+      : typeof productData?.short_description === 'string' && productData.short_description.trim()
       ? productData.short_description
       : productData?.description?.html?.trim()
       ? productData.description.html
-      : typeof productData?.description === "string" &&
-        productData.description.trim()
+      : typeof productData?.description === 'string' && productData.description.trim()
       ? productData.description
-      : "";
-  
+      : '';
+
   const metaDiscription =
-    typeof productData?.meta_description === "string" &&
-    productData.meta_description.trim()
+    typeof productData?.meta_description === 'string' && productData.meta_description.trim()
       ? productData.meta_description
       : getMetaDescription(descriptionSource);
 
-    console.log(metaDiscription,"metaDiscription")
+  const isCollection = view === 'collection';
+  const isProduct = view === 'product';
 
-  const isCollection = view === "collection";
-  const isProduct = view === "product";
-  
   if (!isCollection && !isProduct) {
     return null;
   }
-  
-  const schemaImage = isProduct
-    ? (
-        productData?.__typename === "ConfigurableProduct"
-          ?productData?.image?.url?.replace(/\/cache\/.*?\//, "/")  
-          :productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, "/")
-      ) || `${process.env.baseURL}media/catalog/product/placeholder/default/coming-soon-sign_3.jpg`
+
+  // Product image – always absolute
+  const rawSchemaImage = isProduct
+    ? (productData?.__typename === 'ConfigurableProduct'
+        ? productData?.image?.url?.replace(/\/cache\/.*?\//, '/')
+        : productData?.variants?.[0]?.media_gallery?.[0]?.url?.replace(/\/cache\/.*?\//, '/')) ||
+      `${process.env.baseURL}media/catalog/product/placeholder/default/coming-soon-sign_3.jpg`
     : null;
-  
-  const productFileExtension = schemaImage?.split('.').pop()?.toLowerCase() || "jpg";
-  
+
+  const absoluteSchemaImage = rawSchemaImage
+    ? rawSchemaImage.startsWith('http')
+      ? rawSchemaImage
+      : `${process.env.baseURLWithoutTrailingSlash}${rawSchemaImage.startsWith('/') ? '' : '/'}${rawSchemaImage}`
+    : null;
+
+  const productFileExtension =
+    absoluteSchemaImage?.split('.').pop()?.toLowerCase()?.split('?')[0] || 'jpg';
+
+  const productTitle = productData?.meta_title || productData?.name || '';
+  const productCanonical = `${process.env.baseURLWithoutTrailingSlash}/${productData?.url_key || slug}`;
+  const collectionCanonical = `${process.env.baseURLWithoutTrailingSlash}/${slug}`;
+
   return (
     <div key={urlPath || router.asPath}>
+      {/* ===================== COLLECTION ===================== */}
       {isCollection && (
         <>
           <Head>
             <meta charSet="UTF-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
+
             <meta name="robots" content="noindex, nofollow" />
-            <link
-              rel="canonical"
-              href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
-            />
-  
-            <title>{collection?.meta_title || collection?.name}</title>
-            <meta
-              name="title"
-              content={collection?.meta_title || collection?.name}
-            />
-            {collection?.meta_description && (
-              <meta
-                name="description"
-                content={collection?.meta_description}
-              />
+            <link rel="canonical" href={collectionCanonical} />
+
+            <title>{collectionTitle}</title>
+            <meta name="title" content={collectionTitle} />
+            {collectionDescription && (
+              <meta name="description" content={collectionDescription} />
             )}
             {collection?.meta_keywords && (
-              <meta
-                name="keywords"
-                content={collection?.meta_keywords}
-              />
+              <meta name="keywords" content={collection.meta_keywords} />
             )}
-  
-            <meta property="og:type" content="category" />
-            <meta
-              property="og:title"
-              content={collection?.meta_title || collection?.name}
-            />
-            {collection?.meta_description && (
-              <meta
-                property="og:description"
-                content={collection?.meta_description}
-              />
+
+            {/* Open Graph */}
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content={collectionTitle} />
+            {collectionDescription && (
+              <meta property="og:description" content={collectionDescription} />
             )}
+            <meta property="og:url" content={collectionCanonical} />
+            <meta property="og:site_name" content="Headora" />
             <meta property="og:image" content={CategoryImage} />
             <meta property="og:image:secure_url" content={CategoryImage} />
             <meta property="og:image:width" content="800" />
             <meta property="og:image:height" content="800" />
             <meta property="og:image:type" content={`image/${fileExtension}`} />
-            <meta
-              property="og:url"
-              content={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
-            />
-            <meta property="og:site_name" content="Headora" />
-  
+
+            {/* Twitter */}
             <meta name="twitter:card" content="summary_large_image" />
-            <meta
-              name="twitter:title"
-              content={collection?.meta_title || collection?.name}
-            />
-            {collection?.meta_description && (
-              <meta
-                name="twitter:description"
-                content={collection?.meta_description}
-              />
+            <meta name="twitter:title" content={collectionTitle} />
+            {collectionDescription && (
+              <meta name="twitter:description" content={collectionDescription} />
             )}
             <meta name="twitter:image" content={CategoryImage} />
           </Head>
-  
+
           <BreadcrumbSchema breadcrumbs={breadcrumbs} />
           <CategorySchema category={collection} url={slug} />
           <CategoryProductSchema products={allProductList} />
-  
-          {category?.display_mode === "PAGE" ? (
+
+          {category?.display_mode === 'PAGE' ? (
             <>
               <CollectionHeader Data={collection} />
               <CollectionBreadCrumbs Data={collection} />
               <CollectionListing Collection={collection} />
-              <CollectionReletatedProducts
-                Data={category}
-                Collection={collection}
-              />
+              <CollectionReletatedProducts Data={category} Collection={collection} />
               <Content description={CollectionDescription} />
             </>
           ) : (
-            <>
-              <div
-                style={{
-                  position: "relative",
-                }}
-              >
-                <CollectionBreadCrumbs Data={collection} />
-                <CollectionHeader Data={collection} />
-              
-  
-                <CategoriesProducts
-                  Data={{ name: category?.name }}
-                  categoryDetail={category}
-                  categoriesData={productsRes}
-                  productsData={allProductList}
-                  showRibbon={showRibbon}
-                  isMobile={isMobile}
-                />
-  
-                <Content description={category?.description} />
-              </div>
-            </>
+            <div style={{ position: 'relative' }}>
+              <CollectionBreadCrumbs Data={collection} />
+              <CollectionHeader Data={collection} />
+              <CategoriesProducts
+                Data={{ name: category?.name }}
+                categoryDetail={category}
+                categoriesData={productsRes}
+                productsData={allProductList}
+                showRibbon={showRibbon}
+                isMobile={isMobile}
+              />
+              <Content description={category?.description} />
+            </div>
           )}
         </>
       )}
-  
+
+      {/* ===================== PRODUCT ===================== */}
       {isProduct && (
         <>
           <Head>
             <meta charSet="UTF-8" />
-            <meta
-              name="viewport"
-              content="width=device-width, initial-scale=1.0"
-            />
-  
+            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
             <meta name="robots" content="noindex, nofollow" />
-            <link
-              rel="canonical"
-              href={`${process.env.baseURLWithoutTrailingSlash}/${slug}`}
-            />
-  
-            <title>
-              {`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
-            </title>
-  
-            <meta
-              name="title"
-              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
-            />
-  
-            <meta
-              name="description"
-              content={metaDiscription}
-            />
-  
+            <link rel="canonical" href={productCanonical} />
+
+            <title>{productTitle}</title>
+            <meta name="title" content={productTitle} />
+            <meta name="description" content={metaDiscription} />
             <meta
               name="keywords"
-              content={
-                productData?.meta_keyword
-                  ? productData?.meta_keyword
-                  : "Headora"
-              }
+              content={productData?.meta_keyword || 'Headora'}
             />
-  
+
+            {/* Open Graph */}
             <meta property="og:locale" content="en_US" />
             <meta property="og:type" content="product" />
-  
-            <meta
-              property="og:title"
-              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
-            />
-  
-            <meta
-              property="og:description"
-              content={metaDiscription}
-            />
-  
-            <meta
-              property="og:url"
-              content={`${process.env.baseURL}${productData?.url_key}.html`}
-            />
-  
+            <meta property="og:title" content={productTitle} />
+            <meta property="og:description" content={metaDiscription} />
+            <meta property="og:url" content={productCanonical} />
             <meta property="og:site_name" content="Headora" />
-            <meta property="og:image" content={schemaImage} />
-            <meta property="og:image:secure_url" content={schemaImage} />
+            <meta property="og:image" content={absoluteSchemaImage || ''} />
+            <meta property="og:image:secure_url" content={absoluteSchemaImage || ''} />
             <meta property="og:image:width" content="800" />
             <meta property="og:image:height" content="800" />
-            <meta
-              property="og:image:type"
-              content={`image/${productFileExtension}`}
-            />
-  
-            <meta property="og:price:amount" content={price} />
-            <meta property="og:price:currency" content="USD" />
-  
-            <meta name="twitter:card" content="summary" />
-  
-            <meta
-              name="twitter:title"
-              content={`${productData?.meta_title ? productData?.meta_title : productData?.name}`}
-            />
-  
-            <meta
-              name="twitter:description"
-              content={metaDiscription}
-            />
-  
-            <meta name="twitter:image" content={schemaImage} />
-  
+            <meta property="og:image:type" content={`image/${productFileExtension}`} />
+
+            {price != null && (
+              <>
+                <meta property="og:price:amount" content={String(price)} />
+                <meta property="og:price:currency" content="USD" />
+              </>
+            )}
+
+            {/* Twitter */}
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta name="twitter:title" content={productTitle} />
+            <meta name="twitter:description" content={metaDiscription} />
+            <meta name="twitter:image" content={absoluteSchemaImage || ''} />
+
+            {/* Microdata fallbacks */}
             <meta itemProp="name" content={productData?.name} />
-            <meta
-              itemProp="description"
-              content={metaDiscription}
-            />
-            <meta itemProp="image" content={schemaImage} />
+            <meta itemProp="description" content={metaDiscription} />
+            <meta itemProp="image" content={absoluteSchemaImage || ''} />
           </Head>
-  
-          <BreadcrumbSchema
-            breadcrumbs={breadcrumbsProducts}
-            products={productData}
-          />
-  
+
+          <BreadcrumbSchema breadcrumbs={productBreadcrumbs} />
+
           <ProductSchema
             product={productData}
             aggregations={aggregations}
-            schemaImage={schemaImage}
+            schemaImage={absoluteSchemaImage}
             price={price}
             metaDiscription={metaDiscription}
           />
-  
+
           <ProductDetail
             Data={productData}
             aggregations={aggregations}
-      
             breadcrumbs={productBbreadcrumbs}
             setPrice={setPrice}
             ReturnDataCMSBlock={ReturnDataCMSBlock}
             showRibbon={showRibbon}
             AllReviews={reviews}
           />
-  
-          {/* <ReviewSection
-            Data={productData}
-            AllReviews={reviews}
-          /> */}
-         {/* <p>generatedAt: {generatedAt}+process.env.NEXT_PHASE,"process.env.NEXT_PHASE"</p> */}
 
           <CrossSellProducts Data={productData} />
           <UpSellProducts Data={productData} />
           <ReletedProducts Data={productData} />
-  
+
           <RelatedBrands
             RelatedCategories={productData?.categories}
             categoriesList={categoriesList}
@@ -851,6 +827,6 @@ const descriptionSource =
       )}
     </div>
   );
-  }
+};
 
 export default Collection;

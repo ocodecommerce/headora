@@ -1,4 +1,3 @@
-
 import Filter from '@/components/Filters/Filter'
 import CategoryHeader from '@/components/Category/CategoryHeader'
 import { Client } from '@/graphql/client';
@@ -18,69 +17,114 @@ import SubCollectionListing from '@/components/Collection/SubCollectionListing';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import fs from 'fs/promises';
-  import path from 'path';
-  import { createHash } from 'crypto';
-
-
-
-
-
+import path from 'path';
+import { createHash } from 'crypto';
 
 
 // ==================== SCHEMA COMPONENTS ====================
 
+const getBaseUrl = () =>
+  (process.env.baseURLForSchema || process.env.baseURLWithoutTrailingSlash || '').replace(/\/$/, '');
+
 // 1. Collection / Category Schema
 const CategorySchema = ({ category, url }: any) => {
   if (!category) return null;
+
+  const base = getBaseUrl();
+  const pageUrl = `${base}/${url}`.replace(/\/+$/, '') + '/';
+
+  const image = category?.image
+    ? category.image.startsWith('http')
+      ? category.image
+      : `${base}${category.image.startsWith('/') ? '' : '/'}${category.image}`
+    : undefined;
+
   const schemaData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "name": category?.meta_title || category?.name,
-    "description": category?.meta_description || "",
-    "image": category?.image || "",
-    "url": `${process.env.baseURLForSchema}/${url}/`,
+    "name": category?.meta_title || category?.name || "",
+    "description": category?.meta_description || category?.description || "",
+    ...(image && { image }),
+    "url": pageUrl,
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }}
+    />
+  );
 };
 
 // 2. BreadcrumbList Schema
 const BreadcrumbSchema = ({ breadcrumbs }: any) => {
   if (!breadcrumbs?.length) return null;
+
+  const base = getBaseUrl();
+
   const breadcrumbList = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbs.map((breadcrumb: any, index: number) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": breadcrumb?.name,
-      "item": `${process.env.baseURLForSchema}${breadcrumb?.path}/`,
-    })),
+    "itemListElement": breadcrumbs.map((breadcrumb: any, index: number) => {
+      const path = (breadcrumb?.path || '').replace(/^\/+/, '').replace(/\/+$/, '');
+      const itemUrl = path ? `${base}/${path}/` : `${base}/`;
+
+      return {
+        "@type": "ListItem",
+        "position": index + 1,
+        "name": breadcrumb?.name || "",
+        "item": itemUrl,
+      };
+    }),
   };
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }} />;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbList) }}
+    />
+  );
 };
 
-// 3. Product Schema for each product
+// 3. Product Schema for listing (use @graph)
 const ProductSchema = ({ products }: any) => {
   if (!products?.length) return null;
 
+  const base = getBaseUrl();
+
   const schemaList = products.map((product: any) => {
-    const mainImage = product.image?.url || product.media_gallery?.[0]?.url || "";
-    const price = product.price_range?.minimum_price?.regular_price?.value || product.price?.regularPrice?.value || 0;
-    const currency = product.price_range?.minimum_price?.regular_price?.currency || product.price?.regularPrice?.currency || "USD";
-    const availability = product.stock_status === "IN_STOCK" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+    const mainImage =
+      product.image?.url ||
+      product.media_gallery?.[0]?.url ||
+      "";
+
+    const price =
+      product.price_range?.minimum_price?.regular_price?.value ??
+      product.price?.regularPrice?.value ??
+      0;
+
+    const currency =
+      product.price_range?.minimum_price?.regular_price?.currency ||
+      product.price?.regularPrice?.currency ||
+      "USD";
+
+    const availability =
+      product.stock_status === "IN_STOCK"
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
+
+    const productUrl = `${base}/${product.url_key}/`;
 
     return {
-      "@context": "https://schema.org",
       "@type": "Product",
       "name": product.name,
       "sku": product.sku,
       "image": mainImage,
-      "description": product.description || "",
-      "category": product.categories?.map((cat: any) => cat.name).join(" > ") || "",
-      "url": `${process.env.baseURLForSchema}/${product.url_key}/`,
+      "description": product.short_description || product.description || "",
+      "url": productUrl,
       "offers": {
         "@type": "Offer",
-        "url": `${process.env.baseURLForSchema}/${product.url_key}/`,
+        "url": productUrl,
         "price": price,
         "priceCurrency": currency,
         "availability": availability,
@@ -88,39 +132,45 @@ const ProductSchema = ({ products }: any) => {
     };
   });
 
-  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaList) }} />;
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": schemaList,
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(graph) }}
+    />
+  );
 };
 
 
-
+// ==================== STATIC PATHS ====================
 
 export const getStaticPaths: GetStaticPaths = async () => {
-
   const allCategoriesPathFile = path.resolve(`./cacheM/secondLevelCategoriesPath.json`);
-    try {
-      let allCategories= JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8'));
-      const paths = allCategories.map((url: any) => {
-        let urlPath = url.split('/');
-        return { params: { 
-              slug: urlPath[0].replace(/\.html$/, '') || '',
-              slug2: urlPath[1].replace(/\.html$/, '') || ''
-            } 
-          }  // Single segment case
-           
 
-        
-       
+  try {
+    let allCategories = JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8'));
+    const paths = allCategories.map((url: any) => {
+      let urlPath = url.split('/');
+      return {
+        params: {
+          slug: urlPath[0]?.replace(/\.html$/, '') || '',
+          slug2: urlPath[1]?.replace(/\.html$/, '') || '',
+        },
+      };
     });
-     let responseData = {
+
+    return {
       paths,
       fallback: false,
-    }
-  
-    return responseData;
-  
-    } catch (error) {
-      
-    }
+    };
+  } catch (error) {
+    // fallback to live fetch
+  }
+
   const client = new Client();
 
   const fetchAllCategories = async () => {
@@ -131,154 +181,144 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const categories = await fetchAllCategories();
   const paths = categories.children.flatMap((category: { url_path: string; children: any[] }) => {
     return category.children?.map((subCategory: { url_path: string }) => {
-      let urlPath =subCategory.url_path.split('/')
+      let urlPath = subCategory.url_path.split('/');
       return {
-        params: { slug: urlPath[0],  slug2: urlPath[1]},
+        params: { slug: urlPath[0], slug2: urlPath[1] },
       };
     }) || [];
   });
 
-    let responseData = {
-      paths,
-      fallback: false,
-    }
-    return responseData;
-  
-}
+  return {
+    paths,
+    fallback: false,
+  };
+};
 
 
-
-// STATIC PROPS
+// ==================== STATIC PROPS ====================
 
 export const getStaticProps: GetStaticProps = async ({ params, query }: any) => {
-  const { slug,slug2 } = params as { slug: string ,slug2: string;};
-  const urlPath=slug+'/'+slug2.replace(/\.html$/, '')
+  const { slug, slug2 } = params as { slug: string; slug2: string };
+  const urlPath = slug + '/' + slug2.replace(/\.html$/, '');
 
-  const cacheStaticProps= createHash('md5')
+  const cacheStaticProps = createHash('md5')
     .update(urlPath)
-    .digest('hex')
+    .digest('hex');
 
+  let cacheStaticPropsPath: any;
+  const isBuildTime = process.env.BUILD_MODE === 'build';
 
-
-
-
-let cacheStaticPropsPath:any
- const isBuildTime = process.env.BUILD_MODE === 'build';
-
-
-
-// ====================== BUILD TIME ============================
-
+  // ====================== BUILD TIME ============================
   if (isBuildTime) {
+    cacheStaticPropsPath = path.resolve(`./cacheM/category/${cacheStaticProps}.json`);
 
-     cacheStaticPropsPath= path.resolve(`./cacheM/category/${cacheStaticProps}.json`)
-    
     try {
       let cachedProps = JSON.parse(await fs.readFile(cacheStaticPropsPath, 'utf-8'));
       return {
-      ...cachedProps,
+        ...cachedProps,
         revalidate: 10,
       };
     } catch (error) {
-      
+      // continue to fresh fetch
     }
   }
-
-
 
   const client = new Client();
+  const page = query?.page ? parseInt(query.page as string, 10) : 1;
 
-  // Handle slug and page from params and query
-  //const slug = params?.slug2 || params?.slug; // Use slug2 if available, fallback to slug
-  const page = query?.page ? parseInt(query.page as string, 10) : 1; // Get page from query or default to 1
-
-
-
-  // Fetch category data based on URL key
   const fetchCategoryByURLKey = async (urlKey: string, page: number) => {
-    console.log('Generating collection '+urlKey)
+    console.log('Generating collection ' + urlKey);
     try {
-    const response = await client.fetchSubCategoryDataByUrlKey(urlKey, page);
-    return response?.categoryList[0] || null;
-  } catch (error) {
-    return null;
-  }
-};
-
-try {
-  const collectionData = await client.fetchCollectionPage(urlPath as string);
-  const collection = collectionData?.data?.categoryList?.[0] || null;
-
-  const category = await fetchCategoryByURLKey(urlPath as string, page) || null;
-  const uid = category?.uid || null;
-
-  // Fetch products for the category by UID and page
-  let allProductList: any[] = []
-  const fetchProductsByUID = async (uid: string, currentPage: number) => {
-    try {
-    const response = await client.fetchSubCategoryData(uid, currentPage);
-    return response || null;
-  } catch (error) {
-    return null;
-  }
-};
-
-let productsRes = uid ? await fetchProductsByUID(uid, page) : null;
-  
-  if (productsRes.products) {
-
-    productsRes.products.items.forEach((item: any) => {
-      allProductList.push(item)
-    })
-
-
-  }
-
-  let responseData={
-    props: {
-      allProductList,      
-      category,           
-      currentPage: page,  
-      productsRes,        
-      collection,         
-    },
-    revalidate: 10,
+      const response = await client.fetchSubCategoryDataByUrlKey(urlKey, page);
+      return response?.categoryList[0] || null;
+    } catch (error) {
+      return null;
     }
-    if (isBuildTime) {await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));}
-    return responseData;
-
-  
-} catch (error) {
-  return {
-    props: {
-      allProductList: [],  
-      category: null,     
-      currentPage: page,  
-      productsRes: null,  
-      collection: null,   
-    },
-    revalidate: 10,
   };
-}
+
+  try {
+    const collectionData = await client.fetchCollectionPage(urlPath as string);
+    const collection = collectionData?.data?.categoryList?.[0] || null;
+
+    const category = (await fetchCategoryByURLKey(urlPath as string, page)) || null;
+    const uid = category?.uid || null;
+
+    let allProductList: any[] = [];
+
+    const fetchProductsByUID = async (uid: string, currentPage: number) => {
+      try {
+        const response = await client.fetchSubCategoryData(uid, currentPage);
+        return response || null;
+      } catch (error) {
+        return null;
+      }
+    };
+
+    let productsRes = uid ? await fetchProductsByUID(uid, page) : null;
+
+    if (productsRes?.products) {
+      productsRes.products.items.forEach((item: any) => {
+        allProductList.push(item);
+      });
+    }
+
+    let responseData = {
+      props: {
+        allProductList,
+        category,
+        currentPage: page,
+        productsRes,
+        collection,
+      },
+      revalidate: 10,
+    };
+
+    if (isBuildTime) {
+      await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));
+    }
+
+    return responseData;
+  } catch (error) {
+    return {
+      props: {
+        allProductList: [],
+        category: null,
+        currentPage: page,
+        productsRes: null,
+        collection: null,
+      },
+      revalidate: 10,
+    };
+  }
 };
 
 
-const Categories = ({ allProductList, category, productsRes, collection,categories,showRibbon, isMobile
-  // BlogContent
-}: any) => {
-  
-  const router = useRouter()
-  const url = router.asPath
-  const CategoryImage = category?.image || '/default-image.jpg'
-  const fileExtension = CategoryImage.split('.').pop()?.toLowerCase() || "jpg";
-  const { slug, slug2, slug3, ...rest } = router.query;
+// ==================== PAGE COMPONENT ====================
 
+const Categories = ({
+  allProductList,
+  category,
+  productsRes,
+  collection,
+  categories,
+  showRibbon,
+  isMobile,
+}: any) => {
+  const router = useRouter();
+  const url = router.asPath.split('?')[0]; // clean path without query
+
+  const rawImage = category?.image || collection?.image || '/Logo/Logo.png' || '/default-image.jpg';
+  const CategoryImage = rawImage.startsWith('http')
+    ? rawImage
+    : `${process.env.baseURLWithoutTrailingSlash}${rawImage.startsWith('/') ? '' : '/'}${rawImage}`;
+
+  const fileExtension = CategoryImage.split('.').pop()?.toLowerCase()?.split('?')[0] || 'jpg';
+
+  const { slug, slug2, slug3, ...rest } = router.query;
   const slugs = [slug, slug2, slug3, ...Object.values(rest)].filter(Boolean);
-  // Get all slugs from query
-  //const slugs = [slug, slug2, slug3, ...Object.values(rest)].filter(Boolean);
 
   const findCategoryName = (key: string, items?: any): string | null => {
-    if (!Array.isArray(items)) return null; // Ensure items is an array
+    if (!Array.isArray(items)) return null;
 
     for (const item of items) {
       if (item.url_key === key) {
@@ -291,68 +331,89 @@ const Categories = ({ allProductList, category, productsRes, collection,categori
     }
     return null;
   };
+
+  const breadcrumbs = [
+    { name: 'Home', path: '' },
+    ...slugs.map((slugPart: any, index) => ({
+      name:
+        findCategoryName(slugPart, categories?.data?.categories?.items) ||
+        String(slugPart).replace(/-/g, ' '),
+      path: `/${slugs.slice(0, index + 1).join('/')}`,
+    })),
+  ];
+
+  const CollectionDescription = collection?.description || null;
+  const pageTitle = category?.meta_title || category?.name || collection?.name || '';
+  // const pageDescription = category?.meta_description || collection?.meta_description || category?.description || '';
+  // Clean HTML from description for meta tag
+function getMetaDescription(description: any): string {
+  if (!description) return '';
+
+  let htmlData = typeof description === 'object' && description.html
+    ? description.html
+    : String(description);
+
+  return htmlData
+    .replace(/<style[^>]*>.*?<\/style>/gi, '')
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/<[^>]+>/g, '')          // strip tags
+    .replace(/([\r\n]+ +)+/g, ' ')    // clean whitespace
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);                   // meta description limit
+}
+
+// Usage in component
+const pageDescription =
+  category?.meta_description?.trim() ||
+  getMetaDescription(category?.description) ||
+  getMetaDescription(collection?.description) ||
+  '';
+
   
- // Create breadcrumb array dynamically by matching slugs to category names
-//  const breadcrumbs = [
-//   { name: 'Home', path: '' },
-//   ...slugs.map((slugPart: any, index) => ({
-//     name: findCategoryName(slugPart, categories?.data?.categories?.items) || slugPart.replace(/-/g, ' '),
-//     path: `/${slugs.slice(0, index + 1).join('/')}`,
-//   })),
-// ];
-
-const breadcrumbs = [
-  { name: 'Home', path: '' },
-  ...slugs.map((slugPart: any, index) => ({
-    name: findCategoryName(slugPart, categories?.data?.categories?.items) || slugPart.replace(/-/g, ' '),
-    path: `/${slugs.slice(0, index + 1).join('/')}`,
-  })),
-];
-
-const CollectionDescription = collection?.description || null
+  const canonicalUrl = `${process.env.baseURLWithoutTrailingSlash}${url}`;
 
   return (
     <>
-
       <Head>
-        <meta charSet="UTF-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-   
-        <meta name="robots" content="index, follow"/>
-        <link rel="canonical" href={`${process.env.baseURLWithoutTrailingSlash}${url}`}/>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <title>{`${category?.meta_title || category?.name}`}</title>
-        <meta name="title" content={`${category?.meta_title || category?.name}`}/>
-        {category?.meta_description && (
-          <meta name="description" content={category?.meta_description}/>
-        )}
+        <meta name="robots" content="noindex, nofollow" />
+        <link rel="canonical" href={canonicalUrl} />
+
+        <title>{pageTitle}</title>
+        <meta name="title" content={pageTitle} />
+        {pageDescription && <meta name="description" content={pageDescription} />}
         {category?.meta_keywords && (
-          <meta name="keywords" content={category?.meta_keywords}/>
+          <meta name="keywords" content={category.meta_keywords} />
         )}
 
-
-        <meta property="og:title" content={`${category?.meta_title || category?.name}`}/>
-        {category?.meta_description && (
-        <meta property="og:description" content={category?.meta_description}/>
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={pageTitle} />
+        {pageDescription && (
+          <meta property="og:description" content={pageDescription} />
         )}
-        <meta property="og:url" content={`${process.env.baseURLWithoutTrailingSlash}${url}`}/>
-        <meta property="og:type" content="category"/>
-        <meta property="og:image" content={CategoryImage}/>
-        <meta property="og:image:secure_url" content={CategoryImage}/>
-        <meta property="og:image:width" content="800"/>
-        <meta property="og:image:height" content="800"/>
-        <meta property="og:image:type" content={`image/${fileExtension}`}/>
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:site_name" content="Headora" />
+        <meta property="og:image" content={CategoryImage} />
+        <meta property="og:image:secure_url" content={CategoryImage} />
+        <meta property="og:image:width" content="800" />
+        <meta property="og:image:height" content="800" />
+        <meta property="og:image:type" content={`image/${fileExtension}`} />
 
-        <meta name="twitter:card" content="summary_large_image"/>
-        <meta name="twitter:title" content={`${category?.meta_title || category?.name}`}/>
-        {category?.meta_description && (
-        <meta name="twitter:description" content={category?.meta_description}/>
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={pageTitle} />
+        {pageDescription && (
+          <meta name="twitter:description" content={pageDescription} />
         )}
-        <meta name="twitter:image" content={CategoryImage}/>
+        <meta name="twitter:image" content={CategoryImage} />
       </Head>
-      {/* <BreadcrumbSchema breadcrumbs={breadcrumbs}/> */}
+
       <BreadcrumbSchema breadcrumbs={breadcrumbs} />
-      <CategorySchema category={category} url={`${slug}/${slug2}`}/>
+      <CategorySchema category={category || collection} url={`${slug}/${slug2}`} />
       <ProductSchema products={allProductList} />
 
       {category?.display_mode === "PAGE" ? (
@@ -361,16 +422,12 @@ const CollectionDescription = collection?.description || null
           <CollectionBreadCrumbs Data={collection} />
           <SubCollectionListing Collection={collection} />
           <CollectionReletatedProducts Data={category} Collection={collection} />
-          {/* <CollectionContent BlogContent={BlogContent}/> */}
-
-          <Content description={CollectionDescription}/>
+          <Content description={CollectionDescription} />
         </>
       ) : (
         <>
-        
-        <CollectionBreadCrumbs Data={collection} />
-        <CollectionHeader Data={collection} />
-          {/* <CategoryHeader Data={{ name: category?.name, description:category?.short_description }} categories={categories}/> */}
+          <CollectionBreadCrumbs Data={collection} />
+          <CollectionHeader Data={collection} />
           <CategoriesProducts
             Data={{ name: category?.name }}
             categoryDetail={category}

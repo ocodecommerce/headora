@@ -42,6 +42,107 @@ import {fetchProductDetailURLKey} from "./ProductDetail_URL_Key"
 
 export class Client {
 
+
+
+    async generateCustomerToken(email: string, password: string) {
+        try {
+          const response = await fetch(`${process.env.magentoEndpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+                mutation GenerateCustomerToken($email: String!, $password: String!) {
+                  generateCustomerToken(email: $email, password: $password) {
+                    token
+                  }
+                }
+              `,
+              variables: {
+                email,
+                password,
+              },
+            }),
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+      
+            // Magento returns errors inside the JSON even with 200 status
+            if (data.errors?.length) {
+              throw new Error(data.errors[0].message || "Login failed");
+            }
+      
+            return data; // { data: { generateCustomerToken: { token: "..." } } }
+          } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        } catch (error: any) {
+          console.error("generateCustomerToken error:", error);
+          throw error; // re-throw so the UI can show the message
+        }
+      }
+      
+      async createCustomerV2(input: {
+        firstname: string;
+        lastname: string;
+        email: string;
+        password: string;
+        is_subscribed?: boolean;
+      }) {
+        try {
+          const response = await fetch(`${process.env.magentoEndpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+                mutation CreateCustomerV2($input: CustomerCreateInput!) {
+                  createCustomerV2(input: $input) {
+                    customer {
+                      firstname
+                      lastname
+                      email
+                    }
+                  }
+                }
+              `,
+              variables: {
+                input: {
+                  firstname: input.firstname,
+                  lastname: input.lastname,
+                  email: input.email,
+                  password: input.password,
+                  // uncomment if your Magento schema supports it
+                  // is_subscribed: input.is_subscribed ?? false,
+                },
+              },
+            }),
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+      
+            if (data.errors?.length) {
+              throw new Error(data.errors[0].message || "Could not create account");
+            }
+      
+            return data; // { data: { createCustomerV2: { customer: {...} } } }
+          } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        } catch (error: any) {
+          console.error("createCustomerV2 error:", error);
+          throw error;
+        }
+      }
+
+
+
+
+
     async fetchCategories() {
         try {
 

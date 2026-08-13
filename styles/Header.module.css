@@ -627,3 +627,331 @@ font-size: 10px;
 .iconContainer:hover .whishlistGoldenIcon {
   opacity: 1;
 }
+
+
+/* FOR BOX SIGNIN */
+
+/* ===================== SIGN IN MODAL (Venia style) ===================== */
+
+.signInTrigger {
+  position: relative;
+}
+.signInTrigger:hover .signInModalOverlay {
+text-decoration: underline;
+}
+.signInModalOverlay {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  padding-top: 8px; /* small gap under header */
+}
+
+.signInModal {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 450px;
+  max-width: calc(100vw - 24px);
+  padding: 28px 24px 24px;
+  animation: signInFadeIn 0.18s ease-out;
+}
+
+@keyframes signInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.signInTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #1a1a1a;
+  margin: 0 0 35px 0;
+  text-align: left;
+}
+
+.signInForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.formInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  border-color: #3d3fe0;
+  box-shadow: 0 0 0 1px #3d3fe0;
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper .formInput {
+  padding-right: 44px;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passwordToggle:hover {
+  color: #3d3fe0;
+}
+
+.forgotPassword {
+  margin-top: -4px;
+}
+
+.forgotPassword a {
+  font-size: 13px;
+  color: #3d3fe0;
+  text-decoration: none;
+}
+
+.forgotPassword a:hover {
+  text-decoration: underline;
+}
+
+.signInError {
+  margin: 0;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.signInBtn {
+  width: 60%;
+  height: 40px;
+  background: #3d3fe0;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 4px;
+}
+
+.signInBtnOuter{
+width: 100%;
+display: flex;
+flex-direction: column;
+gap: 16px;
+align-items: center;
+
+}
+
+.signInBtn:hover:not(:disabled) {
+  background: #1557b0;
+}
+
+.signInBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.createAccountBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 40px;
+  background: #ffffff;
+  color: #3d3fe0;
+  border: 1.5px solid #3d3fe0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.createAccountBtn:hover {
+  background: #f0f6ff;
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+  .signInModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 80px 16px 16px;
+    z-index: 2000;
+  }
+
+  .signInModal {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+
+/* Already have most styles – add these */
+
+.linkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #0a28ed;
+  cursor: pointer;
+  text-decoration: capitalize;
+}
+.linkBtn:hover {
+  text-decoration: underline;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3d3fe0;
+  cursor: pointer;
+}
+
+.modalBtnRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  flex: 1;
+  height: 44px;
+  background: #ffffff;
+  color: #3d3fe0;
+  border: 1.5px solid #3d3fe0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cancelBtn:hover {
+  background: #f0f6ff;
+}
+
+.modalBtnRow .signInBtn {
+  flex: 1;
+  margin-top: 0;
+}
+
+.signInSuccess {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  color: #166534;
+  font-size: 13px;
+}
+
+.recoverText {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 16px 0;
+  line-height: 1.45;
+}
+
+/* Sign In trigger – underline when modal is open */
+.signInTrigger {
+  position: relative;
+  cursor: pointer;
+}
+
+.signInTriggerActive {
+  position: relative;
+}
+
+.signInTriggerActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;          /* adjust distance under the text */
+  height: 4px;
+  background-color: #3d3fe0;  /* Venia blue */
+  border-radius: 1px;
+}
+
+/* Optional: also underline on hover */
+.signInTrigger:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 4px;
+  background-color: #3d3fe0;
+  border-radius: 1px;
+}

@@ -7,7 +7,7 @@ interface ContentProps {
 
 export default function Content({ description }: ContentProps) {
   
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   // Count words safely
   const countWords = (text: string | null | undefined): number => {
@@ -51,7 +51,7 @@ export default function Content({ description }: ContentProps) {
         dangerouslySetInnerHTML={{ __html: displayText || '' }}
       />
       
-      {isLongDescription && (
+      {/* {isLongDescription && (
         <span
           className={styles.showToggle}
           onClick={() => setIsExpanded(!isExpanded)}
@@ -65,7 +65,7 @@ export default function Content({ description }: ContentProps) {
         >
           {isExpanded ? 'Show less' : 'Show more'}
         </span>
-      )}
+      )} */}
     </div>
   );
 }

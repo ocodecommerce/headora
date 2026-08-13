@@ -7,23 +7,301 @@ import CartBag from "./CartBag";
 import { useRouter } from "next/router";
 import QuickSearch from "../Search/QuickSearch";
 
-function Header({ categoriesList,megamenu }: any) {
-  // console.log(megamenu,"megamenu")
-  const [isSearchOpen, setSearchOpen] = useState<boolean>(false); // New state for search input
+function Header({ categoriesList, megamenu }: any) {
+  const [isSearchOpen, setSearchOpen] = useState<boolean>(false);
   const [searchText, setSearchText] = useState<string>("");
-  const [searchResults, setSearchResults] = useState<any>(); // Store search results
+  const [searchResults, setSearchResults] = useState<any>();
   const [isLoading, setLoading] = useState<boolean>(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showCartBag, setShowCartBag] = useState(false);
   const [cartCount, setCartCount] = useState<any>(0);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [userLoggedIn, setUserLoggedIn] = useState<boolean | null>(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [userLoggedIn, setUserLoggedIn] = useState<boolean | null>(false);
 
-  // const categories = categoriesList?.data?.categories?.items[0]?.children || [];
+  // ========== SIGN IN MODAL STATE ==========
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [signInLoading, setSignInLoading] = useState(false);
+  const [signInError, setSignInError] = useState("");
+
   const inputRef = useRef<HTMLInputElement>(null);
-  const [categories, setCategories] = useState(categoriesList?.data?.categories?.items[0]?.children || [])
+  const [categories, setCategories] = useState(
+    categoriesList?.data?.categories?.items[0]?.children || []
+  );
   const client = new Client();
   const router = useRouter();
+
+
+  // ========== ADD THESE STATES (near other useState) ==========
+const [showCreateAccountModal, setShowCreateAccountModal] = useState(false);
+const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+
+// Create Account fields
+const [firstName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
+const [createEmail, setCreateEmail] = useState("");
+const [createPassword, setCreatePassword] = useState("");
+const [showCreatePassword, setShowCreatePassword] = useState(false);
+const [subscribeNews, setSubscribeNews] = useState(false);
+const [createLoading, setCreateLoading] = useState(false);
+const [createError, setCreateError] = useState("");
+
+// Forgot Password
+const [forgotEmail, setForgotEmail] = useState("");
+const [forgotLoading, setForgotLoading] = useState(false);
+const [forgotError, setForgotError] = useState("");
+const [forgotSuccess, setForgotSuccess] = useState("");
+
+const signInModalRef = useRef<HTMLDivElement>(null);
+const createAccountModalRef = useRef<HTMLDivElement>(null);
+const forgotPasswordModalRef = useRef<HTMLDivElement>(null);
+
+
+// ========== CLOSE MODALS ON OUTSIDE CLICK ==========
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    const target = event.target as HTMLElement;
+    if (target.closest(`.${styles.signInTrigger}`)) return;
+
+    if (showSignInModal && signInModalRef.current && !signInModalRef.current.contains(target)) {
+      setShowSignInModal(false);
+      setSignInError("");
+    }
+    if (showCreateAccountModal && createAccountModalRef.current && !createAccountModalRef.current.contains(target)) {
+      setShowCreateAccountModal(false);
+      setCreateError("");
+    }
+    if (showForgotPasswordModal && forgotPasswordModalRef.current && !forgotPasswordModalRef.current.contains(target)) {
+      setShowForgotPasswordModal(false);
+      setForgotError("");
+      setForgotSuccess("");
+    }
+  };
+
+  if (showSignInModal || showCreateAccountModal || showForgotPasswordModal) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+}, [showSignInModal, showCreateAccountModal, showForgotPasswordModal]);
+
+
+// ========== OPEN SIGN IN ==========
+const checkUserLogin = async () => {
+  if (userLoggedIn) {
+    router.push("/customer/account/");
+    return;
+  }
+  setShowSignInModal(true);
+  setShowCreateAccountModal(false);
+  setShowForgotPasswordModal(false);
+  setSignInError("");
+};
+
+
+// ========== SIGN IN (generateCustomerToken) ==========
+const handleSignIn = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setSignInError("");
+  setSignInLoading(true);
+
+  try {
+    // GraphQL mutation: generateCustomerToken
+    const response = await client.generateCustomerToken(email, password);
+    // Expected shape: response.data.generateCustomerToken.token
+
+    const token = response?.data?.generateCustomerToken?.token;
+
+    if (token) {
+      // Store token
+      localStorage.setItem("customerToken", token);
+      // Optional: also set cookie if your backend needs it
+      // document.cookie = `customerToken=${token}; path=/; max-age=86400`;
+
+      setUserLoggedIn(true);
+      setShowSignInModal(false);
+      setEmail("");
+      setPassword("");
+
+      // Redirect after successful login
+      router.push("/customer/account/");
+    } else {
+      setSignInError("Invalid email or password.");
+    }
+  } catch (error: any) {
+    console.error("Sign in error:", error);
+    setSignInError(
+      error?.message ||
+      error?.graphQLErrors?.[0]?.message ||
+      "Something went wrong. Please try again."
+    );
+  } finally {
+    setSignInLoading(false);
+  }
+};
+
+
+// ========== CREATE ACCOUNT (createCustomerV2) ==========
+const handleCreateAccount = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setCreateError("");
+  setCreateLoading(true);
+
+  try {
+    // GraphQL mutation: createCustomerV2
+    const response = await client.createCustomerV2({
+      firstname: firstName,
+      lastname: lastName,
+      email: createEmail,
+      password: createPassword,
+      // is_subscribed: subscribeNews, // uncomment if your schema supports it
+    });
+
+    // Expected: response.data.createCustomerV2.customer
+    const customer = response?.data?.createCustomerV2?.customer;
+
+    if (customer) {
+      // Auto-login after registration
+      try {
+        const loginRes = await client.generateCustomerToken(createEmail, createPassword);
+        const token = loginRes?.data?.generateCustomerToken?.token;
+
+        if (token) {
+          localStorage.setItem("customerToken", token);
+          setUserLoggedIn(true);
+        }
+      } catch (loginErr) {
+        console.warn("Account created but auto-login failed", loginErr);
+      }
+
+      setShowCreateAccountModal(false);
+      setFirstName("");
+      setLastName("");
+      setCreateEmail("");
+      setCreatePassword("");
+      setSubscribeNews(false);
+
+      // Redirect after successful registration
+      router.push("/customer/account/");
+    } else {
+      setCreateError("Could not create account. Please try again.");
+    }
+  } catch (error: any) {
+    console.error("Create account error:", error);
+    setCreateError(
+      error?.message ||
+      error?.graphQLErrors?.[0]?.message ||
+      "Something went wrong. Please try again."
+    );
+  } finally {
+    setCreateLoading(false);
+  }
+};
+
+
+// ========== FORGOT / RECOVER PASSWORD ==========
+const handleForgotPassword = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setForgotError("");
+  setForgotSuccess("");
+  setForgotLoading(true);
+
+  try {
+    // TODO: Connect your requestPasswordResetEmail mutation
+    // Example:
+    // const response = await client.requestPasswordResetEmail(forgotEmail);
+    // if (response?.data?.requestPasswordResetEmail) {
+    //   setForgotSuccess("If an account exists with this email, you will receive a password reset link shortly.");
+    // }
+
+    // Temporary placeholder
+    console.log("Password reset requested for:", forgotEmail);
+    setForgotSuccess(
+      "If an account exists with this email, you will receive a password reset link shortly."
+    );
+  } catch (error: any) {
+    console.error("Forgot password error:", error);
+    setForgotError(
+      error?.message ||
+      error?.graphQLErrors?.[0]?.message ||
+      "Something went wrong. Please try again."
+    );
+  } finally {
+    setForgotLoading(false);
+  }
+};
+
+
+// ========== SWITCH BETWEEN MODALS ==========
+const openCreateAccount = () => {
+  setShowSignInModal(false);
+  setShowForgotPasswordModal(false);
+  setShowCreateAccountModal(true);
+  setCreateError("");
+};
+
+const openForgotPassword = () => {
+  setShowSignInModal(false);
+  setShowCreateAccountModal(false);
+  setShowForgotPasswordModal(true);
+  setForgotError("");
+  setForgotSuccess("");
+  setForgotEmail(email); // pre-fill from sign-in if available
+};
+
+const openSignIn = () => {
+  setShowCreateAccountModal(false);
+  setShowForgotPasswordModal(false);
+  setShowSignInModal(true);
+  setSignInError("");
+};
+
+const closeAllModals = () => {
+  setShowSignInModal(false);
+  setShowCreateAccountModal(false);
+  setShowForgotPasswordModal(false);
+  setSignInError("");
+  setCreateError("");
+  setForgotError("");
+  setForgotSuccess("");
+};
+
+  // Close modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        signInModalRef.current &&
+        !signInModalRef.current.contains(event.target as Node)
+      ) {
+        // Only close if click is outside the modal itself
+        const target = event.target as HTMLElement;
+        if (!target.closest(`.${styles.signInTrigger}`)) {
+          setShowSignInModal(false);
+          setSignInError("");
+        }
+      }
+    };
+
+    if (showSignInModal) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showSignInModal]);
+
+  // Close modal on route change
+  useEffect(() => {
+    const handleRouteChange = () => {
+      setShowSignInModal(false);
+      setSignInError("");
+    };
+    router.events.on("routeChangeStart", handleRouteChange);
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+    };
+  }, [router.events]);
 
   function handleStorageChange() {
     let newcartCount: any = localStorage.getItem("cartCount")
@@ -42,10 +320,9 @@ function Header({ categoriesList,megamenu }: any) {
     }
   }
 
-
   const sortOnlyChildrenAlphabetically = (items: any[]): any[] => {
     if (!Array.isArray(items)) return items;
-  
+
     return items.map((item: any) => ({
       ...item,
       children: Array.isArray(item?.children)
@@ -63,33 +340,6 @@ function Header({ categoriesList,megamenu }: any) {
   };
 
 
-  const checkUserLogin = async () => {
-    try {
-      if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-        console.log("Skipping user sync on localhost")
-        return
-      }
-      const response = await fetch(`${process.env.baseURL}fcprofile/sync/index`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-      if (!response.ok) throw new Error("Network response was not ok")
-      const user = await response.json()
-      if (user.logged_in) {
-        setUserLoggedIn(true)
-        // await fetchWishlistId()
-      } else {
-        setUserLoggedIn(false)
-        
-        router.push("/customer/account/login/")
-      }
-    } catch (error) {
-      console.error("Error checking user login status:", error)
-      setUserLoggedIn(false)
-    }
-  }
 
 
 
@@ -97,73 +347,58 @@ function Header({ categoriesList,megamenu }: any) {
     const fetchMegaMenu = async () => {
       try {
         setLoading(true);
-  
-        // 1️⃣ Try the new megaMenuJson API first
-            {/* Change bottom feom refiend cat to categories to ADD MEGA Menu */}
-            
-        const data = megamenu?.data
-        // const data:any = []
-// console.log(data,"data")
-        if (data){
-     
 
-  
-        let menuItems: any[] = [];
-  
-        if (data?.megaMenuJson?.success && Array.isArray(data.megaMenuJson.items)) {
+        const data = megamenu?.data;
 
-          console.log("✅ Good Going");
-          // ✅ New API structure (already JSON)
-          menuItems = data.megaMenuJson.items.map((item: any, i: number) => ({
-            uid: item.uid || `menu-${i}`,
-            name: item.title,
-            url_path: item.link_url?.replace(/\.html$/, "") || "",
-            image: item.image || "",
-            children:
-              item.children?.map((child: any, j: number) => ({
-                uid: child.uid || `menu-${i}-${j}`,
-                name: child.title,
-                url_path: child.link_url?.replace(/\.html$/, "") || "",
-                children:
-                  child.children?.map((sub: any, k: number) => ({
-                    uid: sub.uid || `menu-${i}-${j}-${k}`,
-                    name: sub.title,
-                    url_path: sub.link_url?.replace(/\.html$/, "") || "",
-                    children: sub.children || [],
-                  })) || [],
-              })) || [],
-          }));
+        if (data) {
+          let menuItems: any[] = [];
 
+          if (data?.megaMenuJson?.success && Array.isArray(data.megaMenuJson.items)) {
+            console.log("✅ Good Going");
+            menuItems = data.megaMenuJson.items.map((item: any, i: number) => ({
+              uid: item.uid || `menu-${i}`,
+              name: item.title,
+              url_path: item.link_url?.replace(/\.html$/, "") || "",
+              image: item.image || "",
+              children:
+                item.children?.map((child: any, j: number) => ({
+                  uid: child.uid || `menu-${i}-${j}`,
+                  name: child.title,
+                  url_path: child.link_url?.replace(/\.html$/, "") || "",
+                  children:
+                    child.children?.map((sub: any, k: number) => ({
+                      uid: sub.uid || `menu-${i}-${j}-${k}`,
+                      name: sub.title,
+                      url_path: sub.link_url?.replace(/\.html$/, "") || "",
+                      children: sub.children || [],
+                    })) || [],
+                })) || [],
+            }));
+          } else if (categoriesList?.data?.categories?.items?.[0]?.children) {
+            console.log("✅ Fallback to Magento categories API structure");
+            menuItems = categoriesList.data.categories.items[0].children;
+          } else {
+            console.warn("⚠️ No valid menu data found from either API");
+          }
 
-        } else if (categoriesList?.data?.categories?.items?.[0]?.children) {
-          console.log("✅ Fallback to Magento categories API structure");
-          // ✅ Fallback to Magento categories API structure
-          menuItems = categoriesList.data.categories.items[0].children;
+          setCategories(sortOnlyChildrenAlphabetically(menuItems));
         } else {
-          console.warn("⚠️ No valid menu data found from either API");
+          setLoading(false);
         }
-  
-        // setCategories(menuItems);
-        setCategories(sortOnlyChildrenAlphabetically(menuItems));
-
-      }else{
-        setLoading(false);
-      }
       } catch (error) {
         console.error("Error fetching mega menu:", error);
       } finally {
         setLoading(false);
       }
     };
-  
+
     fetchMegaMenu();
   }, []);
-
 
   useEffect(() => {
     const handleRouteChange = () => {
       setLoading(false);
-      closeSearch()
+      closeSearch();
     };
 
     router.events.on("routeChangeComplete", handleRouteChange);
@@ -195,6 +430,7 @@ function Header({ categoriesList,megamenu }: any) {
   const toggleCartBag = () => {
     setShowCartBag(!showCartBag);
   };
+
   const updateCartCount = (newcartCount: any) => {
     localStorage.setItem("cartCount", newcartCount);
     if (parseInt(newcartCount) > 0) {
@@ -202,6 +438,7 @@ function Header({ categoriesList,megamenu }: any) {
     }
     setShowCartBag(true);
   };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -216,67 +453,60 @@ function Header({ categoriesList,megamenu }: any) {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const closeSearch = () => {
     setSearchOpen(false);
-    setSearchText(""); // Clear search input
-    setSearchResults([]); // Optional: clear results
+    setSearchText("");
+    setSearchResults([]);
+  };
 
-  }
   const toggleSearch = () => {
     setSearchOpen((prev) => {
       const newState = !prev;
       if (!newState) {
-        setSearchText(""); // Clear search input
-        setSearchResults([]); // Optional: clear results
+        setSearchText("");
+        setSearchResults([]);
       }
       return newState;
     });
   };
-  // Fetch search suggestions dynamically
+
   const handleSearchChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
 
     if (text.length >= 2) {
-      // Trigger search for 2+ characters
       setLoading(true);
-
       const data = await client.fetchSearchResult(text, 1);
       setSearchResults(data || []);
       setLoading(false);
     } else {
-      setSearchResults([]); // Clear results if input is cleared
+      setSearchResults([]);
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter" && searchText.trim()) {
-      setLoading(true); // Show loading spinner
-      (event.target as HTMLInputElement).blur(); // Optional
+      setLoading(true);
+      (event.target as HTMLInputElement).blur();
       router.push(`/search/?query=${encodeURIComponent(searchText.trim())}`);
-      // Don't close search here — it'll be closed after route change
     }
   };
 
-const refinedCategories = (categories || []).map((category: any) => {
-  const refinedChildren = category.children?.map((subCategory: any) => {
-    const refinedSubChildren = subCategory.children?.slice(0, 4); // Keep slice if you still want to limit the sub-sub categories
+  const refinedCategories = (categories || []).map((category: any) => {
+    const refinedChildren = category.children?.map((subCategory: any) => {
+      const refinedSubChildren = subCategory.children?.slice(0, 4);
+      return {
+        ...subCategory,
+        children: refinedSubChildren,
+      };
+    });
 
     return {
-      ...subCategory,
-      children: refinedSubChildren,
+      ...category,
+      children: refinedChildren,
     };
   });
-
-  return {
-    ...category,
-    children: refinedChildren,
-  };
-});
-
-
-
-  // ==================Contact us Drop Down==============
 
   const handleMouseEnter = () => {
     setIsDropdownOpen(true);
@@ -286,7 +516,6 @@ const refinedCategories = (categories || []).map((category: any) => {
     setIsDropdownOpen(false);
   };
 
-  // console.log(refinedCategories, 'refinedCategories')
   return (
     <nav className={styles.navbar}>
       <header className={styles.header}>
@@ -305,37 +534,7 @@ const refinedCategories = (categories || []).map((category: any) => {
             )}
           </Link>
         </div>
-        {/* <div className={styles.contactUsDropdownContainer} onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}>
-          <span className={styles.contactUsToggle} style={{ fontSize: '12px' }} >
-            <Image
-              src="/Images/person-call.svg"
-              alt="person call"
-              width={16}
-              height={16}
-              className={styles.contactUsIcon}
-            />
-            <span>Contact Us</span>
 
-
-          </span>
-          <div style={{ marginTop: '10px', borderTop: '1px solid #e6e6e6', paddingTop: '10px' }} className={`${styles.contactUsDropdownContent}${isDropdownOpen ? styles.open : ''}`} >
-            <ul>
-              <span className={styles.contactUsDropdownlist} onClick={() => { window.open(`${process.env.baseURLWithoutTrailingSlash}/faq`, "_blank") }}>
-                <Image src="/Images/contact.png" alt="person call" width={15} height={15} />
-                Contact
-              </span>
-              <span className={styles.contactUsDropdownlist}>
-                <Image src="/Images/chat-118.png" alt="chat" width={15} height={15} />
-                Chat
-              </span>
-              <a className={styles.personalChat} href="tel:+18006903736">
-                <Image src="/Images/call.png" alt="person call" width={13} height={13} />
-                +1 800-690-3736
-              </a>
-            </ul>
-          </div>
-        </div> */}
         <nav className={styles.nav}>
           <ul className={styles.navItems}>
             {categories.map((category: any) => (
@@ -343,10 +542,14 @@ const refinedCategories = (categories || []).map((category: any) => {
                 key={category.uid}
                 className={styles.navItem}
                 style={
-                  category.children.length < 5 ? { position: "relative" } : { position: "unset" }
+                  category.children.length < 5
+                    ? { position: "relative" }
+                    : { position: "unset" }
                 }
               >
-                <Link href={`/${category.url_path?.replace(/^\/+/, "")}`}>{category.name}</Link>
+                <Link href={`/${category.url_path?.replace(/^\/+/, "")}`}>
+                  {category.name}
+                </Link>
 
                 <>
                   {category.children.length > 0 && (
@@ -367,23 +570,26 @@ const refinedCategories = (categories || []).map((category: any) => {
                     </span>
                   )}
 
-                  {/* {category.children?.some((subCategory: any) => subCategory.product_count ? ( */}
-
-                 
-                  {category.children.length > 5 || category.children.some((child: any) => child.children && child.children.length > 0) ? (
-
-// {category.children.length > 5 || category.children.some((child: any) => child.children 
-
-// ) ? (
+                  {category.children.length > 5 ||
+                  category.children.some(
+                    (child: any) => child.children && child.children.length > 0
+                  ) ? (
                     <div className={styles.dropdown}>
-                      {category.name.toLowerCase() == "brands" ? (<h3 className={styles.MegaMenuBrandsHeading}>Brands</h3>) : (null)}
+                      {category.name.toLowerCase() == "brands" ? (
+                        <h3 className={styles.MegaMenuBrandsHeading}>Brands</h3>
+                      ) : null}
                       <div className={styles.megaMenuContainer}>
-
-                      <div
+                        <div
                           className={styles.categoryGrid}
                           style={{
-                            gridTemplateColumns: `repeat(${Math.min(category.children.length, 4)}, 1fr)`,
-                            gap: category.name.toLowerCase() === "brands" ? "10px" : undefined,
+                            gridTemplateColumns: `repeat(${Math.min(
+                              category.children.length,
+                              4
+                            )}, 1fr)`,
+                            gap:
+                              category.name.toLowerCase() === "brands"
+                                ? "10px"
+                                : undefined,
                           }}
                         >
                           {category.children.map((subCategory: any) => (
@@ -392,7 +598,14 @@ const refinedCategories = (categories || []).map((category: any) => {
                               className={styles.categoryColumn}
                             >
                               <span className={styles.categoryTitle}>
-                                <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>{subCategory.name}</Link>
+                                <Link
+                                  href={`/${subCategory.url_path?.replace(
+                                    /^\/+/,
+                                    ""
+                                  )}`}
+                                >
+                                  {subCategory.name}
+                                </Link>
                               </span>
 
                               {subCategory.children?.length > 0 && (
@@ -405,28 +618,31 @@ const refinedCategories = (categories || []).map((category: any) => {
                                           style={{
                                             padding:
                                               category.name.toLowerCase() ==
-                                                "brands"
+                                              "brands"
                                                 ? "0px"
                                                 : undefined,
                                           }}
                                         >
                                           {category.name.toLowerCase() !==
-                                            "brands" ? (
+                                          "brands" ? (
                                             <Link
                                               href={`${subSubCategory.url_path}`}
                                             >
                                               {subSubCategory.name}
                                             </Link>
-                                          ) :
-
-                                            null}
+                                          ) : null}
                                         </li>
                                       )
                                     )}
 
                                   {subCategory.children.length > 4 && (
                                     <li className={styles.viewAllLink}>
-                                      <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
+                                      <Link
+                                        href={`/${subCategory.url_path?.replace(
+                                          /^\/+/,
+                                          ""
+                                        )}`}
+                                      >
                                         View All
                                       </Link>
                                     </li>
@@ -438,7 +654,8 @@ const refinedCategories = (categories || []).map((category: any) => {
                         </div>
                         <div className={styles.bannerColumn}>
                           <Image
-                             height={20} width={23}
+                            height={20}
+                            width={23}
                             src={category.image || "/Images/Affirm banner.png"}
                             alt={`${category.name} Banner`}
                             className={styles.bannerImage}
@@ -446,105 +663,107 @@ const refinedCategories = (categories || []).map((category: any) => {
                         </div>
                       </div>
                     </div>
-                  ) : category.children
-                    ? (
-                      // ------------------start -------------------
-
-                      <div
+                  ) : category.children ? (
+                    <div
                       className={`${styles.dropdown} ${styles.dropdownShort}`}
-                        style={{ minWidth: "140px", width: 'unset', 
-                          padding: category.children?.length === 0 ? "0" : "10px 10px", 
-                          borderBottom: category.children?.length === 0 ? 'unset' :'', 
-                          boxShadow:category.children?.length === 0 ? 'unset' :'', 
-                          borderTop:category.children?.length === 0 ? 'unset' :''
-                           }}
-                      >
-                        <div className={styles.megaMenuContainerShort}>
-                          <div
-                            className={`${styles.categoryGrid} ${category.children.length >= 5
-                                ? styles.fewCategories
-                                : ""
-                              }`}
-                            style={{
-                              gap:
-                                category.name.toLowerCase() == "brands"
-                                  ? "10px"
-                                  : undefined,
-                              gridTemplateColumns: "repeat(1, 1fr)",
-                            }}
-                          >
-                            {category.children.map((subCategory: any) => (
-                              <div
-                                key={subCategory.uid}
-                                className={styles.categoryColumn}
-                              >
-                                <span className={styles.categoryTitle}>
-                                  <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
-                                    {subCategory.name}
-                                  </Link>
-                                </span>
+                      style={{
+                        minWidth: "140px",
+                        width: "unset",
+                        padding:
+                          category.children?.length === 0 ? "0" : "10px 10px",
+                        borderBottom:
+                          category.children?.length === 0 ? "unset" : "",
+                        boxShadow:
+                          category.children?.length === 0 ? "unset" : "",
+                        borderTop:
+                          category.children?.length === 0 ? "unset" : "",
+                      }}
+                    >
+                      <div className={styles.megaMenuContainerShort}>
+                        <div
+                          className={`${styles.categoryGrid} ${
+                            category.children.length >= 5
+                              ? styles.fewCategories
+                              : ""
+                          }`}
+                          style={{
+                            gap:
+                              category.name.toLowerCase() == "brands"
+                                ? "10px"
+                                : undefined,
+                            gridTemplateColumns: "repeat(1, 1fr)",
+                          }}
+                        >
+                          {category.children.map((subCategory: any) => (
+                            <div
+                              key={subCategory.uid}
+                              className={styles.categoryColumn}
+                            >
+                              <span className={styles.categoryTitle}>
+                                <Link
+                                  href={`/${subCategory.url_path?.replace(
+                                    /^\/+/,
+                                    ""
+                                  )}`}
+                                >
+                                  {subCategory.name}
+                                </Link>
+                              </span>
 
-                                {subCategory.children?.length > 0 && (
-                                  <ul className={styles.subCategoryList}>
-                                    {subCategory.name.toLowerCase() !== "brand" &&
-                                      subCategory.children.map(
-                                        (subSubCategory: any) => (
-                                          <li
-                                            key={subSubCategory.uid}
-                                            style={{
-                                              padding:
-                                                category.name.toLowerCase() ==
-                                                  "brands"
-                                                  ? "0px"
-                                                  : undefined,
-                                            }}
-                                          >
-                                            {category.name.toLowerCase() !==
-                                              "brands" ? (
-                                              <Link
-                                                href={`${subSubCategory.url_path}`}
-                                              >
-                                                {subSubCategory.name}
-                                              </Link>
-                                            ) : // category.children && category.children?.some((subCategory: any) => subCategory.length > 1) ? (
-                                              // <div className={styles.dropdown}>
-                                              //    <div className={styles.megaMenuContainer}>
-                                              //  <>Load</>
-                                              //  </div>
-                                              //  </div>
-                                              null}
-                                          </li>
-                                        )
-                                      )}
-
-                                    {subCategory.children.length > 4 && (
-                                      <li className={styles.viewAllLink}>
-                                        <Link href={`/${subCategory.url_path?.replace(/^\/+/, "")}`}>
-                                          View All
-                                        </Link>
-                                      </li>
+                              {subCategory.children?.length > 0 && (
+                                <ul className={styles.subCategoryList}>
+                                  {subCategory.name.toLowerCase() !== "brand" &&
+                                    subCategory.children.map(
+                                      (subSubCategory: any) => (
+                                        <li
+                                          key={subSubCategory.uid}
+                                          style={{
+                                            padding:
+                                              category.name.toLowerCase() ==
+                                              "brands"
+                                                ? "0px"
+                                                : undefined,
+                                          }}
+                                        >
+                                          {category.name.toLowerCase() !==
+                                          "brands" ? (
+                                            <Link
+                                              href={`${subSubCategory.url_path}`}
+                                            >
+                                              {subSubCategory.name}
+                                            </Link>
+                                          ) : null}
+                                        </li>
+                                      )
                                     )}
-                                  </ul>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+
+                                  {subCategory.children.length > 4 && (
+                                    <li className={styles.viewAllLink}>
+                                      <Link
+                                        href={`/${subCategory.url_path?.replace(
+                                          /^\/+/,
+                                          ""
+                                        )}`}
+                                      >
+                                        View All
+                                      </Link>
+                                    </li>
+                                  )}
+                                </ul>
+                              )}
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    ) : // {/* -----------------------end ----------------------- */}
-
-                    null}
+                    </div>
+                  ) : null}
                 </>
-                {/* )} */}
               </li>
             ))}
-
-
-
           </ul>
         </nav>
+
         <div className={styles.actions}>
-          {/* ================================= Quick Search================================ */}
           {isSearchOpen && (
             <QuickSearch
               isSearchOpen={isSearchOpen}
@@ -560,36 +779,37 @@ const refinedCategories = (categories || []).map((category: any) => {
           )}
 
           <div className={styles.actionItemWrapper}>
-            {/* <Link href="/cart"> */}
+            <div className={styles.actionItem} onClick={toggleSearch}>
+              <span className={styles.icon}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="icon-icon-_rq"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </span>
+              Search
+            </div>
 
-{/*  */}
-            {/* <li> */}
-              <div className={styles.actionItem} onClick={toggleSearch}>
+            {/* ========== SIGN IN TRIGGER ========== */}
+            <div
+                className={`${styles.actionItem} ${styles.signInTrigger} ${
+                  showSignInModal || showCreateAccountModal || showForgotPasswordModal
+                    ? styles.signInTriggerActive
+                    : ""
+                }`}
+                onClick={checkUserLogin}
+              >
                 <span className={styles.icon}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="icon-icon-_rq"
-                  >
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                  </svg>
-                </span>
-                Search
-              </div>
-
-
-
-              <div className={styles.actionItem} onClick={checkUserLogin}>
-                <span className={styles.icon}>
-                 
                   <Image
                     src="/Images/personHeader.png"
                     alt="person icon"
@@ -597,22 +817,132 @@ const refinedCategories = (categories || []).map((category: any) => {
                     height={24}
                   />
                 </span>
-                {!userLoggedIn? "Sign in" : ""}
+                {!userLoggedIn ? "Sign In" : "Account"}
               </div>
 
+            {/* ========== SIGN IN MODAL (Venia style) ========== */}
+            {showSignInModal && (
+              <div className={styles.signInModalOverlay}>
+                <div className={styles.signInModal} ref={signInModalRef}>
+                  <h2 className={styles.signInTitle}>Sign-In To Your Account</h2>
 
-            {/* </li> */}
+                  <form onSubmit={handleSignIn} className={styles.signInForm}>
+                    {/* Email */}
+                    <div className={styles.formGroup}>
+                      <label htmlFor="signInEmail" className={styles.formLabel}>
+                        Email address
+                      </label>
+                      <input
+                        id="signInEmail"
+                        type="email"
+                        className={styles.formInput}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        autoComplete="email"
+                        autoFocus
+                      />
+                    </div>
 
+                    {/* Password */}
+                    <div className={styles.formGroup}>
+                      <label
+                        htmlFor="signInPassword"
+                        className={styles.formLabel}
+                      >
+                        Password
+                      </label>
+                      <div className={styles.passwordWrapper}>
+                        <input
+                          id="signInPassword"
+                          type={showPassword ? "text" : "password"}
+                          className={styles.formInput}
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          required
+                          autoComplete="current-password"
+                        />
+                        <button
+                          type="button"
+                          className={styles.passwordToggle}
+                          onClick={() => setShowPassword(!showPassword)}
+                          aria-label={
+                            showPassword ? "Hide password" : "Show password"
+                          }
+                        >
+                          {/* Eye icon */}
+                          {showPassword ? (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                              <line x1="1" y1="1" x2="23" y2="23" />
+                            </svg>
+                          ) : (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                              <circle cx="12" cy="12" r="3" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
 
-            {/* <span className={styles.icon}>
+                    {/* Forgot Password */}
+                    <div className={styles.forgotPassword}>
+                      <Link href="/customer/account/forgotpassword/">
+                        Forgot Password?
+                      </Link>
+                    </div>
 
-              <Link href={'/boutique/wishlist/'} >
-                <div className={styles.iconContainer}>
-                  <Image className={styles.whishlistBlackIcon} src={'/Images/BlackHeart.png'} height={20} width={23} alt="wishlist icon" />
-                  <Image className={styles.whishlistGoldenIcon} src={'/Images/wishlistIcon.png'} height={20} width={23} alt="wishlist icon" />
+                    {/* Error message */}
+                    {signInError && (
+                      <p className={styles.signInError}>{signInError}</p>
+                    )}
+
+                    {/* SIGN IN button */}
+                    <div className={styles.signInBtnOuter}>
+                    <button
+                      type="submit"
+                      className={styles.signInBtn}
+                      disabled={signInLoading}
+                    >
+                      {signInLoading ? "SIGNING IN..." : "SIGN IN"}
+                    </button>
+
+                    {/* CREATE AN ACCOUNT button */}
+                    <Link
+                      href="/customer/account/create/"
+                      className={styles.createAccountBtn}
+                      onClick={() => setShowSignInModal(false)}
+                    >
+                      CREATE AN ACCOUNT
+                    </Link>
+                    </div>
+
+                  </form>
                 </div>
-              </Link>
-            </span> */}
+              </div>
+            )}
+
             <span className={styles.icon} onClick={toggleCartBag}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -634,13 +964,262 @@ const refinedCategories = (categories || []).map((category: any) => {
                 <span className={styles.cartCountNumber}>{cartCount}</span>
               )}
             </span>
-            {/* </Link> */}
+          </div>
+
+
+          {/* ========== SIGN IN MODAL ========== */}
+{showSignInModal && (
+  <div className={styles.signInModalOverlay}>
+    <div className={styles.signInModal} ref={signInModalRef}>
+      <h2 className={styles.signInTitle}>Sign-In To Your Account</h2>
+
+      <form onSubmit={handleSignIn} className={styles.signInForm}>
+        <div className={styles.formGroup}>
+          <label htmlFor="signInEmail" className={styles.formLabel}>
+            Email address
+          </label>
+          <input
+            id="signInEmail"
+            type="email"
+            className={styles.formInput}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+            autoFocus
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="signInPassword" className={styles.formLabel}>
+            Password
+          </label>
+          <div className={styles.passwordWrapper}>
+            <input
+              id="signInPassword"
+              type={showPassword ? "text" : "password"}
+              className={styles.formInput}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className={styles.passwordToggle}
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
+
+        <div className={styles.forgotPassword}>
+          <button type="button" className={styles.linkBtn} onClick={openForgotPassword}>
+            Forgot Password?
+          </button>
+        </div>
+
+        {signInError && <p className={styles.signInError}>{signInError}</p>}
+        <div className={styles.signInBtnOuter}>
+        <button type="submit" className={styles.signInBtn} disabled={signInLoading}>
+          {signInLoading ? "SIGNING IN..." : "SIGN IN"}
+        </button>
+
+        <button
+          type="button"
+          className={styles.createAccountBtn}
+          onClick={openCreateAccount}
+        >
+          CREATE AN ACCOUNT
+        </button>
+         </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+{/* ========== CREATE ACCOUNT MODAL ========== */}
+{showCreateAccountModal && (
+  <div className={styles.signInModalOverlay}>
+    <div className={styles.signInModal} ref={createAccountModalRef}>
+      <h2 className={styles.signInTitle}>Create an Account</h2>
+
+      <form onSubmit={handleCreateAccount} className={styles.signInForm}>
+        <div className={styles.formGroup}>
+          <label htmlFor="firstName" className={styles.formLabel}>First Name</label>
+          <input
+            id="firstName"
+            type="text"
+            className={styles.formInput}
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+            autoComplete="given-name"
+            autoFocus
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="lastName" className={styles.formLabel}>Last Name</label>
+          <input
+            id="lastName"
+            type="text"
+            className={styles.formInput}
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+            autoComplete="family-name"
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="createEmail" className={styles.formLabel}>Email</label>
+          <input
+            id="createEmail"
+            type="email"
+            className={styles.formInput}
+            value={createEmail}
+            onChange={(e) => setCreateEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div className={styles.formGroup}>
+          <label htmlFor="createPassword" className={styles.formLabel}>Password</label>
+          <div className={styles.passwordWrapper}>
+            <input
+              id="createPassword"
+              type={showCreatePassword ? "text" : "password"}
+              className={styles.formInput}
+              value={createPassword}
+              onChange={(e) => setCreatePassword(e.target.value)}
+              required
+              autoComplete="new-password"
+              minLength={8}
+            />
+            <button
+              type="button"
+              className={styles.passwordToggle}
+              onClick={() => setShowCreatePassword(!showCreatePassword)}
+              aria-label={showCreatePassword ? "Hide password" : "Show password"}
+            >
+              {showCreatePassword ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                  <line x1="1" y1="1" x2="23" y2="23" />
+                </svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
+        </div>
+
+        <label className={styles.checkboxLabel}>
+          <input
+            type="checkbox"
+            checked={subscribeNews}
+            onChange={(e) => setSubscribeNews(e.target.checked)}
+          />
+          <span>Subscribe to news and updates</span>
+        </label>
+
+        {createError && <p className={styles.signInError}>{createError}</p>}
+
+        <div className={styles.modalBtnRow}>
+          <button
+            type="button"
+            className={styles.cancelBtn}
+            onClick={closeAllModals}
+          >
+            CANCEL
+          </button>
+          <button
+            type="submit"
+            className={styles.signInBtn}
+            disabled={createLoading}
+          >
+            {createLoading ? "CREATING..." : "CREATE AN ACCOUNT"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
+
+{/* ========== RECOVER PASSWORD MODAL ========== */}
+{showForgotPasswordModal && (
+  <div className={styles.signInModalOverlay}>
+    <div className={styles.signInModal} ref={forgotPasswordModalRef}>
+      <h2 className={styles.signInTitle}>Recover Password</h2>
+
+      <p className={styles.recoverText}>
+        Please enter the email address associated with this account.
+      </p>
+
+      <form onSubmit={handleForgotPassword} className={styles.signInForm}>
+        <div className={styles.formGroup}>
+          <label htmlFor="forgotEmail" className={styles.formLabel}>
+            Email address
+          </label>
+          <input
+            id="forgotEmail"
+            type="email"
+            className={styles.formInput}
+            value={forgotEmail}
+            onChange={(e) => setForgotEmail(e.target.value)}
+            required
+            autoComplete="email"
+            autoFocus
+          />
+        </div>
+
+        {forgotError && <p className={styles.signInError}>{forgotError}</p>}
+        {forgotSuccess && <p className={styles.signInSuccess}>{forgotSuccess}</p>}
+
+        <div className={styles.modalBtnRow}>
+          <button
+            type="button"
+            className={styles.cancelBtn}
+            onClick={openSignIn}
+          >
+            CANCEL
+          </button>
+          <button
+            type="submit"
+            className={styles.signInBtn}
+            disabled={forgotLoading}
+          >
+            {forgotLoading ? "SUBMITTING..." : "SUBMIT"}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+        </div>
       </header>
+
       {showCartBag && (
         <CartBag
-          // showCartBag={showCartBag}
           toggleCartBag={toggleCartBag}
           updateCartCount={updateCartCount}
         />

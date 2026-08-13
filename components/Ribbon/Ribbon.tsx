@@ -95,12 +95,12 @@ useEffect(() => {
           <div className={styles.topRight}>
             <ul className={styles.topNav}>
             
-              <li>
+              {/* <li>
                 <a title="ABOUT US" href={`${process.env.baseURL}our-story`}>
                   ABOUT US
                 </a>
-              </li>
-              {isLoggedIn === true ? (
+              </li> */}
+              {/* {isLoggedIn === true ? (
                 <li>
                   <Link href={'/customer/account'}>
                   <Image src="/Images/account.png" height={20} width={20} alt="Account" />
@@ -125,7 +125,7 @@ useEffect(() => {
                     Signup
                   </a>
                 </li>
-              )}
+              )} */}
             </ul>
             <div className={styles.RibbonIcon}>
               {/* <Image
