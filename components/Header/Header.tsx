@@ -143,6 +143,44 @@ const handleSignIn = async (e: React.FormEvent) => {
 
 // CHECK"
 
+
+useEffect(() => {
+  const checkUserLogin = async () => {
+    try {
+
+      let userData = null;
+
+      if (!userData) {
+        if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+          console.log("Skipping API call on localhost due to CORS");
+          setUserLoggedIn(false);
+          return;
+        }
+
+        const response = await fetch(`${process.env.baseURL}fcprofile/sync/index`, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch user sync data");
+
+        userData = await response.json();
+        console.log("Sync API response:", userData);
+        sessionStorage.setItem("userSyncData", JSON.stringify(userData));
+      }
+      console.log(userData,!!userData?.logged_in, "userData");
+      setUserLoggedIn(!!userData?.logged_in);
+    } catch (error) {
+      console.error("Error during user sync:", error);
+      setUserLoggedIn(false);
+    }
+  };
+
+  checkUserLogin();
+}, []);
+
+
 useEffect(() => {
   const userDataString = sessionStorage.getItem("userSyncData");
   if (userDataString) {
