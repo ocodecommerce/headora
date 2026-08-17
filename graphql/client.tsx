@@ -43,7 +43,7 @@ import {fetchProductDetailURLKey} from "./ProductDetail_URL_Key"
 export class Client {
 
 
-
+// LOGIN
     async generateCustomerToken(email: string, password: string) {
         try {
           const response = await fetch(`${process.env.magentoEndpoint}`, {
@@ -83,7 +83,9 @@ export class Client {
           throw error; // re-throw so the UI can show the message
         }
       }
-      
+
+    //   CREATE ACCOUNT
+
       async createCustomerV2(input: {
         firstname: string;
         lastname: string;
@@ -135,6 +137,46 @@ export class Client {
           }
         } catch (error: any) {
           console.error("createCustomerV2 error:", error);
+          throw error;
+        }
+      }
+
+// RESET PASS EMAIL SEND
+      async requestPasswordResetEmail(email: string) {
+        try {
+          const response = await fetch(`${process.env.magentoEndpoint}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              query: `
+                mutation RequestPasswordResetEmail($email: String!) {
+                  requestPasswordResetEmail(email: $email)
+                }
+              `,
+              variables: {
+                email,
+              },
+            }),
+          });
+      
+          if (response.ok) {
+            const data = await response.json();
+      
+            // Magento returns errors inside the JSON even with 200 status
+            if (data.errors?.length) {
+              throw new Error(
+                data.errors[0].message || "Failed to request password reset"
+              );
+            }
+      
+            return data;
+          } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        } catch (error: any) {
+          console.error("requestPasswordResetEmail error:", error);
           throw error;
         }
       }

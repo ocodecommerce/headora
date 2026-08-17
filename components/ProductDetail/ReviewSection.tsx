@@ -61,6 +61,20 @@ function ReviewSection({ Data, AllReviews }: any) {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+
+  const openLoginModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openLoginModal"));
+  };
+
+  const openSignUpModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openSignUpModal"));
+  };
+
+
   // Check if user already submitted review for this product
   useEffect(() => {
     const storedReviewData = localStorage.getItem('reviewSubmitted');
@@ -216,19 +230,19 @@ function ReviewSection({ Data, AllReviews }: any) {
             <div className={styles.ReviewContent}>
 
 
-                <div className={styles.reviewLoginAlert}>
-                ⚠️ Only registered users can write reviews. Please{" "} 
+            <div className={styles.reviewLoginAlert}>
+                    ⚠️ Only registered users can write reviews. Please{" "}
 
-                  <a href="/customer/account/login">
-                    Login Here
-                  </a>
-                  {" "} or{" "}  
-                  <a href="/customer/account/login">
-                  create an account
-                  </a>
+                    <a href="#" onClick={openLoginModal}>
+                      Login Here
+                    </a>
 
+                    {" "}or{" "}
 
-                  </div>   
+                    <a href="#" onClick={openSignUpModal}>
+                      create an account
+                    </a>
+                  </div> 
                   </div>
                 </div>)}
 

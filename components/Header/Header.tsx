@@ -58,6 +58,34 @@ const signInModalRef = useRef<HTMLDivElement>(null);
 const createAccountModalRef = useRef<HTMLDivElement>(null);
 const forgotPasswordModalRef = useRef<HTMLDivElement>(null);
 
+// OPEN REF
+
+useEffect(() => {
+  const handleOpenLoginModal = () => {
+    setShowSignInModal(true);
+  };
+
+  window.addEventListener("openLoginModal", handleOpenLoginModal);
+
+  return () => {
+    window.removeEventListener("openLoginModal", handleOpenLoginModal);
+  };
+}, []);
+
+
+useEffect(() => {
+  const handleopenSignUpModal = () => {
+    setShowCreateAccountModal(true);
+  };
+
+  window.addEventListener("openSignUpModal", handleopenSignUpModal);
+
+  return () => {
+    window.removeEventListener("openSignUpModal", handleopenSignUpModal);
+  };
+}, []);
+
+
 
 // ========== CLOSE MODALS ON OUTSIDE CLICK ==========
 useEffect(() => {
@@ -262,30 +290,29 @@ const handleForgotPassword = async (e: React.FormEvent) => {
   setForgotLoading(true);
 
   try {
-    // TODO: Connect your requestPasswordResetEmail mutation
-    // Example:
-    // const response = await client.requestPasswordResetEmail(forgotEmail);
-    // if (response?.data?.requestPasswordResetEmail) {
-    //   setForgotSuccess("If an account exists with this email, you will receive a password reset link shortly.");
-    // }
+    const response = await client.requestPasswordResetEmail(forgotEmail);
 
-    // Temporary placeholder
-    console.log("Password reset requested for:", forgotEmail);
-    setForgotSuccess(
-      "If an account exists with this email, you will receive a password reset link shortly."
-    );
+    if (response?.data?.requestPasswordResetEmail) {
+      setForgotSuccess(
+        "If an account exists with this email, you will receive a password reset link shortly."
+      );
+    } else {
+      setForgotError(
+        "Unable to send the password reset link. Please try again."
+      );
+    }
   } catch (error: any) {
     console.error("Forgot password error:", error);
+
     setForgotError(
       error?.message ||
-      error?.graphQLErrors?.[0]?.message ||
-      "Something went wrong. Please try again."
+        error?.graphQLErrors?.[0]?.message ||
+        "Something went wrong. Please try again."
     );
   } finally {
     setForgotLoading(false);
   }
 };
-
 
 // ========== SWITCH BETWEEN MODALS ==========
 const openCreateAccount = () => {
