@@ -19,7 +19,7 @@ function App({
   ribbonResponce 
 }: any) {
 
-  const [showRibbon, setShowRibbon] = useState(false);
+  const [showRibbon, setShowRibbon] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
