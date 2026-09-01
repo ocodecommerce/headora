@@ -268,6 +268,19 @@ const handleAddToCompare = () => {
     }
   }
 
+  const openLoginModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openLoginModal"));
+  };
+
+  const openSignUpModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openSignUpModal"));
+  };
+  
+
   const handleWishlist = async (productSku: string, productId: string) => {
     setWishlistLoading((prev) => ({ ...prev, [productId]: true }))
     try {
@@ -275,7 +288,8 @@ const handleAddToCompare = () => {
         await checkUserLogin()
       }
       if (!userLoggedIn) {
-        router.push("/customer/account/login/")
+        // router.push("/customer/account/login/")
+        openLoginModal(new MouseEvent("click") as any)
         return
       }
       if (!wishlistId) {

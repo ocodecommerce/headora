@@ -13,26 +13,46 @@ import { manufacturer } from "../Category/ManufacturerData"
 import { conditions } from "../Category/ConditionsData"
 import { debounce } from "lodash"
 
-
 let filterOptions: any = []
 
 const productsPerPage = 21
 
-function CategoriesProducts({ iscollectionData, productsData, categoriesData, categoryDetail, showRibbon, isMobile }: any) {
+/* ========== Skeletons (CLS-safe) ========== */
+const FilterSkeleton = () => (
+  <div className={styles.filterSkeleton}>
+    <div className={`${styles.skeleton} ${styles.filterSkeletonHeader}`} />
+    {[1, 2, 3, 4].map((i) => (
+      <div key={i} className={styles.filterSkeletonGroup}>
+        <div className={`${styles.skeleton} ${styles.filterSkeletonTitle}`} />
+        {[1, 2, 3].map((j) => (
+          <div key={j} className={`${styles.skeleton} ${styles.filterSkeletonOption}`} />
+        ))}
+      </div>
+    ))}
+  </div>
+)
+
+function CategoriesProducts({
+  iscollectionData,
+  productsData,
+  categoriesData,
+  categoryDetail,
+  showRibbon,
+  isMobile,
+}: any) {
   const router = useRouter()
-  // console.log("CategoryDetail:", categoryDetail, "productsData:", productsData, "categoriesData:", categoriesData)
-  
-  // Pagination state
+
+  // Pagination
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [changeCheckPage, setChangeCheckPage] = useState<boolean>(false)
-  
-  // Product state
+
+  // Products
   const [displayedProducts, setDisplayedProducts] = useState<any[]>(productsData || [])
   const [pendingProducts, setPendingProducts] = useState<any[] | null>(null)
   const [totalPages, setTotalPages] = useState<number>(1)
   const [productCount, setProductCount] = useState<number>(0)
-  
-  // Filter state
+
+  // Filters
   const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 80000])
   const [highestPrice, setHighestPrice] = useState<number>(0)
@@ -41,62 +61,74 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
   const [activeFilters, setActiveFilters] = useState<any[]>([])
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
   const [selectedSortOption, setSelectedSortOption] = useState<string>("")
-  const [showAllFilters, setShowAllFilters] = useState<Record<string, boolean>>({});
+  const [showAllFilters, setShowAllFilters] = useState<Record<string, boolean>>({})
 
-  // Loading states
+  // Loading
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [addToLoading, setAddToLoading] = useState<boolean>(false)
   const [loadingStockStatus, setLoadingStockStatus] = useState<boolean>(true)
-  
-  // Modal state
+
+  // Modal
   const [showModal, setShowModal] = useState<boolean>(false)
   const [modalHeading, setModalHeading] = useState<string>("")
   const [modalMessage, setModalMessage] = useState<string>("")
-  
-  // UI state
+
+  // UI
   const [isSortListHovered, setIsSortListHovered] = useState<boolean>(false)
   const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false)
   const [hasValidAggregations, setHasValidAggregations] = useState<boolean>(false)
-  
-  // Wishlist state
+  const [filtersReady, setFiltersReady] = useState<boolean>(false)
+
+  // Wishlist
   const [wishlistLoading, setWishlistLoading] = useState<{ [key: string]: boolean }>({})
   const [userLoggedIn, setUserLoggedIn] = useState<boolean | null>(null)
   const [wishlistId, setWishlistId] = useState<any>(null)
   const [wishlistItems, setWishlistItems] = useState<Record<string, boolean>>({})
   const [wishlistItemIds, setWishlistItemIds] = useState<Record<string, number>>({})
   const [wishlistItemsLoading, setWishlistItemsLoading] = useState<boolean>(false)
-  
-  // Stock status
+
+  // Stock
   const [stockStatus, setStockStatus] = useState<any>(null)
-  
+
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+  const [activeSortField, setActiveSortField] = useState<string>("")
+
   const client = useRef(new Client()).current
-  
-  // Refs for latest values to avoid stale closures
+
+  // Refs
   const filtersRef = useRef(filters)
   const selectedSortOptionRef = useRef(selectedSortOption)
   const activeFiltersRef = useRef(activeFilters)
   const currentPageRef = useRef(currentPage)
   const categoryDetailRef = useRef(categoryDetail)
   const isApplyingFilterRef = useRef(false)
-  
-  // Keep refs updated
-  useEffect(() => { filtersRef.current = filters }, [filters])
-  useEffect(() => { selectedSortOptionRef.current = selectedSortOption }, [selectedSortOption])
-  useEffect(() => { activeFiltersRef.current = activeFilters }, [activeFilters])
-  useEffect(() => { currentPageRef.current = currentPage }, [currentPage])
-  useEffect(() => { categoryDetailRef.current = categoryDetail }, [categoryDetail])
 
-  // Check screen size
   useEffect(() => {
-    const checkScreenSize = () => {
-      setIsSmallScreen(window.innerWidth < 768)
-    }
+    filtersRef.current = filters
+  }, [filters])
+  useEffect(() => {
+    selectedSortOptionRef.current = selectedSortOption
+  }, [selectedSortOption])
+  useEffect(() => {
+    activeFiltersRef.current = activeFilters
+  }, [activeFilters])
+  useEffect(() => {
+    currentPageRef.current = currentPage
+  }, [currentPage])
+  useEffect(() => {
+    categoryDetailRef.current = categoryDetail
+  }, [categoryDetail])
+
+  // Reserve filter column while checking / when valid → no layout shift
+  const showFilterColumn = !filtersReady || hasValidAggregations
+
+  useEffect(() => {
+    const checkScreenSize = () => setIsSmallScreen(window.innerWidth < 768)
     checkScreenSize()
-    window.addEventListener('resize', checkScreenSize)
-    return () => window.removeEventListener('resize', checkScreenSize)
+    window.addEventListener("resize", checkScreenSize)
+    return () => window.removeEventListener("resize", checkScreenSize)
   }, [])
 
-  // Initialize filter options
   useEffect(() => {
     if (categoriesData?.products?.aggregations) {
       filterOptions = categoriesData.products.aggregations.map((element: any) => ({
@@ -106,45 +138,35 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [categoriesData])
 
-  // Check valid aggregations
   useEffect(() => {
     const validAggregations = categoriesData?.products?.aggregations?.some(
       (aggregation: any) => aggregation.label && aggregation.label !== "0"
     )
     setHasValidAggregations(!!validAggregations)
+    setFiltersReady(true)
   }, [categoriesData])
 
-  // Initialize open groups
-  // useEffect(() => {
-  //   if (categoriesData?.products?.aggregations?.length > 0) {
-  //     const firstGroupLabel = categoriesData.products.aggregations[0].label
-  //     setOpenGroups({ [firstGroupLabel]: true })
-  //   }
-  // }, [categoriesData])
-
-
   useEffect(() => {
-    if (!categoriesData?.products?.aggregations) return;
-  
-    const initialState: Record<string, boolean> = {};
-  
+    if (!categoriesData?.products?.aggregations) return
+
+    const initialState: Record<string, boolean> = {}
     categoriesData.products.aggregations
       .filter(
-        (aggregation: any) =>
-          aggregation.label !== "Category" &&
-          aggregation.label !== "Brand"
+        (aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand"  &&
+        (
+          aggregation.options?.length > 1
+        ) 
       )
       .reverse()
       .slice(0, 3)
       .forEach((aggregation: any) => {
-        initialState[aggregation.label] = true;
-      });
-  
-    setOpenGroups(initialState);
-  }, [categoriesData]);
+        initialState[aggregation.label] = true
+      })
 
+    setOpenGroups(initialState)
+  }, [categoriesData])
 
-  // Calculate price range
+  // Price bounds from products
   useEffect(() => {
     const calculatePriceRange = (products: any[]) => {
       if (!products || products.length === 0) {
@@ -152,32 +174,32 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         setHighestPrice(0)
         return
       }
-      
+
       const prices = products
         .map((product) => {
           const finalPrice =
             product?.price_range?.maximum_price?.final_price?.value ||
             product?.price_range?.minimum_price?.final_price?.value
-          
+
           if (typeof finalPrice === "number" && !isNaN(finalPrice) && finalPrice > 0) {
             return finalPrice
           }
-          
+
           const regularPrice = product?.price?.regularPrice?.amount?.value
           if (typeof regularPrice === "number" && !isNaN(regularPrice) && regularPrice > 0) {
             return regularPrice
           }
-          
+
           return null
         })
         .filter((price): price is number => price !== null)
-      
+
       if (prices.length === 0) {
         setLowestPrice(0)
         setHighestPrice(0)
         return
       }
-      
+
       const rawMin = Math.min(...prices)
       const rawMax = Math.max(...prices)
       const stepSize = 10
@@ -185,16 +207,15 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
       const highest = Math.ceil(rawMax / stepSize) * stepSize
       const adjustedLowest = Math.max(0, lowest)
       const adjustedHighest = Math.max(adjustedLowest + stepSize, highest)
-      
+
       setLowestPrice(adjustedLowest)
       setHighestPrice(adjustedHighest)
       setPriceRange([adjustedLowest, adjustedHighest])
     }
-    
+
     calculatePriceRange(productsData)
   }, [productsData])
 
-  // Initialize products
   useEffect(() => {
     if (productsData) {
       setDisplayedProducts(productsData)
@@ -204,7 +225,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [productsData, categoriesData])
 
-  // Sync wishlist items
   const syncWishlistItems = useCallback(async () => {
     if (!userLoggedIn) return
     try {
@@ -214,35 +234,35 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         const wishlistProducts = wishlist.items_v2?.items || []
         const wishlistSkuMap: Record<string, boolean> = {}
         const wishlistSkuToItemIdMap: Record<string, number> = {}
-        
+
         wishlistProducts.forEach((item: any) => {
           if (item.product?.sku) {
             wishlistSkuMap[item.product.sku] = true
             wishlistSkuToItemIdMap[item.product.sku] = item.id
           }
         })
-        
+
         const updatedWishlistItems: Record<string, boolean> = {}
         const updatedWishlistItemIds: Record<string, number> = {}
-        
+
         displayedProducts.forEach((productItem: any) => {
           const product = productItem
           let variantProduct = product
-          
+
           if (product?.__typename === "ConfigurableProduct") {
             const optionValueIndex = product?.configurable_options?.[0]?.values?.[0]?.value_index
             const selectedVariant = product?.variants.find((variant: any) =>
-              variant.attributes.some((attribute: any) => attribute.value_index === optionValueIndex),
+              variant.attributes.some((attribute: any) => attribute.value_index === optionValueIndex)
             )
             variantProduct = selectedVariant?.product || product
           }
-          
+
           if (variantProduct.sku && wishlistSkuMap[variantProduct.sku]) {
             updatedWishlistItems[variantProduct.id] = true
             updatedWishlistItemIds[variantProduct.id] = wishlistSkuToItemIdMap[variantProduct.sku]
           }
         })
-        
+
         setWishlistItems(updatedWishlistItems)
         setWishlistItemIds(updatedWishlistItemIds)
       }
@@ -251,7 +271,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [userLoggedIn, displayedProducts, client])
 
-  // Check user login
   const checkUserLogin = useCallback(async () => {
     if (typeof window !== "undefined" && window.location.hostname === "localhost") {
       return
@@ -271,7 +290,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [])
 
-  // Fetch wishlist ID
   const fetchWishlistId = useCallback(async () => {
     try {
       const wishlistData = await client.fetchWishListID()
@@ -283,7 +301,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [client])
 
-  // Handle wishlist toggle
   const handleWishlist = useCallback(
     async (productSku: string, productId: string) => {
       setWishlistLoading((prev) => ({ ...prev, [productId]: true }))
@@ -293,18 +310,19 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
           await checkUserLogin()
           loggedIn = userLoggedIn
         }
-        
+
         if (!loggedIn) {
-          router.push("/customer/account/login/")
+          // router.push("/customer/account/login/")
+          openLoginModal(new MouseEvent("click") as any)
           return
         }
-        
+
         let wId = wishlistId
         if (!wId) {
           await fetchWishlistId()
           wId = wishlistId
         }
-        
+
         if (wId) {
           const result = await client.fetchWishlistMutation(productSku, wId)
           if (result?.data?.addProductsToWishlist?.wishlist) {
@@ -338,7 +356,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     [userLoggedIn, wishlistId, checkUserLogin, fetchWishlistId, router, client]
   )
 
-  // Remove from wishlist
   const handleRemoveWishlist = useCallback(
     async (itemId: number) => {
       try {
@@ -361,19 +378,16 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     [wishlistId, wishlistItems, syncWishlistItems, client]
   )
 
-  // Check login on mount
   useEffect(() => {
     checkUserLogin()
   }, [checkUserLogin])
 
-  // Sync wishlist when products or login changes
   useEffect(() => {
     if (userLoggedIn && displayedProducts.length > 0) {
       syncWishlistItems()
     }
   }, [userLoggedIn, displayedProducts, syncWishlistItems])
 
-  // Fetch stock data
   const fetchStockData = useCallback(async () => {
     if (!categoryDetail?.url_path) return
     setLoadingStockStatus(true)
@@ -390,11 +404,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [categoryDetail, currentPage, client])
 
-  // useEffect(() => {
-  //   fetchStockData()
-  // }, [fetchStockData])
-
-  // Cookie helpers
   const setCookie = useCallback((name: string, value: string, days: number) => {
     let expires = ""
     if (days) {
@@ -416,7 +425,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     return null
   }, [])
 
-  // Fetch form key
   const fetchFormKey = useCallback(async () => {
     try {
       const response = await fetch(`${process.env.baseURL}fcprofile/sync/index`, {
@@ -435,7 +443,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [setCookie])
 
-  // Add to cart
   const handleAddToCart = useCallback(
     async (productId: string | number, quantity: number) => {
       let formKey = getCookie("form_key")
@@ -443,7 +450,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         formKey = await fetchFormKey()
         if (!formKey) return
       }
-      
+
       setAddToLoading(true)
       try {
         const response = await fetch(`${process.env.baseURL}fcprofile/cart/add`, {
@@ -466,14 +473,16 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
           setModalHeading("Oops!")
           setModalMessage(
             result.errors?.general_exception?.[0]?.message ||
-            result.message ||
-            "Something went wrong... Please try again later."
+              result.message ||
+              "Something went wrong... Please try again later."
           )
           setShowModal(true)
         }
       } catch (error) {
         setModalHeading("Oops!")
-        setModalMessage("Error adding to cart: " + (error instanceof Error ? error.message : "Unknown error"))
+        setModalMessage(
+          "Error adding to cart: " + (error instanceof Error ? error.message : "Unknown error")
+        )
         setShowModal(true)
       } finally {
         setAddToLoading(false)
@@ -482,7 +491,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     [fetchFormKey, getCookie]
   )
 
-  // Fetch products for page
   const fetchProductsForPage = useCallback(
     async (page: number) => {
       if (!categoryDetail?.uid) return
@@ -493,7 +501,9 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         if (response?.categoryList?.[0]?.products?.items?.length > 0) {
           setPendingProducts(response.categoryList[0].products.items)
           setProductCount(response.categoryList[0].products.total_count || 0)
-          setTotalPages(Math.ceil((response.categoryList[0].products.total_count || 0) / productsPerPage))
+          setTotalPages(
+            Math.ceil((response.categoryList[0].products.total_count || 0) / productsPerPage)
+          )
         } else {
           setPendingProducts([])
           setProductCount(0)
@@ -517,34 +527,34 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     [categoryDetail, productsData, categoriesData, client]
   )
 
-  // Update displayed products when pending changes
   useEffect(() => {
     if (pendingProducts !== null) {
       setDisplayedProducts(pendingProducts)
     }
   }, [pendingProducts])
 
-  // Handle router query changes
   useEffect(() => {
     const pageFromQuery = router.query.page ? parseInt(router.query.page as string, 10) : 1
     const safePage = isNaN(pageFromQuery) ? 1 : Math.max(1, Math.min(pageFromQuery, totalPages || 1))
-    
+
     if (safePage !== currentPage) {
       setCurrentPage(safePage)
     }
   }, [router.query.page, totalPages])
 
-  // Breadcrumbs
   const pathWithoutQuery = router.asPath.split("?")[0]
   const slugs = pathWithoutQuery.split("/").filter(Boolean)
 
-  const breadcrumbs = useMemo(() => [
-    { name: "Home", path: "/" },
-    ...slugs.map((slugPart: string, index: number) => ({
-      name: slugPart.replace(/-/g, " "),
-      path: `/${slugs.slice(0, index + 1).join("/")}`,
-    })),
-  ], [slugs])
+  const breadcrumbs = useMemo(
+    () => [
+      { name: "Home", path: "/" },
+      ...slugs.map((slugPart: string, index: number) => ({
+        name: slugPart.replace(/-/g, " "),
+        path: `/${slugs.slice(0, index + 1).join("/")}`,
+      })),
+    ],
+    [slugs]
+  )
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -552,7 +562,6 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [breadcrumbs])
 
-  // Get sorting param
   const getSortingParam = useCallback((sortOption: string): Record<string, string> => {
     switch (sortOption) {
       case "productNameAtoZ":
@@ -568,33 +577,31 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     }
   }, [])
 
-  // Apply product filter - FIXED: Prevent duplicate calls and handle empty filters
   const applyProductFilter = useMemo(() => {
     const debouncedFn = debounce(async (filter: any, page: number, sort: string) => {
-      // Prevent concurrent calls
       if (isApplyingFilterRef.current) return
       isApplyingFilterRef.current = true
-      
+
       setIsLoading(true)
-      
+
       try {
-        // If no filters and no sort, reset to original products
         const hasFilters = Object.keys(filter).length > 0
         const hasSort = sort && sort !== "none"
-        
+
         if (!hasFilters && !hasSort && page === 1) {
           setPendingProducts(productsData)
           const total = categoriesData?.products?.total_count || productsData?.length || 0
           setProductCount(total)
           setTotalPages(Math.ceil(total / productsPerPage))
           isApplyingFilterRef.current = false
+          setIsLoading(false)
           return
         }
-        
+
         const graphqlFilter: Record<string, any> = {
           category_uid: { eq: categoryDetailRef.current?.uid },
         }
-        
+
         for (const key in filter) {
           if (key === "price" && filter[key]) {
             graphqlFilter.price = {
@@ -603,20 +610,18 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
             }
           } else if (filter[key] && filter[key].length > 0) {
             const filterOption = filterOptions.find((option: any) => option.value === key)
-            
+
             if (filterOption) {
               const attributeName = filterOption.value
               graphqlFilter[attributeName] =
-                filter[key].length === 1
-                  ? { eq: filter[key][0] }
-                  : { in: filter[key] }
+                filter[key].length === 1 ? { eq: filter[key][0] } : { in: filter[key] }
             }
           }
         }
-        
+
         const formatObject = (obj: Record<string, any>): string => {
           if (!obj || Object.keys(obj).length === 0) return "{}"
-          
+
           const formatValue = (val: any, key?: string): string => {
             if (typeof val === "string") {
               if (["lux_ring_size"].includes(key!) && !isNaN(Number(val))) {
@@ -633,28 +638,28 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
               return `${val}`
             }
           }
-          
+
           return `{ ${Object.entries(obj)
             .map(([key, value]) => `${key}: ${formatValue(value, key)}`)
             .join(", ")} }`
         }
-        
+
         const formatSortObject = (obj: Record<string, string> | null): string => {
           if (!obj || Object.keys(obj).length === 0) return "{}"
           return `{ ${Object.entries(obj)
             .map(([key, value]) => `${key}: ${value}`)
             .join(", ")} }`
         }
-        
+
         const sortParam = sort && sort !== "none" ? getSortingParam(sort) : {}
-        
+
         const response = await client.fetchCategoryFilterProductResult(
           "",
           page,
           formatObject(graphqlFilter),
           formatSortObject(sortParam)
         )
-        
+
         if (response?.products?.items?.length > 0) {
           setPendingProducts(response.products.items)
           setProductCount(response.products.total_count || 0)
@@ -674,101 +679,100 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         isApplyingFilterRef.current = false
       }
     }, 500)
-    
+
     return debouncedFn
   }, [client, getSortingParam, productsData, categoriesData])
 
-  // Apply filters when dependencies change - FIXED: Single effect with proper dependencies
   useEffect(() => {
-    // Skip initial mount
     if (!categoryDetail?.uid) return
-    
-    // Reset to page 1 when filters/sort change (except when explicitly changing page)
+
     if (!changeCheckPage) {
       setCurrentPage(1)
-      // Update URL without triggering effect
       const newQuery = { ...router.query }
       delete newQuery.page
       router.replace({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true })
     }
-    
-    setChangeCheckPage(false)
-    
-    // Apply filter with current values
-    applyProductFilter(filters, 1, selectedSortOption)
-    
-  }, [selectedSortOption, filters, categoryDetail?.uid]) // Removed applyProductFilter from deps
 
-  // Toggle dropdown
+    setChangeCheckPage(false)
+    applyProductFilter(filters, 1, selectedSortOption)
+  }, [selectedSortOption, filters, categoryDetail?.uid])
+
   const toggleDropdown = useCallback((label: string) => {
-    setOpenDropdown((prev) => prev === label ? null : label)
+    setOpenDropdown((prev) => (prev === label ? null : label))
   }, [])
-  
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   const closeDropDown = useCallback(() => {
     setOpenDropdown(null)
   }, [])
 
-  // Handle checkbox change - FIXED: Prevent duplicates
-  const handleCheckboxChange = useCallback((aggregationLabel: string, optionValue: string, isChecked: boolean) => {
-    setFilters((prevFilters) => {
-      const newFilters = { ...prevFilters }
-      
-      filterOptions.forEach((option: any) => {
-        if (option.label === aggregationLabel) {
-          const key = option.value
-          
-          if (isChecked) {
-            // Add to filters
-            if (!newFilters[key]) {
-              newFilters[key] = [optionValue]
-            } else if (!newFilters[key].includes(optionValue)) {
-              newFilters[key] = [...newFilters[key], optionValue]
-            }
-          } else {
-            // Remove from filters
-            if (newFilters[key]) {
-              newFilters[key] = newFilters[key].filter((value: string) => value !== optionValue)
-              if (newFilters[key].length === 0) {
-                delete newFilters[key]
+  const handleCheckboxChange = useCallback(
+    (aggregationLabel: string, optionValue: string, isChecked: boolean) => {
+      setFilters((prevFilters) => {
+        const newFilters = { ...prevFilters }
+
+        filterOptions.forEach((option: any) => {
+          if (option.label === aggregationLabel) {
+            const key = option.value
+
+            if (isChecked) {
+              if (!newFilters[key]) {
+                newFilters[key] = [optionValue]
+              } else if (!newFilters[key].includes(optionValue)) {
+                newFilters[key] = [...newFilters[key], optionValue]
+              }
+            } else {
+              if (newFilters[key]) {
+                newFilters[key] = newFilters[key].filter((value: string) => value !== optionValue)
+                if (newFilters[key].length === 0) {
+                  delete newFilters[key]
+                }
               }
             }
           }
+        })
+
+        return newFilters
+      })
+
+      setActiveFilters((prev) => {
+        if (isChecked) {
+          const exists = prev.some((f) => f.label === aggregationLabel && f.value === optionValue)
+          if (exists) return prev
+          return [...prev, { label: aggregationLabel, value: optionValue }]
+        } else {
+          return prev.filter(
+            (item) => !(item.label === aggregationLabel && item.value === optionValue)
+          )
         }
       })
-      
-      return newFilters
-    })
-    
-    // Update active filters separately to avoid duplicate entries
-    setActiveFilters((prev) => {
-      if (isChecked) {
-        // Check if already exists
-        const exists = prev.some(f => f.label === aggregationLabel && f.value === optionValue)
-        if (exists) return prev
-        return [...prev, { label: aggregationLabel, value: optionValue }]
-      } else {
-        return prev.filter((item) => !(item.label === aggregationLabel && item.value === optionValue))
-      }
-    })
-  }, [])
+    },
+    []
+  )
 
-  // Remove filter - FIXED: Handle last filter removal properly
   const handleRemoveFilter = useCallback((filterToRemove: any) => {
-    // Remove from active filters
     setActiveFilters((prev) =>
-      prev.filter((filter) => !(filter.label === filterToRemove?.label && filter.value === filterToRemove?.value))
+      prev.filter(
+        (filter) =>
+          !(filter.label === filterToRemove?.label && filter.value === filterToRemove?.value)
+      )
     )
-    
-    // Remove from filters object
+
     setFilters((prev) => {
       const updatedFilters = { ...prev }
+
+      // Price chip removal
+      if (filterToRemove?.label === "Price") {
+        delete updatedFilters.price
+        return updatedFilters
+      }
+
       filterOptions.forEach((option: any) => {
         if (option?.label === filterToRemove?.label) {
           const key = option.value
           if (updatedFilters[key]) {
-            updatedFilters[key] = updatedFilters[key].filter((val: string) => val !== filterToRemove.value)
+            updatedFilters[key] = updatedFilters[key].filter(
+              (val: string) => val !== filterToRemove.value
+            )
             if (updatedFilters[key].length === 0) {
               delete updatedFilters[key]
             }
@@ -778,86 +782,80 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
       return updatedFilters
     })
   }, [])
-    // Handle price range change - FIXED: Proper state updates
-    const handlePriceRangeChange = useCallback((event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+
+  // ========== FIXED PRICE RANGE HANDLER ==========
+  const handlePriceRangeChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
       const value = Number(event.target.value)
+
       setPriceRange((prev) => {
-        const newRange: [number, number] = [...prev] as [number, number];
-      
+        let min = prev[0]
+        let max = prev[1]
+
         if (index === 0) {
-          if (value < newRange[1]) {
-          newRange[0] = Math.min(value, newRange[1]);}
+          // Left thumb cannot cross right
+          min = Math.min(value, max)
         } else {
-          if (value > newRange[0]) {
-          newRange[1] = Math.max(value, newRange[0]);
-          }
+          // Right thumb cannot cross left
+          max = Math.max(value, min)
         }
-      
-        return newRange;
-      });
-        
 
-      
-      // Update filters with new price range
-      setFilters((prevFilters) => {
-        const newFilters = { ...prevFilters }
-        const newRange: [number, number] = index === 0 
-          ? [value, Math.max(value, priceRange[1])]
-          : [Math.min(priceRange[0], value), value]
-        
-        newFilters.price = newRange
-        return newFilters
-      })
-      
-      // Update active filters
-      setActiveFilters((prev) => {
-        const otherFilters = prev.filter((filter) => filter.label !== "Price")
-        const newRange: [number, number] = index === 0 
-          ? [value, Math.max(value, priceRange[1])]
-          : [Math.min(priceRange[0], value), value]
-        return [...otherFilters, { label: "Price", value: `${newRange[0]}_${newRange[1]}` }]
-      })
-    }, [priceRange])
+        const newRange: [number, number] = [min, max]
 
-  // Handle sort option click
+        // Sync filters + activeFilters with the same values (no stale state)
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          price: newRange,
+        }))
+
+        setActiveFilters((prev) => {
+          const otherFilters = prev.filter((f) => f.label !== "Price")
+          return [
+            ...otherFilters,
+            { label: "Price", value: `${newRange[0]}_${newRange[1]}` },
+          ]
+        })
+
+        return newRange
+      })
+    },
+    []
+  )
+
   const handleSortOptionClick = useCallback((value: string) => {
     setActiveSortField(value)
     setSelectedSortOption(value)
   }, [])
-  
-  const [activeSortField, setActiveSortField] = useState<string>("")
 
-  // Handle sort list hover
   const handleSortListHover = useCallback((isHovered: boolean) => {
     setIsSortListHovered(isHovered)
   }, [])
 
-  // Handle filter click
   const handleFilterClick = useCallback(() => {
     setIsFilterOpen((prev) => !prev)
   }, [])
 
-  // Toggle group
   const toggleGroup = useCallback((groupLabel: string) => {
     setOpenGroups((prev) => ({
       ...prev,
       [groupLabel]: !prev[groupLabel],
-    }));
-  }, []);
+    }))
+  }, [])
 
-  // Check if option is checked
-  const isChecked = useCallback((label: string, value: string) => {
-    const option = filterOptions.find((opt: any) => opt.label === label)
-    if (!option) return false
-    return filters[option.value]?.includes(value) || false
-  }, [filters])
+  const isChecked = useCallback(
+    (label: string, value: string) => {
+      const option = filterOptions.find((opt: any) => opt.label === label)
+      if (!option) return false
+      return filters[option.value]?.includes(value) || false
+    },
+    [filters]
+  )
 
-  // Price helpers
   const regularPrice = useCallback((item: any) => {
     const final_price = item?.price_range?.maximum_price?.final_price?.value?.toLocaleString()
     const regular_price = item?.price_range?.maximum_price?.regular_price?.value?.toLocaleString()
     const currency = item?.price?.regularPrice?.amount?.currency
-    
+
     if (regular_price && final_price && regular_price !== final_price) {
       return `${Currency[currency]}${regular_price}`
     }
@@ -874,9 +872,9 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     const regularValue = item?.price_range?.maximum_price?.regular_price?.value
     const finalValue = item?.price_range?.maximum_price?.final_price?.value
     const currency = item?.price_range?.maximum_price?.regular_price?.currency
-    
+
     if (!regularValue || !finalValue) return ""
-    
+
     if (regularValue !== finalValue) {
       return `${Currency[currency]}${regularValue.toLocaleString()}`
     }
@@ -889,47 +887,68 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
     return `${Currency[currency]}${final_price}`
   }, [])
 
-  // Handle page change - FIXED: Proper debounce with cancel
-  const handlePageChange = useCallback((page: number) => {
-    if (page < 1 || page > totalPages || page === currentPage) return
-    
-    window.scrollTo({ top: 0, behavior: "smooth" })
-    
-    router.push(
-      {
-        pathname: router.pathname,
-        query: { ...router.query, page },
-      },
-      undefined,
-      { shallow: true }
-    )
-    
-    setChangeCheckPage(true)
-    setCurrentPage(page)
-    
-    // Use refs to get latest values
-    if (activeFiltersRef.current.length > 0 || selectedSortOptionRef.current) {
-      applyProductFilter(filtersRef.current, page, selectedSortOptionRef.current)
-    } else {
-      fetchProductsForPage(page)
-    }
-  }, [router, totalPages, currentPage, applyProductFilter, fetchProductsForPage])
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (page < 1 || page > totalPages || page === currentPage) return
 
-  // Cleanup debounce on unmount
+      window.scrollTo({ top: 0, behavior: "smooth" })
+
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, page },
+        },
+        undefined,
+        { shallow: true }
+      )
+
+      setChangeCheckPage(true)
+      setCurrentPage(page)
+
+      if (activeFiltersRef.current.length > 0 || selectedSortOptionRef.current) {
+        applyProductFilter(filtersRef.current, page, selectedSortOptionRef.current)
+      } else {
+        fetchProductsForPage(page)
+      }
+    },
+    [router, totalPages, currentPage, applyProductFilter, fetchProductsForPage]
+  )
+
   useEffect(() => {
     return () => {
       applyProductFilter.cancel()
     }
   }, [applyProductFilter])
 
-  // Product skeleton
-  const ProductSkeleton = useCallback(() => (
-    <div className={styles.item}>
-      <div className={styles.skeletonImage}></div>
-      <div className={styles.skeletonTitle}></div>
-      <div className={styles.skeletonPrice}></div>
-    </div>
-  ), [styles])
+  const ProductSkeleton = useCallback(
+    () => (
+      <div className={styles.item}>
+        <div className={styles.skeletonImage}></div>
+        <div className={styles.skeletonTitle}></div>
+        <div className={styles.skeletonPrice}></div>
+      </div>
+    ),
+    [styles]
+  )
+
+  // Safe % for dual-range gradient (avoid /0)
+  const priceSpan = Math.max(1, highestPrice - lowestPrice)
+  const leftPct = ((priceRange[0] - lowestPrice) / priceSpan) * 100
+  const rightPct = ((priceRange[1] - lowestPrice) / priceSpan) * 100
+
+
+
+  const openLoginModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openLoginModal"));
+  };
+
+  const openSignUpModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openSignUpModal"));
+  };
 
 
   return (
@@ -946,7 +965,7 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
         </div>
       )}
 
-{hasValidAggregations && (
+      {hasValidAggregations && (
         <Filter
           isSortListHovered={isSortListHovered}
           handleCheckboxChange={handleCheckboxChange}
@@ -975,148 +994,192 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
       )}
 
       <div className={styles.allProductContainer}>
-      {hasValidAggregations && (
+        {/* Always reserve filter column while checking / when valid */}
+        {showFilterColumn && (
           <div className={styles.filterContainer}>
             <div className={styles.filterModal_Desktop} style={{ zIndex: "unset" }}>
-              <div className={styles.filterHeader}>
-                <label>Filters</label>
-              </div>
-              <div className={styles.filterContent}>
-                <div className={styles.filterGroup} style={{ borderBottom: activeFilters.length === 0 ? "none" : "" }}>
-                  <div className={styles.filterLabelContainer} style={{ padding: activeFilters.length === 0 ? "0" : "" }}>
-                    {activeFilters
-                      .filter((filter: any) => filter.label !== "Price")
-                      .map((filter: any, index: number) => {
-                        const label = categoriesData?.products?.aggregations
-                          ?.flatMap((aggregation: any) => aggregation.options)
-                          .find((option: any) => option.value === filter.value)?.label
-                        return (
-                          <span key={`${filter.label}-${filter.value}-${index}`} className={styles.filterGroupLabel}>
-                            {`
-                         
-                            ${label || "Unknown"}`}
-                            <button className="remove-filter" onClick={() => handleRemoveFilter(filter)}>
-                            ╳
-                            </button>
-                          </span>
-                        )
-                      })}
+              {!hasValidAggregations ? (
+                <FilterSkeleton />
+              ) : (
+                <>
+                  <div className={styles.filterHeader}>
+                    <label>Filters</label>
                   </div>
-                </div>
-                
-                {categoriesData?.products?.aggregations
-                  ?.filter((aggregation: any) => aggregation.label !== "Category" && aggregation.label !== "Brand" 
-                  // && aggregation.label.toLowerCase() !== "price"
-                )
-                  .reverse().map((aggregation: any) => (
-                    <div key={aggregation.label} className={styles.filterGroup}>
-                      <h5 className={styles.filterGroupTitle} onClick={() => toggleGroup(aggregation.label)}>
-                        {aggregation.label.replace(/_/g, " ")}
-                        <span className={styles.dropdownArrow}>
-                          {openGroups[aggregation.label] ? (
-                            <Image src="/Images/up-arrow.png" alt="Up Arrow" height={10} width={10} />
-                          ) : (
-                            <Image src="/Images/down-arrow.png" alt="Down Arrow" height={10} width={10} />
-                          )}
-                        </span>
-                      </h5>
-
-                      {openGroups[aggregation.label] && (
-                        aggregation.label.toLowerCase() === "price" ? ( <div className={styles.priceSliderContainer}>
-
-                          <div className={styles.priceRangeLabels}>
-                              <span>{Currency.USD}{priceRange[0]}</span>
-                              <span>{Currency.USD}{priceRange[1]}</span>
-                            </div>
-                              <div
-                                className={styles.sliderWrapper}
-                                style={{
-                                  background: `linear-gradient(
-                                    to right,
-                                    #ddd 0%,
-                                    #ddd ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
-                                    #1979c3 ${((priceRange[0] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
-                                    #1979c3 ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
-                                    #ddd ${((priceRange[1] - lowestPrice) / (highestPrice - lowestPrice)) * 100}%,
-                                    #ddd 100%
-                                  )`,
-                                }}
+                  <div className={styles.filterContent}>
+                    <div
+                      className={styles.filterGroup}
+                      style={{ borderBottom: activeFilters.length === 0 ? "none" : "" }}
+                    >
+                      <div
+                        className={styles.filterLabelContainer}
+                        style={{ padding: activeFilters.length === 0 ? "0" : "" }}
+                      >
+                        {activeFilters
+                          .filter((filter: any) => filter.label !== "Price")
+                          .map((filter: any, index: number) => {
+                            const label = categoriesData?.products?.aggregations
+                              ?.flatMap((aggregation: any) => aggregation.options)
+                              .find((option: any) => option.value === filter.value)?.label
+                            return (
+                              <span
+                                key={`${filter.label}-${filter.value}-${index}`}
+                                className={styles.filterGroupLabel}
                               >
-                                <input
-                                  type="range"
-                                  min={lowestPrice}
-                                  max={highestPrice}
-                                  step={Math.max(1, Math.round((highestPrice - lowestPrice) / 10))}
-                                  value={priceRange[0]}
-                                  onChange={(e) => handlePriceRangeChange(e, 0)}
-                                  className={styles.priceSlider}
-                                />
-
-                                <input
-                                  type="range"
-                                  min={lowestPrice}
-                                  max={highestPrice}
-                                  step={Math.max(1, Math.round((highestPrice - lowestPrice) / 10))}
-                                  value={priceRange[1]}
-                                  onChange={(e) => handlePriceRangeChange(e, 1)}
-                                  className={styles.priceSlider}
-                                />
-                              </div>
-                              </div>
-  
-                        ) : (<>
-<div className={styles.filterOptionsGrid}>
-  {(showAllFilters[aggregation.label]
-    ? aggregation.options
-    : aggregation.options.slice(0, 5)
-  ).map((option: any) => (
-    <label key={option.value} className={styles.filterOption}>
-      <input
-        type="checkbox"
-        value={option.value}
-        checked={isChecked(aggregation.label, option.value)}
-        onChange={(e) => {
-          handleCheckboxChange(
-            aggregation.label,
-            option.value,
-            e.target.checked
-          );
-        }}
-      />
-      {option.label.replace(/_/g, " ")}
-    </label>
-  ))}
-
-{aggregation.options.length > 5 && (
-  <button
-    type="button"
-    className={styles.showMoreButton}
-    onClick={() =>
-      setShowAllFilters((prev) => ({
-        ...prev,
-        [aggregation.label]: !prev[aggregation.label],
-      }))
-    }
-  >
-    {showAllFilters[aggregation.label] ? "Show Less" : "Show More"}
-  </button>
-)}
-
-
-</div>
-</>
-                        )
-                      )}
+                                {`${label || "Unknown"}`}
+                                <button
+                                  className="remove-filter"
+                                  onClick={() => handleRemoveFilter(filter)}
+                                >
+                                  ╳
+                                </button>
+                              </span>
+                            )
+                          })}
+                      </div>
                     </div>
-                  ))}
-              </div>
 
-    
+                    {categoriesData?.products?.aggregations
+                      ?.filter(
+                        (aggregation: any) =>
+                          aggregation.label !== "Category" && aggregation.label !== "Brand" &&
+                        (
+                          aggregation.label.toLowerCase() === "price" ||
+                          aggregation.options?.length > 1
+                        ) 
+                      )
+                      .reverse()
+                      .map((aggregation: any) => (
+                        <div key={aggregation.label} className={styles.filterGroup}>
+                          <h5
+                            className={styles.filterGroupTitle}
+                            onClick={() => toggleGroup(aggregation.label)}
+                          >
+                            {aggregation.label.replace(/_/g, " ")}
+                            <span className={styles.dropdownArrow}>
+                              {openGroups[aggregation.label] ? (
+                                <Image
+                                  src="/Images/up-arrow.png"
+                                  alt="Up Arrow"
+                                  height={10}
+                                  width={10}
+                                />
+                              ) : (
+                                <Image
+                                  src="/Images/down-arrow.png"
+                                  alt="Down Arrow"
+                                  height={10}
+                                  width={10}
+                                />
+                              )}
+                            </span>
+                          </h5>
+
+                          {openGroups[aggregation.label] &&
+                            (aggregation.label.toLowerCase() === "price"  ? (
+                              <div className={styles.priceSliderContainer}>
+                                <div className={styles.priceRangeLabels}>
+                                  <span>
+                                    {Currency.USD}
+                                    {priceRange[0]}
+                                  </span>
+                                  <span>
+                                    {Currency.USD}
+                                    {priceRange[1]}
+                                  </span>
+                                </div>
+                                <div
+                                  className={styles.sliderWrapper}
+                                  style={{
+                                    background: `linear-gradient(
+                                      to right,
+                                      #ddd 0%,
+                                      #ddd ${leftPct}%,
+                                      #1979c3 ${leftPct}%,
+                                      #1979c3 ${rightPct}%,
+                                      #ddd ${rightPct}%,
+                                      #ddd 100%
+                                    )`,
+                                  }}
+                                >
+                                  <input
+                                    type="range"
+                                    min={lowestPrice}
+                                    max={highestPrice}
+                                    step={Math.max(
+                                      1,
+                                      Math.round((highestPrice - lowestPrice) / 10)
+                                    )}
+                                    value={priceRange[0]}
+                                    onChange={(e) => handlePriceRangeChange(e, 0)}
+                                    className={styles.priceSlider}
+                                  />
+                                  <input
+                                    type="range"
+                                    min={lowestPrice}
+                                    max={highestPrice}
+                                    step={Math.max(
+                                      1,
+                                      Math.round((highestPrice - lowestPrice) / 10)
+                                    )}
+                                    value={priceRange[1]}
+                                    onChange={(e) => handlePriceRangeChange(e, 1)}
+                                    className={styles.priceSlider}
+                                  />
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className={styles.filterOptionsGrid}>
+                                  {(showAllFilters[aggregation.label]
+                                    ? aggregation.options
+                                    : aggregation.options.slice(0, 5)
+                                  ).map((option: any) => (
+                                    <label key={option.value} className={styles.filterOption}>
+                                      <input
+                                        type="checkbox"
+                                        value={option.value}
+                                        checked={isChecked(aggregation.label, option.value)}
+                                        onChange={(e) => {
+                                          handleCheckboxChange(
+                                            aggregation.label,
+                                            option.value,
+                                            e.target.checked
+                                          )
+                                        }}
+                                      />
+                                      {option.label.replace(/_/g, " ")}
+                                    </label>
+                                  ))}
+
+                                  {aggregation.options.length > 5 && (
+                                    <button
+                                      type="button"
+                                      className={styles.showMoreButton}
+                                      onClick={() =>
+                                        setShowAllFilters((prev) => ({
+                                          ...prev,
+                                          [aggregation.label]: !prev[aggregation.label],
+                                        }))
+                                      }
+                                    >
+                                      {showAllFilters[aggregation.label]
+                                        ? "Show Less"
+                                        : "Show More"}
+                                    </button>
+                                  )}
+                                </div>
+                              </>
+                            ))}
+                        </div>
+                      ))}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         )}
 
-        <div className={hasValidAggregations ? styles.products : styles.productsFullWidth}>
+        <div className={showFilterColumn ? styles.products : styles.productsFullWidth}>
           {isLoading ? (
             <div className={styles.grid}>
               {Array.from({ length: productsPerPage }).map((_, i) => (
@@ -1130,11 +1193,14 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                   {displayedProducts.map((productItem: any, index: number) => {
                     let selectedVariant: any = null
                     let product: any = productItem
-                    let optionValueIndex: any = product?.configurable_options?.[0]?.values?.[0]?.value_index
+                    let optionValueIndex: any =
+                      product?.configurable_options?.[0]?.values?.[0]?.value_index
 
                     if (product?.__typename === "ConfigurableProduct") {
                       selectedVariant = product?.variants.find((variant: any) =>
-                        variant.attributes.some((attribute: any) => attribute.value_index === optionValueIndex),
+                        variant.attributes.some(
+                          (attribute: any) => attribute.value_index === optionValueIndex
+                        )
                       )
                     }
 
@@ -1142,10 +1208,15 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
 
                     return (
                       <React.Fragment key={index}>
-                        {/* ---- Main Product Item ---- */}
-                        <Link href={`/${product.url_key}.html`} key={variantProduct.id} className={styles.item}>
+                        <Link
+                          href={`/${product.url_key}.html`}
+                          key={variantProduct.id}
+                          className={styles.item}
+                        >
                           {(() => {
-                            const isOutOfStock = stockStatus?.every((status: any) => status?.stock_status !== "IN_STOCK")
+                            const isOutOfStock = stockStatus?.every(
+                              (status: any) => status?.stock_status !== "IN_STOCK"
+                            )
                             const isOnSale =
                               (product.__typename === "ConfigurableProduct"
                                 ? getconfigurablePrice(selectedVariant?.product)
@@ -1165,7 +1236,10 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                             src={
                               variantProduct?.image?.url?.includes("placeholder")
                                 ? variantProduct?.media_gallery?.[0]?.url?.includes("cache")
-                                  ? variantProduct.media_gallery[0].url.replace(/\/cache\/.*?\//, "/")
+                                  ? variantProduct.media_gallery[0].url.replace(
+                                      /\/cache\/.*?\//,
+                                      "/"
+                                    )
                                   : variantProduct.media_gallery?.[0]?.url
                                 : variantProduct?.image?.url
                                   ? variantProduct.image.url.includes("cache")
@@ -1179,11 +1253,15 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                           />
 
                           <p className={styles.brandName}>
-                            {manufacturer.find((c) => c.value === String(product?.manufacturer))?.["data-title"] || ""}
+                            {manufacturer.find((c) => c.value === String(product?.manufacturer))?.[
+                              "data-title"
+                            ] || ""}
                           </p>
                           <span style={{ textDecoration: "none" }}>{variantProduct.name}</span>
                           <p className={styles.conditionName}>
-                            {conditions.find((c) => c.value === String(product?.condition))?.["data-title"] || ""}
+                            {conditions.find((c) => c.value === String(product?.condition))?.[
+                              "data-title"
+                            ] || ""}
                           </p>
                           <p className={styles.price}>
                             <span className={styles.special}>
@@ -1198,79 +1276,65 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                             </span>
                           </p>
 
-                          {/* {!isMobile && ( */}
-                            <div className={styles.actionContainer}>
-                              {stockStatus?.some((status: any) => status?.stock_status === "IN_STOCK") ? (
-                                <button
-                                  className={styles.addToCartButton}
-                                  onClick={(e) => {
-                                    e.preventDefault()
-                                    // console.log("product", product)
-                                    if (product.__typename === "ConfigurableProduct") {
-                                      router.push(`/${product.url_key}.html`)
-                                    } else {
-                                      handleAddToCart(productItem.id, 1)
-                                    }
-                                  }}
-                                >
-                                 {!isMobile ? ( "add to cart") : (
-                                  
-                                //   <Image
-                                //   src="/Images/cart.png"
-                                //   height={20}
-                                //   width={23}
-                                //   alt="wishlist filled icon"
-                                // />
-                                <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
+                          <div className={styles.actionContainer}>
+                            {stockStatus?.some(
+                              (status: any) => status?.stock_status === "IN_STOCK"
+                            ) ? (
+                              <button
+                                className={styles.addToCartButton}
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  if (product.__typename === "ConfigurableProduct") {
+                                    router.push(`/${product.url_key}.html`)
+                                  } else {
+                                    handleAddToCart(productItem.id, 1)
+                                  }
+                                }}
                               >
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                              </svg>
-
-                                  )}
-                                </button>
-                              ) : (
-                                <button className={styles.addToCartButton} >
-                                  {!isMobile ? ( "add to cart") : (
-                                    
-                                  //   <Image
-                                  //   src="/Images/cart.png"
-                                  //   height={20}
-                                  //   width={23}
-                                  //   alt="wishlist filled icon"
-                                  // />
-
-
+                                {!isMobile ? (
+                                  "add to cart"
+                                ) : (
                                   <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="20"
-                                  height="20"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                                  <path d="M16 10a4 4 0 0 1-8 0"></path>
-                                </svg>
-
-                                  )}
-                                </button>
-                              )}
-                                {wishlistLoading[variantProduct.id] || wishlistItemsLoading ? (
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                  </svg>
+                                )}
+                              </button>
+                            ) : (
+                              <button className={styles.addToCartButton}>
+                                {!isMobile ? (
+                                  "add to cart"
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  >
+                                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                                  </svg>
+                                )}
+                              </button>
+                            )}
+                            {wishlistLoading[variantProduct.id] || wishlistItemsLoading ? (
                               <div className={styles.SearchLoader}></div>
                             ) : wishlistItems[variantProduct.id] ? (
                               <button
@@ -1295,33 +1359,19 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
                                 }}
                                 style={{ background: "none", border: "none", cursor: "pointer" }}
                               >
-                                <Image src="/Images/BlackHeart.png" height={24} width={27} alt="wishlist icon" />
+                                <Image
+                                  src="/Images/BlackHeart.png"
+                                  height={24}
+                                  width={27}
+                                  alt="wishlist icon"
+                                />
                               </button>
                             )}
-                            </div>
-                          {/* )} */}
-
-                     
-                          
-                      
-                        </Link>
-
-                        {/* ---- Insert Banner After 2nd Product (Index 2 = 3rd Position) ---- */}
-                        {/* {index === 2 && isMobile == true && (
-                          <div className={styles.smallBannerWrapper}>
-                            <Image
-                              src={categoryDetail.image ? categoryDetail.image : "/Images/miniBanner.jpg"}
-                              alt="Small Promo Banner"
-                              width={250}
-                              height={500}
-                              className={styles.smallBannerImage}
-                            />
                           </div>
-                        )} */}
+                        </Link>
                       </React.Fragment>
                     )
                   })}
-
                 </div>
               ) : (
                 <p className={styles.productNotFoundMessage}>No products found!</p>
@@ -1330,8 +1380,12 @@ function CategoriesProducts({ iscollectionData, productsData, categoriesData, ca
           )}
         </div>
       </div>
-      {displayedProducts && displayedProducts.length > 0 ? (
-        <Pagination totalPages={totalPages} currentPage={currentPage} handlePageChange={handlePageChange} />
+      {displayedProducts && displayedProducts.length > 0 && !isLoading ? (
+        <Pagination
+          totalPages={totalPages}
+          currentPage={currentPage}
+          handlePageChange={handlePageChange}
+        />
       ) : null}
     </>
   )
