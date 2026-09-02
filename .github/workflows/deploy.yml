@@ -3,33 +3,44 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - dev
+      
+dev
 
 jobs:
-
   deploy:
     runs-on: ubuntu-latest
     environment: dev
 
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          port: 22
-
-    script: |
+      
+name: Deploy over SSH
+      uses: appleboy/ssh-action@v1.2.0
+      with:
+        host: ${{ secrets.SERVER_HOST }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_KEY }}
+        port: 22
+        script: |
           set -Eeuxo pipefail
 
-          cd /srv/headora/frontend
+            cd /srv/headora/frontend
 
-          echo "=== GIT REMOTE ==="
-          git remote -v
-          echo $== "=== GIT STATUS ==="
-          git pull origin dev
+            echo "=== GIT REMOTE ==="
+            git remote -v
 
-          npm run build
+            echo "=== GIT STATUS ==="
+            git status
 
-          pm2 restart 0
+            echo "=== PULLING DEV ==="
+            git pull origin dev
+
+            echo "=== INSTALLING DEPENDENCIES ==="
+            npm install
+
+            echo "=== BUILDING ==="
+            npm run build
+
+            echo "=== RESTARTING PM2 ==="
+            pm2 restart 0
+
+            echo "=== DEPLOYMENT COMPLETE ==="
