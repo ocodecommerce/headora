@@ -21,5 +21,15 @@ jobs:
           port: 22
 
           script: |
+            set -euxo pipefail
+
             cd /srv/headora/frontend
-            ./deploy.sh
+
+            echo "=== CURRENT USER ==="
+            whoami
+
+            echo "=== CURRENT DIRECTORY ==="
+            pwd
+
+            echo "=== RUNNING SCRIPT ==="
+            bash -x ./deploy.sh
