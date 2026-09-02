@@ -76,22 +76,28 @@ const WishlistCompareButtons: React.FC<WishlistCompareButtonsProps> = ({
   const checkUserLogin = async () => {
     try {
       if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-        setUserLoggedIn(true);
-        return true;
+        console.log("Skipping user sync on localhost")
+        return
       }
       const response = await fetch(`${process.env.baseURL}fcprofile/sync/index`, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      const user = await response.json();
-      const loggedIn = !!user.logged_in;
-      setUserLoggedIn(loggedIn);
-      return loggedIn;
-    } catch {
-      setUserLoggedIn(false);
-      return false;
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+      if (!response.ok) throw new Error("Network response was not ok")
+      const user = await response.json()
+      if (user.logged_in) {
+        setUserLoggedIn(true)
+        await fetchWishlistId()
+      } else {
+        setUserLoggedIn(false)
+      }
+    } catch (error) {
+      console.error("Error checking user login status:", error)
+      setUserLoggedIn(false)
     }
-  };
+  }
 
   const fetchWishlistId = async () => {
     try {
@@ -120,20 +126,35 @@ const WishlistCompareButtons: React.FC<WishlistCompareButtonsProps> = ({
     }
   };
 
+
+
+  const openLoginModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openLoginModal"));
+  };
+
+  const openSignUpModal = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+  
+    window.dispatchEvent(new Event("openSignUpModal"));
+  };
+
+
   const handleWishlist = async () => {
     setWishlistLoading(true);
+    console.log("userLoggedIn:", userLoggedIn);
     try {
       if (userLoggedIn === null) {
-        const isLogged = await checkUserLogin();
-        if (!isLogged) {
-          router.push("/customer/account/login/");
-          return;
+        await checkUserLogin()
+      }
+       if (!userLoggedIn) {
+        console.log("cones")
+          // router.push("/customer/account/login/")
+          openLoginModal(new MouseEvent("click") as any)
+          return
         }
-      }
-      if (!userLoggedIn) {
-        router.push("/customer/account/login/");
-        return;
-      }
+      
 
       if (!wishlistId) {
         await fetchWishlistId();

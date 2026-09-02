@@ -1,8 +1,8 @@
+// Search Page:
 "use client"
 
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react"
 import styles from "../../styles/Search.module.css"
-import type React from "react"
-import { useEffect, useState, useCallback } from "react"
 import { useRouter } from "next/router"
 import SearchProduct from "@/components/Search/SearchProduct"
 import { Client } from "@/graphql/client"
@@ -13,188 +13,286 @@ import { debounce } from "lodash"
 
 let filterOptions: any = []
 
+const productsPerPage = 21
+
 function Search() {
   const router = useRouter()
-  const client = new Client()
+  const client = useRef(new Client()).current
+
+  // Search
   const [searchInput, setSearchInput] = useState<string>("")
   const [loading, setLoading] = useState<boolean>(false)
-  const [searchResults, setSearchResults] = useState<any>(null)
-  const [currentPage, setCurrentPage] = useState<any>(1)
-  const [aggregations, setAggregations] = useState<any[]>([])
-  const [activeFilters, setActiveFilters] = useState<any[]>([])
-  const [openGroups, setOpenGroups] = useState<{ [key: string]: boolean }>({})
-  const [filters, setFilters] = useState<any>({})
-  const [isFilterOpen, setIsFilterOpen] = useState<any>(false)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [hasValidAggregations, setHasValidAggregations] = useState<boolean>(false)
 
-  // New states for filter and sort functionality
-  const [selectedSortOption, setSelectedSortOption] = useState("")
-  const [isSortListHovered, setIsSortListHovered] = useState<any>(false)
+  // Pagination
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [changeCheckPage, setChangeCheckPage] = useState<boolean>(false)
+  const [totalPages, setTotalPages] = useState<number>(1)
+
+  // Products
+  const [displayedProducts, setDisplayedProducts] = useState<any[]>([])
+  const [pendingProducts, setPendingProducts] = useState<any[] | null>(null)
+  const [productCount, setProductCount] = useState<number>(0)
+  const [searchResults, setSearchResults] = useState<any>(null)
+
+  // Filters
+  const [aggregations, setAggregations] = useState<any[]>([])
+  const [isFilterOpen, setIsFilterOpen] = useState<boolean>(false)
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 80000])
   const [highestPrice, setHighestPrice] = useState<number>(0)
   const [lowestPrice, setLowestPrice] = useState<number>(0)
-  const [productCount, setProductCount] = useState<any>("")
-  const [changeCheckPage, setChangeCheckPage] = useState<any>(false)
-  const [displayedProducts, setDisplayedProducts] = useState<any>([])
-  const [totalPages, setTotalPages] = useState(1)
+  const [filters, setFilters] = useState<Record<string, any>>({})
+  const [activeFilters, setActiveFilters] = useState<any[]>([])
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({})
+  const [selectedSortOption, setSelectedSortOption] = useState<string>("")
+  const [showAllFilters, setShowAllFilters] = useState<Record<string, boolean>>({})
+  const [hasValidAggregations, setHasValidAggregations] = useState<boolean>(false)
+  const [filtersReady, setFiltersReady] = useState<boolean>(false)
 
-// console.log(searchResults,'searchResults')
-  // Extract the slug from the router query
-  const slug: any = router.query?.query
-  const page = Number(router.query?.page) || 1
+  // Loading / UI
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isSortListHovered, setIsSortListHovered] = useState<boolean>(false)
+  const [isSmallScreen, setIsSmallScreen] = useState<boolean>(false)
 
-  // Sync currentPage with the URL parameter
+  // Refs to avoid stale closures
+  const filtersRef = useRef(filters)
+  const selectedSortOptionRef = useRef(selectedSortOption)
+  const activeFiltersRef = useRef(activeFilters)
+  const currentPageRef = useRef(currentPage)
+  const isApplyingFilterRef = useRef(false)
+
   useEffect(() => {
-    setCurrentPage(page)
-  }, [page])
+    filtersRef.current = filters
+  }, [filters])
+  useEffect(() => {
+    selectedSortOptionRef.current = selectedSortOption
+  }, [selectedSortOption])
+  useEffect(() => {
+    activeFiltersRef.current = activeFilters
+  }, [activeFilters])
+  useEffect(() => {
+    currentPageRef.current = currentPage
+  }, [currentPage])
 
+  const slug: any = router.query?.query
+  const pageFromQuery = Number(router.query?.page) || 1
 
-  // // Get Aggregation
-  // async function FetchAggregation() {
-  //   if (currentPage) {
-  //     try {
-  //       setLoading(true)
-  //       const result = await client.fetchProductDetailsAllUrl(currentPage)
-  //       setAggregations(result?.data?.products?.aggregations || [])
-  //     } catch (error) {
-  //       console.error("Error fetching aggregations:", error)
-  //       setAggregations([])
-  //     } finally {
-  //       setLoading(false)
-  //     }
-  //   }
-  // }
+  // Reserve filter column while checking / when valid → no layout shift
+  const showFilterColumn = !filtersReady || hasValidAggregations
 
-  // useEffect(() => {
-  //   FetchAggregation()
-  // }, [currentPage])
+  useEffect(() => {
+    const checkScreenSize = () => setIsSmallScreen(window.innerWidth < 768)
+    checkScreenSize()
+    window.addEventListener("resize", checkScreenSize)
+    return () => window.removeEventListener("resize", checkScreenSize)
+  }, [])
 
-  // Setup filter options
+  // Sync page from URL
+  useEffect(() => {
+    const safePage = isNaN(pageFromQuery) ? 1 : Math.max(1, pageFromQuery)
+    if (safePage !== currentPage) {
+      setCurrentPage(safePage)
+    }
+  }, [pageFromQuery])
+
+  // Setup filter options from aggregations
   useEffect(() => {
     if (aggregations?.length > 0) {
       filterOptions = aggregations.map((element: any) => ({
         label: element?.label,
-        value: getForMatted(element?.label),
+        value: element?.attribute_code || getForMatted(element?.label),
       }))
     }
   }, [aggregations])
 
-  // Initialize open groups
+  // Valid aggregations + open first groups
   useEffect(() => {
+    const validAggregations = aggregations?.some(
+      (aggregation: any) => aggregation.label && aggregation.label !== "0"
+    )
+    setHasValidAggregations(!!validAggregations)
+    setFiltersReady(true)
+
     if (aggregations?.length > 0) {
-      const firstGroupLabel = aggregations[0].label
-      setOpenGroups({ [firstGroupLabel]: true })
+      const initialState: Record<string, boolean> = {}
+      aggregations
+        .filter(
+          (aggregation: any) =>
+            aggregation.label !== "Category" &&
+            aggregation.label !== "Brand" &&
+            (aggregation.label?.toLowerCase() === "price" || aggregation.options?.length > 1)
+        )
+        .reverse()
+        .slice(0, 3)
+        .forEach((aggregation: any) => {
+          initialState[aggregation.label] = true
+        })
+      setOpenGroups(initialState)
     }
   }, [aggregations])
 
-  // Calculate price range
+  // Price bounds from products
   useEffect(() => {
     const calculatePriceRange = (products: any[]) => {
-      if (products.length === 0) {
-        setHighestPrice(0)
+      if (!products || products.length === 0) {
         setLowestPrice(0)
+        setHighestPrice(0)
         return
       }
 
-      const prices = products.map((product) => {
-        return (
-          product?.price?.regularPrice?.amount?.value ??
-          product?.variants?.[0]?.product?.price_range?.maximum_price?.final_price?.value ??
-          0
-        )
-      })
+      const prices = products
+        .map((product) => {
+          const finalPrice =
+            product?.price_range?.maximum_price?.final_price?.value ||
+            product?.price_range?.minimum_price?.final_price?.value
 
-      const highest = Math.round(Math.max(...prices) / 10) * 10
-      const lowest = Math.round(Math.min(...prices) / 10) * 10
+          if (typeof finalPrice === "number" && !isNaN(finalPrice) && finalPrice > 0) {
+            return finalPrice
+          }
 
-      setHighestPrice(highest)
-      setLowestPrice(lowest)
+          const regularPrice = product?.price?.regularPrice?.amount?.value
+          if (typeof regularPrice === "number" && !isNaN(regularPrice) && regularPrice > 0) {
+            return regularPrice
+          }
+
+          return null
+        })
+        .filter((price): price is number => price !== null)
+
+      if (prices.length === 0) {
+        setLowestPrice(0)
+        setHighestPrice(0)
+        return
+      }
+
+      const rawMin = Math.min(...prices)
+      const rawMax = Math.max(...prices)
+      const stepSize = 10
+      const lowest = Math.floor(rawMin / stepSize) * stepSize
+      const highest = Math.ceil(rawMax / stepSize) * stepSize
+      const adjustedLowest = Math.max(0, lowest)
+      const adjustedHighest = Math.max(adjustedLowest + stepSize, highest)
+      if (highestPrice == 0){
+      setLowestPrice(adjustedLowest)
+      setHighestPrice(adjustedHighest)
+      setPriceRange([adjustedLowest, adjustedHighest])}
     }
 
     if (searchResults?.products?.items) {
       calculatePriceRange(searchResults.products.items)
-      setDisplayedProducts(searchResults.products.items)
-      setProductCount(searchResults.products.total_count || 0)
-      setTotalPages(Math.ceil((searchResults.products.total_count || 0) / 21))
     }
   }, [searchResults])
 
-  // Fetch search results based on the slug
-  const fetchSearchResults = async () => {
-    if (slug) {
-      setLoading(true)
-      setSearchInput(slug as string)
-      try {
-        const result = await client.fetchSearchProductResult(slug as string, currentPage)
-        setSearchResults(result || null)
-         setAggregations(result?.products?.aggregations || [])
-      } catch (error) {
-        console.error("Error fetching search results:", error)
-        setSearchResults(null)
-         setAggregations([])
-      } finally {
-        setLoading(false)
-      }
-    }
-  }
-
-  // Fetch search results whenever slug or currentPage changes
+  // Apply pending products
   useEffect(() => {
-    if (slug) {
-      fetchSearchResults()
+    if (pendingProducts !== null) {
+      setDisplayedProducts(pendingProducts)
     }
-  }, [slug, currentPage])
+  }, [pendingProducts])
 
-  // Filter and Sorting Logic
   const getForMatted = (str: any) => {
+    if (!str) return ""
     str = str.replace(/[()]/g, "")
     return str.replaceAll(" ", "_").toLowerCase()
   }
 
-  const applyProductFilter = useCallback(
-    debounce(async (filter: any) => {
+  const getSortingParam = useCallback((sortOption: string): Record<string, string> => {
+    switch (sortOption) {
+      case "productNameAtoZ":
+        return { name: "ASC" }
+      case "productNameZtoA":
+        return { name: "DESC" }
+      case "priceHighToLow":
+        return { price: "DESC" }
+      case "priceLowToHigh":
+        return { price: "ASC" }
+      default:
+        return {}
+    }
+  }, [])
+
+  // Initial / page search fetch
+  const fetchSearchResults = useCallback(
+    async (page: number = currentPage) => {
       if (!slug) return
-
+      setLoading(true)
       setIsLoading(true)
-      try {
-        // Create filter object WITHOUT search term - only actual filters
-        const graphqlFilter: Record<string, { eq?: string; in?: string[]; from?: string; to?: string }> = {}
+      setSearchInput(slug as string)
 
-        // Add filters (excluding search term)
+      try {
+        const result = await client.fetchSearchProductResult(slug as string, page)
+        if (result?.products) {
+          setSearchResults(result)
+          setAggregations(result.products.aggregations || [])
+          setPendingProducts(result.products.items || [])
+          setProductCount(result.products.total_count || 0)
+          setTotalPages(Math.ceil((result.products.total_count || 0) / productsPerPage))
+        } else {
+          setSearchResults(null)
+          setAggregations([])
+          setPendingProducts([])
+          setProductCount(0)
+          setTotalPages(0)
+        }
+      } catch (error) {
+        console.error("Error fetching search results:", error)
+        setSearchResults(null)
+        setAggregations([])
+        setPendingProducts([])
+        setProductCount(0)
+        setTotalPages(0)
+      } finally {
+        setLoading(false)
+        setIsLoading(false)
+      }
+    },
+    [slug, currentPage, client]
+  )
+
+  useEffect(() => {
+    if (slug && router.isReady) {
+      // Only do plain search when no active filters/sort
+      if (activeFiltersRef.current.length === 0 && !selectedSortOptionRef.current) {
+        fetchSearchResults(currentPage)
+      }
+    }
+  }, [slug, currentPage, router.isReady])
+
+  // Filter + sort application (mirrors Category page)
+  const applyProductFilter = useMemo(() => {
+    const debouncedFn = debounce(async (filter: any, page: number, sort: string) => {
+      if (!slug || isApplyingFilterRef.current) return
+      isApplyingFilterRef.current = true
+      setIsLoading(true)
+
+      try {
+        const hasFilters = Object.keys(filter).length > 0
+        const hasSort = sort && sort !== "none" && sort !== ""
+
+        // No filters/sort → fall back to plain search results
+        if (!hasFilters && !hasSort && page === 1) {
+          await fetchSearchResults(1)
+          isApplyingFilterRef.current = false
+          setIsLoading(false)
+          return
+        }
+
+        const graphqlFilter: Record<string, any> = {}
+
         for (const key in filter) {
-          if (filter[key] && filter[key].length > 0) {
+          if (key === "price" && filter[key]) {
+            graphqlFilter.price = {
+              from: String(filter[key][0]),
+              to: String(filter[key][1]),
+            }
+          } else if (filter[key] && filter[key].length > 0) {
             const filterOption = filterOptions.find((option: any) => option.value === key)
             if (filterOption) {
-              let attributeName: any = getForMatted(filterOption.label)
-              if (attributeName.toLowerCase() === "ring_size") {
-                attributeName = "lux_ring_size"
-              } else if (attributeName.toLowerCase() === "metal") {
-                attributeName = "metal_type"
-              }
+              let attributeName = filterOption.value || getForMatted(filterOption.label)
+              if (attributeName.toLowerCase() === "ring_size") attributeName = "lux_ring_size"
+              if (attributeName.toLowerCase() === "metal") attributeName = "metal_type"
 
-              if (attributeName.toLowerCase() === "price") {
-                const priceRanges = filter[key]
-                  .map((range: string) => {
-                    const [from, to] = range.split("_").map(Number)
-                    if (!isNaN(from) && !isNaN(to)) {
-                      return { from, to }
-                    }
-                    return null
-                  })
-                  .filter(Boolean)
-
-                if (priceRanges.length > 0) {
-                  const minFrom = Math.min(...priceRanges.map((r: any) => r!.from))
-                  const maxTo = Math.max(...priceRanges.map((r: any) => r!.to))
-                  graphqlFilter.price = {
-                    from: String(minFrom),
-                    to: String(maxTo),
-                  }
-                }
-              } else {
-                graphqlFilter[attributeName] = filter[key].length === 1 ? { eq: filter[key][0] } : { in: filter[key] }
-              }
+              graphqlFilter[attributeName] =
+                filter[key].length === 1 ? { eq: filter[key][0] } : { in: filter[key] }
             }
           }
         }
@@ -231,186 +329,250 @@ function Search() {
             .join(", ")} }`
         }
 
-        const sortParam = selectedSortOption ? getSortingParam(selectedSortOption) : {}
+        const sortParam = sort && sort !== "none" ? getSortingParam(sort) : {}
 
-        // Call API with search term separate from filter
-        // This should generate: search: "rolex", filter: { price: { from: "1000000", to: "2000000" } }
         const response = await client.fetchCategoryFilterProductResult(
-          slug, // search term as separate parameter
-          currentPage,
-          formatObject(graphqlFilter), // filter object without search term
-          formatSortObject(sortParam),
+          slug, // search term
+          page,
+          formatObject(graphqlFilter),
+          formatSortObject(sortParam)
         )
 
         if (response?.products?.items?.length > 0) {
           setSearchResults(response)
-          setDisplayedProducts(response.products.items)
+          // setAggregations(response.products.aggregations || aggregations)
+          setPendingProducts(response.products.items)
           setProductCount(response.products.total_count || 0)
-          setTotalPages(Math.ceil((response.products.total_count || 0) / 21))
+          setTotalPages(Math.ceil((response.products.total_count || 0) / productsPerPage))
         } else {
-          setDisplayedProducts([])
+          setPendingProducts([])
           setProductCount(0)
           setTotalPages(0)
         }
       } catch (error) {
         console.error("Error applying filters:", error)
-        setDisplayedProducts([])
+        setPendingProducts([])
         setProductCount(0)
         setTotalPages(0)
       } finally {
         setIsLoading(false)
+        isApplyingFilterRef.current = false
       }
-    }, 500),
-    [currentPage, slug, selectedSortOption, filterOptions],
+    }, 500)
+
+    return debouncedFn
+  }, [client, getSortingParam, slug, fetchSearchResults, aggregations])
+
+  // Trigger filter/sort when they change
+  useEffect(() => {
+    if (!slug || !router.isReady) return
+
+    if (!changeCheckPage) {
+      setCurrentPage(1)
+      const newQuery = { ...router.query }
+      delete newQuery.page
+      router.replace({ pathname: router.pathname, query: newQuery }, undefined, { shallow: true })
+    }
+
+    setChangeCheckPage(false)
+    applyProductFilter(filters, 1, selectedSortOption)
+  }, [selectedSortOption, filters, slug])
+
+  // Cleanup debounce
+  useEffect(() => {
+    return () => {
+      applyProductFilter.cancel()
+    }
+  }, [applyProductFilter])
+
+  const handleCheckboxChange = useCallback(
+    (aggregationLabel: string, optionValue: string, isChecked: boolean) => {
+      setFilters((prevFilters) => {
+        const newFilters = { ...prevFilters }
+
+        filterOptions.forEach((option: any) => {
+          if (option.label === aggregationLabel) {
+            const key = option.value
+
+            if (isChecked) {
+              if (!newFilters[key]) {
+                newFilters[key] = [optionValue]
+              } else if (!newFilters[key].includes(optionValue)) {
+                newFilters[key] = [...newFilters[key], optionValue]
+              }
+            } else {
+              if (newFilters[key]) {
+                newFilters[key] = newFilters[key].filter((value: string) => value !== optionValue)
+                if (newFilters[key].length === 0) {
+                  delete newFilters[key]
+                }
+              }
+            }
+          }
+        })
+
+        return newFilters
+      })
+
+      setActiveFilters((prev) => {
+        if (isChecked) {
+          const exists = prev.some((f) => f.label === aggregationLabel && f.value === optionValue)
+          if (exists) return prev
+          return [...prev, { label: aggregationLabel, value: optionValue }]
+        } else {
+          return prev.filter(
+            (item) => !(item.label === aggregationLabel && item.value === optionValue)
+          )
+        }
+      })
+    },
+    []
   )
 
-  const getSortingParam = (selectedSortOption: string): Record<string, string> => {
-    switch (selectedSortOption) {
-      case "productNameAtoZ":
-        return { name: "ASC" }
-      case "productNameZtoA":
-        return { name: "DESC" }
-      case "priceHighToLow":
-        return { price: "DESC" }
-      case "priceLowToHigh":
-        return { price: "ASC" }
-      default:
-        return {}
-    }
-  }
-
-  useEffect(() => {
-    if (selectedSortOption || Object.keys(filters).length > 0) {
-      changeCheckPage ? null : setCurrentPage(1)
-      setChangeCheckPage(false)
-      applyProductFilter(filters)
-    }
-  }, [selectedSortOption, filters, applyProductFilter, changeCheckPage])
-
-  const handleCheckboxChange = (aggregationLabel: string, optionValue: string, isChecked: boolean) => {
-    const filter: { [key: string]: string[] } = { ...filters }
-    filterOptions.forEach((option: any) => {
-      if (option.label === aggregationLabel) {
-        const key = option.value
-        if (!filter[key]) filter[key] = []
-        if (isChecked) {
-          setActiveFilters((prev) => [...prev, { label: aggregationLabel, value: optionValue }])
-          if (!filter[key].includes(optionValue)) filter[key].push(optionValue)
-        } else {
-          setActiveFilters((prev) =>
-            prev.filter((item) => item.label !== aggregationLabel || item.value !== optionValue),
-          )
-          filter[key] = filter[key].filter((value) => value !== optionValue)
-          if (filter[key].length === 0) delete filter[key]
-        }
-      }
-    })
-    setFilters(filter)
-    applyProductFilter(filter)
-  }
-
-  const handleRemoveFilter = (filterToRemove: any) => {
+  const handleRemoveFilter = useCallback((filterToRemove: any) => {
     setActiveFilters((prev) =>
-      prev.filter((filter) => !(filter.label === filterToRemove?.label && filter.value === filterToRemove?.value)),
+      prev.filter(
+        (filter) =>
+          !(filter.label === filterToRemove?.label && filter.value === filterToRemove?.value)
+      )
     )
 
-    const updatedFilters = { ...filters }
-    filterOptions.forEach((option: any) => {
-      if (option?.label === filterToRemove?.label) {
-        const key = option.value
-        if (updatedFilters[key]) {
-          updatedFilters[key] = updatedFilters[key].filter((val: string) => val !== filterToRemove.value)
-          if (updatedFilters[key].length === 0) delete updatedFilters[key]
+    setFilters((prev) => {
+      const updatedFilters = { ...prev }
+
+      if (filterToRemove?.label === "Price") {
+        delete updatedFilters.price
+        return updatedFilters
+      }
+
+      filterOptions.forEach((option: any) => {
+        if (option?.label === filterToRemove?.label) {
+          const key = option.value
+          if (updatedFilters[key]) {
+            updatedFilters[key] = updatedFilters[key].filter(
+              (val: string) => val !== filterToRemove.value
+            )
+            if (updatedFilters[key].length === 0) {
+              delete updatedFilters[key]
+            }
+          }
         }
-      }
+      })
+      return updatedFilters
     })
-    setFilters(updatedFilters)
-    applyProductFilter(updatedFilters)
-  }
+  }, [])
 
-  const handleSortOptionClick = (value: string) => {
+  // Dual-range price handler (same as Category)
+  const handlePriceRangeChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+      const value = Number(event.target.value)
+
+      setPriceRange((prev) => {
+        let min = prev[0]
+        let max = prev[1]
+
+        if (index === 0) {
+          min = Math.min(value, max)
+        } else {
+          max = Math.max(value, min)
+        }
+
+        const newRange: [number, number] = [min, max]
+
+        setFilters((prevFilters) => ({
+          ...prevFilters,
+          price: newRange,
+        }))
+
+        setActiveFilters((prev) => {
+          const otherFilters = prev.filter((f) => f.label !== "Price")
+          return [
+            ...otherFilters,
+            { label: "Price", value: `${newRange[0]}_${newRange[1]}` },
+          ]
+        })
+
+        return newRange
+      })
+    },
+    []
+  )
+
+  const handleSortOptionClick = useCallback((value: string) => {
     setSelectedSortOption(value)
-  }
+  }, [])
 
-  const handleSortListHover = (isHovered: boolean) => {
+  const handleSortListHover = useCallback((isHovered: boolean) => {
     setIsSortListHovered(isHovered)
-  }
+  }, [])
 
-  const handleFilterClick = () => {
-    setIsFilterOpen(!isFilterOpen)
-  }
+  const handleFilterClick = useCallback(() => {
+    setIsFilterOpen((prev) => !prev)
+  }, [])
 
-  const toggleGroup = (groupLabel: string) => {
-    setOpenGroups((prev) => {
-      const isCurrentlyOpen = prev[groupLabel]
-      const newState = Object.keys(prev).reduce(
-        (acc, key) => {
-          acc[key] = false
-          return acc
-        },
-        {} as Record<string, boolean>,
-      )
-      if (!isCurrentlyOpen) newState[groupLabel] = true
-      return newState
-    })
-  }
+  const toggleGroup = useCallback((groupLabel: string) => {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [groupLabel]: !prev[groupLabel],
+    }))
+  }, [])
 
-  const isChecked = (label: any, value: any) => {
-    let key = ""
-    for (let i = 0; i < filterOptions.length; i++) {
-      if (filterOptions[i].label === label) {
-        key = filterOptions[i].value
-      }
-    }
-    return filters[key]?.includes(value) || false
-  }
+  const isChecked = useCallback(
+    (label: string, value: string) => {
+      const option = filterOptions.find((opt: any) => opt.label === label)
+      if (!option) return false
+      return filters[option.value]?.includes(value) || false
+    },
+    [filters]
+  )
 
-  // Handle search input submission
-  const handleSearch = () => {
-    if (searchInput.trim()) {
-      router.push(`/search/?query=${encodeURIComponent(searchInput.trim())}&page=1`)
-    }
-  }
-
-  // Handle page change for pagination
   const handlePageChange = useCallback(
-    debounce((page: number) => {
+    (page: number) => {
+      if (page < 1 || page > totalPages || page === currentPage) return
+
       window.scrollTo({ top: 0, behavior: "smooth" })
+
       router.push(
         {
           pathname: router.pathname,
           query: { ...router.query, page },
         },
         undefined,
-        { shallow: true },
+        { shallow: true }
       )
+
       setChangeCheckPage(true)
       setCurrentPage(page)
-      if (activeFilters.length > 0 || selectedSortOption) {
-        applyProductFilter(filters)
+
+      if (activeFiltersRef.current.length > 0 || selectedSortOptionRef.current) {
+        applyProductFilter(filtersRef.current, page, selectedSortOptionRef.current)
+      } else {
+        fetchSearchResults(page)
       }
-    }, 300),
-    [router, activeFilters, filters, selectedSortOption, applyProductFilter],
+    },
+    [router, totalPages, currentPage, applyProductFilter, fetchSearchResults]
   )
 
-  // Handle Enter key press for search
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter" && searchInput.trim()) {
+  const handleSearch = () => {
+    if (searchInput.trim()) {
+      // Reset filters when doing a new search
+      setFilters({})
+      setActiveFilters([])
+      setAggregations([])
+      setSelectedSortOption("")
       router.push(`/search/?query=${encodeURIComponent(searchInput.trim())}&page=1`)
     }
   }
 
-  // Check if any aggregations exist and if the label is not null or 0
-  useEffect(() => {
-    if (Array.isArray(aggregations) && aggregations.length > 0) {
-      const validAggregations = aggregations.some((aggregation: any) => aggregation?.label && aggregation.label !== "0")
-      setHasValidAggregations(validAggregations)
-    } else {
-      setHasValidAggregations(false)
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter" && searchInput.trim()) {
+      setFilters({})
+      setActiveFilters([])
+      setSelectedSortOption("")
+      router.push(`/search/?query=${encodeURIComponent(searchInput.trim())}&page=1`)
     }
-  }, [aggregations])
+  }
 
-  // Early return if router is not ready (prevents SSR issues)
   if (!router.isReady) {
     return <div>Loading...</div>
   }
@@ -467,54 +629,59 @@ function Search() {
             </button>
           </div>
           <div className={styles.resultCount}>
-            {loading ? (
+            {loading || isLoading ? (
               <p className={styles.textLoading}>Loading...</p>
             ) : (
               <p>
                 {productCount
-                  ? `Showing result for ${slug}: ${productCount} items`
+                  ? `Showing result for "${slug}": ${productCount} items`
                   : `No results found for ${slug || "your search"}.`}
               </p>
             )}
           </div>
         </div>
 
-        
-          <>
-            <SearchProduct
-              productsData={displayedProducts || []}
-              aggrations={aggregations}
-              toggleGroup={toggleGroup}
-              openGroups={openGroups}
-              handleCheckboxChange={handleCheckboxChange}
-              handleFilterClick={handleFilterClick}
-              isFilterOpen={isFilterOpen}
-              isChecked={isChecked}
-              filters={filters}
-              filterOptions={filterOptions}
-              setIsFilterOpen={setIsFilterOpen}
-              activeFilters={activeFilters}
-              handleRemoveFilter={handleRemoveFilter}
-              setFilters={setFilters}
-              setActiveFilters={setActiveFilters}
-              hasValidAggregations={hasValidAggregations}
-              isSortListHovered={isSortListHovered}
-              handleSortOptionClick={handleSortOptionClick}
-              handleSortListHover={handleSortListHover}
-              productCount={productCount}
-              setSelectedSortOption={setSelectedSortOption}
-              selectedSortOption={selectedSortOption}
-              setPriceRange={setPriceRange}
-              highestPrice={highestPrice}
-              lowestPrice={lowestPrice}
-              isLoading={loading}
-            />
+        <SearchProduct
+          productsData={displayedProducts || []}
+          aggrations={aggregations}
+          toggleGroup={toggleGroup}
+          openGroups={openGroups}
+          handleCheckboxChange={handleCheckboxChange}
+          handleFilterClick={handleFilterClick}
+          isFilterOpen={isFilterOpen}
+          isChecked={isChecked}
+          filters={filters}
+          filterOptions={filterOptions}
+          setIsFilterOpen={setIsFilterOpen}
+          activeFilters={activeFilters}
+          handleRemoveFilter={handleRemoveFilter}
+          setFilters={setFilters}
+          setActiveFilters={setActiveFilters}
+          hasValidAggregations={hasValidAggregations}
+          showFilterColumn={showFilterColumn}
+          isSortListHovered={isSortListHovered}
+          handleSortOptionClick={handleSortOptionClick}
+          handleSortListHover={handleSortListHover}
+          productCount={productCount}
+          setSelectedSortOption={setSelectedSortOption}
+          selectedSortOption={selectedSortOption}
+          setPriceRange={setPriceRange}
+          highestPrice={highestPrice}
+          lowestPrice={lowestPrice}
+          priceRange={priceRange}
+          handlePriceRangeChange={handlePriceRangeChange}
+          isLoading={isLoading || loading}
+          showAllFilters={showAllFilters}
+          setShowAllFilters={setShowAllFilters}
+        />
 
-            {totalPages > 1 && (
-              <Pagination totalPages={totalPages} currentPage={currentPage} handlePageChange={handlePageChange} />
-            )}
-          </>
-
+        {displayedProducts && displayedProducts.length > 0 && !isLoading && totalPages > 1 && (
+          <Pagination
+            totalPages={totalPages}
+            currentPage={currentPage}
+            handlePageChange={handlePageChange}
+          />
+        )}
       </div>
     </>
   )
