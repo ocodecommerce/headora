@@ -20,16 +20,16 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
 
-          script: |
-            set -euxo pipefail
+    script: |
+          set -Eeuxo pipefail
 
-            cd /srv/headora/frontend
+          cd /srv/headora/frontend
 
-            echo "=== CURRENT USER ==="
-            whoami
+          echo "=== GIT REMOTE ==="
+          git remote -v
+          echo $== "=== GIT STATUS ==="
+          git pull origin dev
 
-            echo "=== CURRENT DIRECTORY ==="
-            pwd
+          npm run build
 
-            echo "=== RUNNING SCRIPT ==="
-            bash -x ./deploy.sh
+          pm2 restart 0
