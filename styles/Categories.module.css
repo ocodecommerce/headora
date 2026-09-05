@@ -86,7 +86,7 @@
 
 .updatedSortList {
   position: relative;
-  width: 230px;
+  min-width: 230px;
   font-family: inherit;
 }
 .updatedArrowRotate{
@@ -97,6 +97,7 @@
 .updatedSortButton {
   width: 100%;
   height: 46px;
+  gap: 6px;
   padding: 0 18px;
   background: #ffffff;
   border: 2px solid #111827;
