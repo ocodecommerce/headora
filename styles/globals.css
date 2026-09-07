@@ -7287,6 +7287,10 @@ margin-bottom: 20px;
     flex: 1;
     gap: 10px;
   }
+  .product-item-details > a[href="#review-form"] {
+display: none;
+  }
+  
   
   .block.widget.block-new-products .product-item-name {
     font-family: var(--font-body);
