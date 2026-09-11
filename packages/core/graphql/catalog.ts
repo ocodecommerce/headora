@@ -18,7 +18,7 @@ export const CATEGORY_QUERY = `query Cat($id: String!) {
   categories(filters: { category_url_path: { eq: $id } }) { items { name description products(pageSize: 24) { items { ...Card } } } }
 }`;
 export const STORES_QUERY = `query Stores { storeConfig { store_name base_currency_code locale } availableStores { store_code store_name } currency { base_currency_code available_currency_codes } }`;
-export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 20) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
+export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 10) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
 export const CREATE_REVIEW_MUTATION = `mutation Write($sku: String!, $nick: String!, $sum: String!, $text: String!, $ratings: [ProductReviewRatingInput!]!) {
   createProductReview(input: { sku: $sku, nickname: $nick, summary: $sum, text: $text, ratings: $ratings }) { review { nickname summary } }
 }`;

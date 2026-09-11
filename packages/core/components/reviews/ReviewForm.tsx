@@ -1,7 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 type RatingMeta = { id: string; name: string };
-// Login-required only. Rating IDs resolved per store via /api/ratings. Never hardcoded.
+// Login-required only. Rating IDs resolved per store via /api/ratings, top 10. Never hardcoded.
+// Login via modal event (legacy pattern): dispatches openLoginModal, falls back to link.
+function openLoginModal() {
+  window.dispatchEvent(new Event("openLoginModal"));
+}
 export function ReviewForm({ sku, loginUrl }: { sku: string; loginUrl?: string }) {
   const [ratings, setRatings] = useState<RatingMeta[]>([]);
   const [state, setState] = useState<"idle" | "loading-ratings" | "sending" | "done" | "login" | "error">("loading-ratings");
@@ -11,7 +15,7 @@ export function ReviewForm({ sku, loginUrl }: { sku: string; loginUrl?: string }
       .then((r) => r.json())
       .then((j) => {
         if (j.ok && j.items?.length) {
-          setRatings(j.items);
+          setRatings(j.items.slice(0, 10));
           setState("idle");
         } else setState("error");
       })
@@ -29,14 +33,27 @@ export function ReviewForm({ sku, loginUrl }: { sku: string; loginUrl?: string }
       ratings: ratings.map((r) => ({ id: r.id, value_id: picks[r.id] ?? "5" })),
     };
     const r = await fetch("/api/reviews", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-    if (r.status === 401) { setState("login"); return; }
+    if (r.status === 401) { setState("login"); openLoginModal(); return; }
     setState(r.ok ? "done" : "error");
   }
   if (state === "done") return <p>Thanks. Review submitted for moderation.</p>;
-  if (state === "login") return <p>Login required to write reviews. <a href={loginUrl ?? "/customer/account/login"}>Login here</a></p>;
+  if (state === "login")
+    return (
+      <p>
+        Login required to write reviews.{" "}
+        <a href={loginUrl ?? "/customer/account/login"} onClick={(e) => { e.preventDefault(); openLoginModal(); }}>
+          Login here
+        </a>
+      </p>
+    );
   return (
     <form onSubmit={submit} style={{ display: "grid", gap: 8, maxWidth: 480 }}>
-      <p style={{ margin: 0 }}>Login required to write reviews.</p>
+      <p style={{ margin: 0 }}>
+        Login required to write reviews.{" "}
+        <a href={loginUrl ?? "#login"} onClick={(e) => { e.preventDefault(); openLoginModal(); }}>
+          Login
+        </a>
+      </p>
       {state === "loading-ratings" && <p>Loading rating options for this store...</p>}
       {ratings.map((r) => (
         <label key={r.id}>{r.name} (1-5)
@@ -49,6 +66,7 @@ export function ReviewForm({ sku, loginUrl }: { sku: string; loginUrl?: string }
       <input name="summary" required placeholder="Summary" />
       <textarea name="text" required placeholder="Review" />
       <button disabled={state === "sending" || state === "loading-ratings"}>{state === "sending" ? "Sending..." : "Write review"}</button>
+      <button type="button" onClick={openLoginModal}>Login / Sign up</button>
       {state === "error" && <p>Failed to load or submit. Try again logged in.</p>}
     </form>
   );
