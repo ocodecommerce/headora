@@ -1,0 +1,1 @@
+{ "preset": "fashion", "extends": "@headora/preset-base", "tokens": { "primary": "#111111", "accent": "#C9A24B" }, "home": ["Hero", "CategoryTiles", "ProductCarousel"] }

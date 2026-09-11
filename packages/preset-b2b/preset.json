@@ -1,0 +1,1 @@
+{ "preset": "b2b-minimal", "extends": "@headora/preset-base", "tokens": { "primary": "#1A1A1A", "accent": "#2E7D32" }, "features": { "tierPricing": true, "bulkAdd": true, "hideReviews": true }, "home": ["Hero", "CategoryTiles"] }
