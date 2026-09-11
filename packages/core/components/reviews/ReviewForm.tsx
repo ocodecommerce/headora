@@ -66,7 +66,7 @@ export function ReviewForm({ sku, loginUrl }: { sku: string; loginUrl?: string }
       <input name="summary" required placeholder="Summary" />
       <textarea name="text" required placeholder="Review" />
       <button disabled={state === "sending" || state === "loading-ratings"}>{state === "sending" ? "Sending..." : "Write review"}</button>
-      <button type="button" onClick={openLoginModal}>Login / Sign up</button>
+      <div style={{ display: "flex", gap: 8 }}><button type="button" onClick={openLoginModal}>Login</button><button type="button" onClick={() => window.dispatchEvent(new Event("openSignUpModal"))}>Sign up</button></div>
       {state === "error" && <p>Failed to load or submit. Try again logged in.</p>}
     </form>
   );
