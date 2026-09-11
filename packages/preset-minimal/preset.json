@@ -1,0 +1,1 @@
+{ "preset": "minimal", "extends": "@headora/preset-base", "style": "minimal", "tokens": { "primary": "#111111", "accent": "#111111" } }

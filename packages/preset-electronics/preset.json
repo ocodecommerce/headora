@@ -1,1 +1,0 @@
-{ "preset": "electronics", "extends": "@headora/preset-base", "tokens": { "primary": "#0B1F3A", "accent": "#00C2FF" }, "home": ["Hero", "ProductCarousel", "CMSHtml"] }
