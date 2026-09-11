@@ -1,4 +1,6 @@
 import { magentoFetch, URL_RESOLVE_QUERY } from "../../../lib/magento.js";
+import { PDP_QUERY, REVIEWS_QUERY, CATEGORY_QUERY } from "../../../graphql/catalog.js";
+import { PdpTabs } from "../../../components/product/PdpTabs.js";
 export const revalidate = 120;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; url: string[] }> }) {
   const { url } = await params;
@@ -7,9 +9,36 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function CatchAll({ params }: { params: Promise<{ locale: string; url: string[] }> }) {
   const { locale, url } = await params;
   const path = `/${url?.join("/") ?? ""}`;
-  const data = await magentoFetch<{ urlResolver: { type: string } | null }>(
+  const resolved = await magentoFetch<{ urlResolver: { type: string; id?: number } | null }>(
     URL_RESOLVE_QUERY, { url: path }, { tags: [`url:${path}`, `locale:${locale}`], revalidate: 120 }
   ).catch(() => ({ urlResolver: null }));
-  if (!data.urlResolver) return <main><h1>Not found</h1><p>{path}</p></main>;
-  return <main><h1>{data.urlResolver.type}</h1><p>{path}</p></main>;
+  if (!resolved.urlResolver) return <main><h1>Not found</h1><p>{path}</p></main>;
+  const kind = resolved.urlResolver.type;
+  if (kind === "PRODUCT") {
+    const slug = url?.[url.length - 1]?.replace(/\.html$/, "") ?? "";
+    const pdp = await magentoFetch<any>(PDP_QUERY, { urlKey: slug }, { tags: [`pdp:${slug}`, `locale:${locale}`], revalidate: 120 }).catch(() => null);
+    const item = pdp?.products?.items?.[0];
+    if (!item) return <main><h1>{slug}</h1><p>Product data pending. Check PDP_QUERY mapping.</p></main>;
+    const rev = await magentoFetch<any>(REVIEWS_QUERY, { sku: item.sku }, { tags: [`reviews:${item.sku}`, `locale:${locale}`], revalidate: 60 }).catch(() => null);
+    const node = rev?.products?.items?.[0] ?? { reviews: { items: [] }, review_count: 0, rating_summary: 0 };
+    return (
+      <main style={{ padding: 24, display: "grid", gap: 24 }}>
+        <div><h1>{item.name}</h1><p>{item.sku} - {item.price_range?.minimum_price?.final_price?.value}</p></div>
+        <PdpTabs
+          description={item.description?.html ?? ""}
+          details={item.short_description?.html ?? ""}
+          reviews={node.reviews?.items ?? []}
+          reviewCount={node.review_count ?? 0}
+          ratingSummary={node.rating_summary ?? 0}
+          sku={item.sku}
+          loginUrl="/customer/account/login"
+        />
+      </main>
+    );
+  }
+  if (kind === "CATEGORY") {
+    const data = await magentoFetch<any>(CATEGORY_QUERY, { id: path.replace(/^\//, "") }, { tags: [`cat:${path}`], revalidate: 300 }).catch(() => null);
+    return <main style={{ padding: 24 }}><h1>{data?.categories?.items?.[0]?.name ?? kind}</h1><p>{path}</p></main>;
+  }
+  return <main style={{ padding: 24 }}><h1>{kind}</h1><p>{path}</p></main>;
 }
