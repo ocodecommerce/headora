@@ -3,7 +3,13 @@ import { useEffect, useRef, useState } from "react";
 // Ported from legacy Header.tsx: listens for openLoginModal / openSignUpModal,
 // plus forgot-password. Renders sign-in + create-account + forgot modals.
 // Closes on outside click / Escape. Session left to header via headora:auth-changed.
-export function AuthModals() {
+function localeFromPath(): string | undefined {
+  try {
+    const seg = window.location.pathname.split("/").filter(Boolean)[0];
+    return seg || undefined;
+  } catch { return undefined; }
+}
+export function AuthModals({ locale: localeProp }: { locale?: string }) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [signupOpen, setSignupOpen] = useState(false);
   const [forgotOpen, setForgotOpen] = useState(false);
@@ -17,14 +23,21 @@ export function AuthModals() {
   const loginRef = useRef<HTMLDivElement>(null);
   const signupRef = useRef<HTMLDivElement>(null);
   const forgotRef = useRef<HTMLDivElement>(null);
+  const locale = localeProp ?? (typeof window !== "undefined" ? localeFromPath() : undefined);
+  function resetForm() {
+    setError(""); setNotice("");
+    setEmail(""); setPassword("");
+    setFirstName(""); setLastName("");
+  }
+  function showLogin() { resetForm(); setLoginOpen(true); setSignupOpen(false); setForgotOpen(false); }
+  function showSignup() { resetForm(); setSignupOpen(true); setLoginOpen(false); setForgotOpen(false); }
+  function showForgot() { resetForm(); setForgotOpen(true); setLoginOpen(false); setSignupOpen(false); }
   useEffect(() => {
-    const openLogin = () => { setLoginOpen(true); setSignupOpen(false); setForgotOpen(false); setError(""); setNotice(""); };
-    const openSignup = () => { setSignupOpen(true); setLoginOpen(false); setForgotOpen(false); setError(""); setNotice(""); };
-    window.addEventListener("openLoginModal", openLogin);
-    window.addEventListener("openSignUpModal", openSignup);
+    window.addEventListener("openLoginModal", showLogin);
+    window.addEventListener("openSignUpModal", showSignup);
     return () => {
-      window.removeEventListener("openLoginModal", openLogin);
-      window.removeEventListener("openSignUpModal", openSignup);
+      window.removeEventListener("openLoginModal", showLogin);
+      window.removeEventListener("openSignUpModal", showSignup);
     };
   }, []);
   useEffect(() => {
@@ -44,7 +57,7 @@ export function AuthModals() {
   async function doLogin(e: any) {
     e.preventDefault();
     setLoading(true); setError("");
-    const r = await fetch("/api/auth/login", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), password }) });
+    const r = await fetch("/api/auth/login", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), password, locale }) });
     const j = await r.json().catch(() => ({}));
     setLoading(false);
     if (!r.ok) { setError(j.error ?? "Login failed"); return; }
@@ -54,7 +67,7 @@ export function AuthModals() {
   async function doSignup(e: any) {
     e.preventDefault();
     setLoading(true); setError("");
-    const r = await fetch("/api/auth/register", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password }) });
+    const r = await fetch("/api/auth/register", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password, locale }) });
     const j = await r.json().catch(() => ({}));
     setLoading(false);
     if (!r.ok) { setError(j.error ?? "Signup failed"); return; }
@@ -64,7 +77,7 @@ export function AuthModals() {
   async function doForgot(e: any) {
     e.preventDefault();
     setLoading(true); setError(""); setNotice("");
-    const r = await fetch("/api/auth/forgot", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim() }) });
+    const r = await fetch("/api/auth/forgot", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), locale }) });
     const j = await r.json().catch(() => ({}));
     setLoading(false);
     if (!r.ok) { setError(j.error ?? "Reset failed"); return; }
@@ -82,8 +95,8 @@ export function AuthModals() {
             {error && <p>{error}</p>}
             <button disabled={loading}>{loading ? "..." : "Sign in"}</button>
           </form>
-          <p><a href="#signup" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("openSignUpModal")); }}>Create account</a></p>
-          <p><a href="#forgot" onClick={(e) => { e.preventDefault(); setForgotOpen(true); setLoginOpen(false); }}>Forgot password?</a></p>
+          <p><a href="#signup" onClick={(e) => { e.preventDefault(); showSignup(); }}>Create account</a></p>
+          <p><a href="#forgot" onClick={(e) => { e.preventDefault(); showForgot(); }}>Forgot password?</a></p>
         </div>
       )}
       {signupOpen && (
@@ -97,7 +110,7 @@ export function AuthModals() {
             {error && <p>{error}</p>}
             <button disabled={loading}>{loading ? "..." : "Create account"}</button>
           </form>
-          <p><a href="#login" onClick={(e) => { e.preventDefault(); window.dispatchEvent(new Event("openLoginModal")); }}>Back to sign in</a></p>
+          <p><a href="#login" onClick={(e) => { e.preventDefault(); showLogin(); }}>Back to sign in</a></p>
         </div>
       )}
       {forgotOpen && (
@@ -109,7 +122,7 @@ export function AuthModals() {
             {notice && <p>{notice}</p>}
             <button disabled={loading}>{loading ? "..." : "Send reset email"}</button>
           </form>
-          <p><a href="#login" onClick={(e) => { e.preventDefault(); setForgotOpen(false); window.dispatchEvent(new Event("openLoginModal")); }}>Back to sign in</a></p>
+          <p><a href="#login" onClick={(e) => { e.preventDefault(); showLogin(); }}>Back to sign in</a></p>
         </div>
       )}
     </div>

@@ -8,6 +8,7 @@
   "scripts": {
     "dev:fashion": "npm run dev --workspace sites/demo-fashion",
     "build:core": "npm run build --workspace @headora/core",
-    "doctor": "node packages/cli/doctor.mjs"
+    "doctor": "node packages/cli/doctor.mjs",
+    "audit:cms": "node packages/cli/audit-cms.mjs"
   }
 }

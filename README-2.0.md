@@ -9,3 +9,7 @@ Hybrid checkout: Next.js browse only, Magento native /checkout via /api/handoff.
 - Multi-store: default Magento websites/stores/views. Auto-discovered, locale routing `app/[locale]`, Store header per request.
 - Product types: all magento2 defaults - simple, configurable, grouped, bundle, downloadable, virtual.
 - Reviews: headless write via POST /api/reviews -> createProductReview. Moderation stays in Magento admin.
+- Bare-theme content contract (headora, not venia): live backend must serve only Magento defaults
+  (`home`, `no-route`, `enable-cookies`, `privacy-policy-cookie-restriction-mode`) plus headora-owned
+  slots (`headora_hero_<locale>` blocks, neutral content). No `sell-*`, jewelry, or `venia-*` catalog.
+  Enforce with `npm run audit:cms` (`--strict` fails on custom content live).

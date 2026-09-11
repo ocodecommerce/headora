@@ -5,5 +5,3 @@ export async function GET(req: Request) {
   if (!masked || !base) return Response.json({ ok: false }, { status: 400 });
   return Response.redirect(`${base}/headora/handoff?masked_quote=${encodeURIComponent(masked)}`, 302);
 }
-TSX
-echo OK && find packages/core -type f | sort

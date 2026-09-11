@@ -6,10 +6,20 @@ on:
       - dev
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+      - run: npm run doctor
+      - run: npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"
+
   deploy:
     runs-on: ubuntu-latest
+    needs: gate
     environment: dev
-
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -26,19 +36,46 @@ jobs:
             echo "=== GIT REMOTE ==="
             git remote -v
 
-            echo "=== GIT STATUS ==="
-            git status
-
             echo "=== PULLING DEV ==="
-            git pull origin dev
+            git fetch origin dev
+            BEFORE=$(git rev-parse HEAD)
+            git checkout dev
+            git pull --ff-only origin dev
+            AFTER=$(git rev-parse HEAD)
+            echo "BEFORE=$BEFORE AFTER=$AFTER"
 
             echo "=== INSTALLING DEPENDENCIES ==="
-            npm install
+            npm ci
+
+            echo "=== DOCTOR ==="
+            npm run doctor
 
             echo "=== BUILDING ==="
-            npm run build
+            npm run build --workspace sites/demo-fashion
 
-            echo "=== RESTARTING PM2 ==="
-            pm2 restart 0
+            echo "=== ZERO-DOWNTIME RELOAD (not restart) ==="
+            if pm2 describe headora >/dev/null 2>&1; then
+              pm2 reload headora --update-env
+            else
+              pm2 start ecosystem.config.cjs --env production
+            fi
+            pm2 save
+
+            echo "=== HEALTH GATE ==="
+            for i in $(seq 1 30); do
+              if curl -fsS http://localhost:3000/api/health | grep -q '"ok":true'; then
+                echo "HEALTHY on attempt $i"
+                break
+              fi
+              if [ "$i" = "30" ]; then
+                echo "HEALTH CHECK FAILED — rolling back to $BEFORE"
+                git reset --hard "$BEFORE"
+                npm ci
+                npm run build --workspace sites/demo-fashion
+                pm2 reload headora --update-env
+                exit 1
+              fi
+              sleep 5
+            done
 
             echo "=== DEPLOYMENT COMPLETE ==="

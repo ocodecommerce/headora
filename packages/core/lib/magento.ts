@@ -1,4 +1,5 @@
 import { getConfig, storeForLocale } from "./config.js";
+export { getConfig, storeForLocale };
 export async function magentoFetch<T>(query: string, variables = {}, opts: { tags?: string[]; revalidate?: number; store?: string; currency?: string; locale?: string } = {}): Promise<T> {
   const c = getConfig();
   const mapped = opts.locale ? storeForLocale(opts.locale) : { store: c.NEXT_PUBLIC_STORE, currency: c.NEXT_PUBLIC_CURRENCY };

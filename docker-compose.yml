@@ -1,3 +1,5 @@
 services:
-  nextjs: { image: ghcr.io/ocodecommerce/headora:1.0, env_file: ./sites/demo-fashion/.env, ports: ["3000:3000"] }
-  nginx: { image: nginx:alpine, ports: ["80:80"], volumes: ["./docker/nginx.conf:/etc/nginx/nginx.conf:ro"], depends_on: [nextjs] }
+  nextjs-blue: { image: ghcr.io/ocodecommerce/headora:${TAG:-1.0}, env_file: ./sites/demo-fashion/.env, expose: ["3000"], restart: unless-stopped, healthcheck: { test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""], interval: 15s, timeout: 5s, retries: 3, start_period: 30s } }
+  nextjs-green: { image: ghcr.io/ocodecommerce/headora:${TAG:-1.0}, env_file: ./sites/demo-fashion/.env, expose: ["3000"], restart: unless-stopped, profiles: ["green"], healthcheck: { test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""], interval: 15s, timeout: 5s, retries: 3, start_period: 30s } }
+  nextjs: { image: ghcr.io/ocodecommerce/headora:${TAG:-1.0}, env_file: ./sites/demo-fashion/.env, ports: ["3000:3000"], restart: unless-stopped, profiles: ["legacy"] }
+  nginx: { image: nginx:alpine, ports: ["80:80"], volumes: ["./docker/nginx.conf:/etc/nginx/nginx.conf:ro"], depends_on: { nextjs-blue: { condition: service_healthy } } }
