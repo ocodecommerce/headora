@@ -2,8 +2,15 @@
 import { useState } from "react";
 import { ReviewsList, type ReviewItem } from "../reviews/ReviewsList.js";
 import { ReviewForm } from "../reviews/ReviewForm.js";
-export function PdpTabs({ description, details, reviews, reviewCount, ratingSummary, sku, loginUrl }: {
-  description: string; details: string; reviews: ReviewItem[]; reviewCount: number; ratingSummary: number; sku: string; loginUrl?: string;
+// Magento HTML is admin-authored. Strip scripts + event handlers before inject.
+function sanitize(html: string): string {
+  return html
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/\son\w+="[^"]*"/gi, "")
+    .replace(/\son\w+='[^']*'/gi, "");
+}
+export function PdpTabs({ description, details, reviews, reviewCount, ratingSummary, sku, locale, loginUrl }: {
+  description: string; details: string; reviews: ReviewItem[]; reviewCount: number; ratingSummary: number; sku: string; locale?: string; loginUrl?: string;
 }) {
   const [tab, setTab] = useState<"desc" | "details" | "reviews">("desc");
   return (
@@ -15,12 +22,12 @@ export function PdpTabs({ description, details, reviews, reviewCount, ratingSumm
           </button>
         ))}
       </nav>
-      {tab === "desc" && <div dangerouslySetInnerHTML={{ __html: description }} />}
-      {tab === "details" && <div dangerouslySetInnerHTML={{ __html: details }} />}
+      {tab === "desc" && <div dangerouslySetInnerHTML={{ __html: sanitize(description) }} />}
+      {tab === "details" && <div dangerouslySetInnerHTML={{ __html: sanitize(details) }} />}
       {tab === "reviews" && (
         <div style={{ display: "grid", gap: 24 }}>
-          <ReviewsList items={reviews} count={reviewCount} summary={ratingSummary} />
-          <ReviewForm sku={sku} loginUrl={loginUrl} />
+          <ReviewsList items={reviews} count={reviewCount} ratingSummary={ratingSummary} />
+          <ReviewForm sku={sku} locale={locale} loginUrl={loginUrl} />
         </div>
       )}
     </section>

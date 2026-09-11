@@ -1,6 +1,7 @@
 // All product types per magento/magento2 defaults. Vertical + sample-data agnostic.
 export const PRODUCT_CARD_FRAGMENT = `fragment Card on ProductInterface { sku name url_key __typename price_range { minimum_price { regular_price { value currency } final_price { value currency } } } small_image { url label } }`;
-export const PDP_QUERY = `query Pdp($urlKey: String!) {
+export const PDP_QUERY = `${PRODUCT_CARD_FRAGMENT}
+query Pdp($urlKey: String!) {
   products(filter: { url_key: { eq: $urlKey } }) {
     items {
       ...Card
@@ -14,12 +15,16 @@ export const PDP_QUERY = `query Pdp($urlKey: String!) {
     }
   }
 }`;
-export const CATEGORY_QUERY = `query Cat($id: String!) {
+export const CATEGORY_QUERY = `${PRODUCT_CARD_FRAGMENT}
+query Cat($id: String!) {
   categories(filters: { category_url_path: { eq: $id } }) { items { name description products(pageSize: 24) { items { ...Card } } } }
 }`;
+export const CMS_QUERY = `query Cms($id: String!) { cmsPage(identifier: $id) { title content } }`;
 export const STORES_QUERY = `query Stores { storeConfig { store_name base_currency_code locale } availableStores { store_code store_name } currency { base_currency_code available_currency_codes } }`;
-export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 10) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
+export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 10, currentPage: 1) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
 export const CREATE_REVIEW_MUTATION = `mutation Write($sku: String!, $nick: String!, $sum: String!, $text: String!, $ratings: [ProductReviewRatingInput!]!) {
   createProductReview(input: { sku: $sku, nickname: $nick, summary: $sum, text: $text, ratings: $ratings }) { review { nickname summary } }
 }`;
-export const RATINGS_QUERY = `query Meta { productReviewRatingsMetadata { items { id name } } }`;
+// Values included: option IDs differ per store. Never assume 1-5.
+export const RATINGS_QUERY = `query Meta { productReviewRatingsMetadata { items { id name values { value_id value } } } }`;
+export const FORGOT_MUTATION = `mutation Forgot($email: String!) { requestPasswordResetEmail(email: $email) }`;
