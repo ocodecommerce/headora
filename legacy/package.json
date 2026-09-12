@@ -1,0 +1,30 @@
+{
+  "name": "venia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "BUILD_MODE=build NODE_OPTIONS='--max-old-space-size=8192' NEXT_PRIVATE_BUILD_WORKERS=10 next build",
+    "start": "BUILD_MODE=false next start",
+    "lint": "next lint",
+    "prebuild": "rm -rf cacheM/category/* && node scripts/generate-sitemap.mjs"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "lucide-react": "^0.555.0",
+    "next": "15.1.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-icons": "^5.5.0",
+    "swiper": "^11.1.15",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.20",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}
