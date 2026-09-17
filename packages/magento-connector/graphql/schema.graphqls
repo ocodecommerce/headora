@@ -1,0 +1,2 @@
+type Query { headoraConfig(store: String): HeadoraConfig @resolver(class: "Ocode\\Headora\\Model\\Resolver\\Config") }
+type HeadoraConfig { preset: String blocks: String }

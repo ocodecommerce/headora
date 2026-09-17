@@ -1,0 +1,1 @@
+<config><event name="catalog_product_save_after"><observer name="headora_revalidate" instance="Ocode\Headora\Observer\Revalidate" /></event></config>

@@ -1,0 +1,957 @@
+
+.navbar{
+  width: 100%;
+  border-bottom: 1px solid ;
+  --tw-border-opacity: 1;
+  border-color: rgb(209 213 219 / var(--tw-border-opacity));
+  background-color: white;
+  position: fixed;
+  z-index: 11;
+  display: block;
+  @media screen and (max-width:1000px) {
+    display: none;
+  }
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 32px;
+    height: 80px;
+
+    max-width: 1440px;
+    margin: auto;
+  }
+  
+  .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    letter-spacing: 2px;
+    margin-top: 5px;
+  }
+
+  .logo a {
+ font-weight: 200;
+  }
+
+  
+  .nav {
+    flex: 1;
+    margin-left: 20px;
+  }
+  
+  .navItems {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-weight: 200;
+    align-items: center;
+  }
+  
+  .navItem {
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+  }
+
+  .navItem:hover {
+text-decoration: underline;
+  }
+
+  
+  .navItem span {
+    /* font-size: 12px;
+  
+   letter-spacing:unset;
+    text-transform: capitalize; */
+    text-transform: capitalize;
+    font-size: 14px;
+    line-height: 16px;
+    letter-spacing: 0.036em;
+    font-family: var(--Secondary);
+
+    color: #000000;
+    cursor: pointer;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  
+  .actionItem {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .actionItemWrapper{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 10px;
+    color: #333;
+    cursor: pointer;
+    /* letter-spacing: 0.2em; */
+  }
+  
+  .icon {
+    font-size: 18px;
+    position: relative;
+  }
+
+  /* =================Drop Down============ */
+  .navItem {
+    font-size: 16px;
+    color: #4c4d4f;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    
+    justify-content: center;
+    text-transform: capitalize;
+    letter-spacing: 0.02em;
+    
+  }
+  .navItemShort{
+    position: relative;
+  }
+  .navItem > a{
+  height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  }
+  .navItem span.icon {
+    margin-left: 8px; /* Adjust spacing for the arrow icon */
+    margin-right: -4px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 70px; /* Position the dropdown below the parent */
+    left: 0; 
+    width: 100vw; /* Make the dropdown span the entire viewport width */
+    background-color: white;
+    border-top: 1px solid #ddd; /* Optional: Border for better separation */
+    border-bottom: 1px solid #ddd;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    list-style: none;
+    margin: 0;
+    padding: 20px 12px; 
+    z-index: 999; /* Ensure it's above other elements */
+    max-height: 70vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+  
+  }
+
+
+  .dropdownShort {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 70px !important;
+    /* left: unset !important; */
+    width: unset !important; 
+
+  }
+
+
+  .navItem:hover .dropdown {
+    display: flex;
+    flex-wrap: wrap;
+    /* padding-left: 460px; */
+    /* padding-right: 280px; */
+    padding: 35px;
+    justify-content: center;
+    animation: fadeIn 0.3s ease-in-out; /* Smooth transition */
+    /* justify-content: flex-end; */
+    @media screen and (min-width: 1700px) and (max-width: 1800px) {
+      /* padding-right: 170px; */
+      /* padding-left: 380px; */
+    }
+    @media screen and (min-width: 1600px) and (max-width: 1700px) {
+      /* padding-right: 140px; */
+      /* padding-left: 320px; */
+    }
+    @media screen and (min-width: 1500px) and (max-width: 1600px) {
+      /* padding-right: 100px; */
+      /* padding-left: 295px; */
+    }
+    @media screen and (min-width:  1000px) and (max-width:1440px ) {
+      /* padding-right: 40px; */
+      /* padding-left: 270px; */
+    }
+    /* @media screen and (min-width: 1000px) and (max-width: 1440px) {
+    padding-left: 20px;
+    padding-right: 20px;
+    } */
+
+
+  }
+
+  
+  .dropdown li {
+    padding: 8px 0px;
+    white-space: nowrap; /* Prevent text wrapping */
+    min-width: 200px;
+  }
+  
+  .dropdown li a {
+    display: block;
+    width: 100%;
+    color: #333;
+    text-decoration: none;
+    font-size: 11px;
+    text-transform: capitalize;
+    font-family:var(--sansSerif);
+    letter-spacing: 1px;
+  }
+  
+  .dropdown li a:hover {
+   text-decoration: underline;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+   
+.searchContainer {
+  position: absolute;
+  top: 70px;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10000;
+  animation: slideDown 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media screen and (max-width: 1000px) {
+  .searchContainer {
+    top: 48px;
+  }
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 70rem;
+  position: relative;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 40px 12px 40px;
+  border: 1px solid rgb(47, 47, 255);
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.2s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: blue;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  color: #666;
+}
+
+.closeIcon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.closeIcon:hover {
+  color: #000;
+}
+
+.resultsContainer {
+  width: 100%;
+  max-width: 70rem;
+  margin-top: 10px;
+}
+.bottomsearch{
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.searchResults {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.bannerImage{
+  height: 200px;
+  width: 200px;
+  object-fit: cover;
+}
+
+.searchResultHeader {
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.searchResultHeader h3 {
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.searchResultItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  transition: background-color 0.2s ease;
+}
+
+.searchResultItem:last-child {
+  border-bottom: none;
+}
+
+.searchResultItem:hover {
+  background-color: #f8f9fa;
+}
+
+.resultLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #333;
+  width: 100%;
+}
+
+.searchResultImage {
+  margin-right: 12px;
+  border-radius: 4px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.searchResultItem span {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.noResults {
+  padding: 15px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  color: #666;
+  font-size: 14px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 10px;
+}
+
+.loader {
+  border: 3px solid #e0e0e0;
+  border-top: 3px solid blue;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+  .cartCountNumber{
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid blue;
+    color: #ffffff;
+    text-align: center;
+    font-weight: 800;
+    font-size: 11px;
+    background: blue;
+    display: flex;
+    flex-wrap: wrap;
+    position: absolute;
+    top: -10px;
+    right: -8px;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  .categoryGrid {
+    display: grid;
+    /* grid-template-columns: repeat(4, 1fr); */
+    gap: 20px;
+    flex-wrap: wrap;
+    /* flex: 1 1; */
+    justify-content: space-around;
+    width: 100%;
+    min-width: 140px;
+    justify-content: start;
+  }
+  .categoryGrid span a:hover {
+text-decoration: underline;
+  }
+  .categoryGrid span a {
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    text-transform: capitalize;
+    font-family: var(--sansSerif);
+    letter-spacing: 1px;
+  }
+  .megaMenuContainer{
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    min-width: 1000px;
+    max-width: 1440px;
+  }
+
+  .megaMenuContainerShort{
+    min-width: unset !important;
+    max-width: unset !important;
+  }
+
+  .MegaMenuBrandsHeading{
+    font-size: 18px;
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+    text-decoration: underline;
+  }
+
+/*=================================== Contactus Dropdown ====================================== */
+.contactUsDropdownContent {
+  display: none;
+  margin-top: 10px;
+
+ 
+}
+.contactUsDropdownContainer{
+  position: absolute;
+  top: 71px;
+  cursor: pointer;
+  /* bottom: -30px; */
+  background-color: #ffffff;
+  padding: 1px 20px;
+  border: 1px solid #e6e6e6;
+  border-top: none;
+}
+
+.contactUsDropdownContainer span {
+  font-size: 10px;
+  text-decoration: none;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+
+}
+.personalChat{
+  font-size: 10px;
+  text-decoration: none;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+
+}
+.contactUsDropdownContainer a{
+font-size: 10px;
+}
+.contactUsDropdownContent.open {
+  display: block;
+
+}
+
+.contactUsDropdownContent {
+  min-width: 200px;
+  background: #fff;
+}
+
+.contactUsDropdownContent ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px;
+}
+
+.contactUsDropdownContent span {
+  border-bottom: 1px solid #aaa;
+  width: 95%;
+  padding: 10px 0;
+  margin: auto;
+  text-decoration: none;
+  color: #000;
+  cursor: pointer;
+
+  @media screen and (max-width:1000px) {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+}
+
+.contactUsDropdownContent span:hover {
+
+  font-weight: 700;
+}
+
+.contactUsDropdownlist{
+  margin-bottom: 10px;
+}
+.categoryGrid > div{
+  /* min-width: 200px; */
+}
+
+
+.SearchLoader {
+  width: 25px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid #2c2c2c;
+  animation:
+    l20-1 0.8s infinite linear alternate,
+    l20-2 1.6s infinite linear;
+}
+@keyframes l20-1{
+   0%    {clip-path: polygon(50% 50%,0       0,  50%   0%,  50%    0%, 50%    0%, 50%    0%, 50%    0% )}
+   12.5% {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100%   0%, 100%   0%, 100%   0% )}
+   25%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 100% 100%, 100% 100% )}
+   50%   {clip-path: polygon(50% 50%,0       0,  50%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+   62.5% {clip-path: polygon(50% 50%,100%    0, 100%   0%,  100%   0%, 100% 100%, 50%  100%, 0%   100% )}
+   75%   {clip-path: polygon(50% 50%,100% 100%, 100% 100%,  100% 100%, 100% 100%, 50%  100%, 0%   100% )}
+   100%  {clip-path: polygon(50% 50%,50%  100%,  50% 100%,   50% 100%,  50% 100%, 50%  100%, 0%   100% )}
+}
+@keyframes l20-2{ 
+  0%    {transform:scaleY(1)  rotate(0deg)}
+  49.99%{transform:scaleY(1)  rotate(135deg)}
+  50%   {transform:scaleY(-1) rotate(0deg)}
+  100%  {transform:scaleY(-1) rotate(-135deg)}
+}
+
+.wishlistIconWrapper {
+  display: inline-block;
+}
+
+.iconContainer {
+  position: relative;
+  width: 23px;
+  height: 20px;
+}
+
+.whishlistBlackIcon,
+.whishlistGoldenIcon {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s ease;
+}
+
+.whishlistBlackIcon {
+  opacity: 1;
+  z-index: 1;
+}
+
+.whishlistGoldenIcon {
+  opacity: 0;
+  z-index: 2;
+}
+
+.iconContainer:hover .whishlistBlackIcon {
+  opacity: 0;
+}
+
+.iconContainer:hover .whishlistGoldenIcon {
+  opacity: 1;
+}
+
+
+/* FOR BOX SIGNIN */
+
+/* ===================== SIGN IN MODAL (Venia style) ===================== */
+
+.signInTrigger {
+  position: relative;
+}
+.signInTrigger:hover .signInModalOverlay {
+text-decoration: underline;
+}
+.signInModalOverlay {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  padding-top: 8px; /* small gap under header */
+}
+
+.signInModal {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  width: 450px;
+  max-width: calc(100vw - 24px);
+  padding: 28px 24px 24px;
+  animation: signInFadeIn 0.18s ease-out;
+}
+
+@keyframes signInFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.signInTitle {
+  font-size: 22px;
+  font-weight: 200;
+  color: #1a1a1a;
+  margin: 0 0 35px 0;
+  text-align: left;
+}
+
+.signInForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.formInput {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid #000000;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  border-color: #3d3fe0;
+  box-shadow: 0 0 0 1px #3d3fe0;
+}
+
+.passwordWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper .formInput {
+  padding-right: 44px;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.passwordToggle:hover {
+  color: #3d3fe0;
+}
+
+.forgotPassword {
+  margin-top: -4px;
+}
+
+.forgotPassword a {
+  font-size: 13px;
+  color: #3d3fe0;
+  text-decoration: none;
+}
+
+.forgotPassword a:hover {
+  text-decoration: underline;
+}
+
+.signInError {
+  margin: 0;
+  padding: 8px 12px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 4px;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.signInBtn {
+  width: 60%;
+  height: 40px;
+  background: #3d3fe0;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  margin-top: 4px;
+}
+
+.signInBtnOuter{
+width: 100%;
+display: flex;
+flex-direction: column;
+gap: 16px;
+align-items: center;
+
+}
+
+.signInBtn:hover:not(:disabled) {
+  background: #1557b0;
+}
+
+.signInBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.createAccountBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60%;
+  height: 40px;
+  background: #ffffff;
+  color: #3d3fe0;
+  border: 1.5px solid #3d3fe0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  box-sizing: border-box;
+}
+
+.createAccountBtn:hover {
+  background: #f0f6ff;
+}
+
+/* Mobile adjustment */
+@media (max-width: 768px) {
+  .signInModalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.35);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 80px 16px 16px;
+    z-index: 2000;
+  }
+
+  .signInModal {
+    width: 100%;
+    max-width: 400px;
+  }
+}
+
+
+/* Already have most styles – add these */
+
+.linkBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 13px;
+  color: #0a28ed;
+  cursor: pointer;
+  text-decoration: capitalize;
+}
+.linkBtn:hover {
+  text-decoration: underline;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+  user-select: none;
+}
+.checkboxLabel input {
+  width: 16px;
+  height: 16px;
+  accent-color: #3d3fe0;
+  cursor: pointer;
+}
+
+.modalBtnRow {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cancelBtn {
+  flex: 1;
+  height: 44px;
+  background: #ffffff;
+  color: #3d3fe0;
+  border: 1.5px solid #3d3fe0;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.cancelBtn:hover {
+  background: #f0f6ff;
+}
+
+.modalBtnRow .signInBtn {
+  flex: 1;
+  margin-top: 0;
+}
+
+.signInSuccess {
+  margin: 0;
+  padding: 8px 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 4px;
+  color: #166534;
+  font-size: 13px;
+}
+
+.recoverText {
+  font-size: 14px;
+  color: #555;
+  margin: 0 0 16px 0;
+  line-height: 1.45;
+}
+
+/* Sign In trigger – underline when modal is open */
+.signInTrigger {
+  position: relative;
+  cursor: pointer;
+}
+
+.signInTriggerActive {
+  position: relative;
+}
+
+.signInTriggerActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;          /* adjust distance under the text */
+  height: 4px;
+  background-color: #3d3fe0;  /* Venia blue */
+  border-radius: 1px;
+}
+
+/* Optional: also underline on hover */
+.signInTrigger:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 4px;
+  background-color: #3d3fe0;
+  border-radius: 1px;
+}

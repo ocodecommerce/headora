@@ -80,3 +80,8 @@ next-env.d.ts
 /magento/*.tgz
 /magento/.DS_Store
 
+sites/demo-fashion/node_modules/
+.next/
+ 
+     
+      
