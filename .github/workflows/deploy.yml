@@ -20,18 +20,6 @@ jobs:
 
       - run: npm ci
 
-      - name: Debug Magento URL
-        env:
-          MAGENTO_GRAPHQL_URL: ${{ vars.MAGENTO_GRAPHQL_URL }}
-        run: |
-          if [ -z "$MAGENTO_GRAPHQL_URL" ]; then
-            echo "MAGENTO_GRAPHQL_URL is EMPTY"
-            exit 1
-          fi
-
-          echo "MAGENTO_GRAPHQL_URL is set"
-          echo "URL length: ${#MAGENTO_GRAPHQL_URL}"
-
       - name: Doctor
         env:
           MAGENTO_GRAPHQL_URL: ${{ vars.MAGENTO_GRAPHQL_URL }}
@@ -40,6 +28,7 @@ jobs:
       - name: Typecheck
         run: |
           npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -90,9 +79,11 @@ jobs:
             else
               pm2 start ecosystem.config.cjs --env production
             fi
+
             pm2 save
 
             echo "=== HEALTH GATE ==="
+
             for i in $(seq 1 30); do
               if curl -fsS http://localhost:3000/api/health | grep -q '"ok":true'; then
                 echo "HEALTHY on attempt $i"
@@ -101,12 +92,17 @@ jobs:
 
               if [ "$i" = "30" ]; then
                 echo "HEALTH CHECK FAILED — rolling back to $BEFORE"
+
                 git reset --hard "$BEFORE"
+
                 npm ci
                 npm run build --workspace sites/demo-fashion
+
                 pm2 reload headora --update-env
+
                 exit 1
               fi
+
               sleep 5
             done
 
