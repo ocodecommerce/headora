@@ -1,118 +1,118 @@
 <?xml version="1.0" encoding="UTF-8"?>
-  <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-tops.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-tops/venia-blouses.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-tops/venia-sweaters.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-bottoms.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-bottoms/venia-pants.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-bottoms/venia-skirts.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-dresses.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-accessories.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-accessories/venia-belts.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-accessories/venia-jewelry.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/venia-accessories/venia-scarves.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/minimalist-sensibility.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/outside-the-lines.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/carefree-days.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/perfectly-beachy.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/retire-your-lbd.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/shop-the-look/timeless-sophistication.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-      <url>
-        <loc>https://headora.ocodecommerce.com/new-products3.html</loc>
-        <changefreq>weekly</changefreq>
-        <priority>0.8</priority>
-      </url>
-    
-  </urlset>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-tops.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-tops/venia-blouses.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-tops/venia-sweaters.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-bottoms.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-bottoms/venia-pants.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-bottoms/venia-skirts.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-dresses.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-accessories.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-accessories/venia-belts.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-accessories/venia-jewelry.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/venia-accessories/venia-scarves.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/minimalist-sensibility.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/outside-the-lines.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/carefree-days.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/perfectly-beachy.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/retire-your-lbd.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/shop-the-look/timeless-sophistication.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/new-products3.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+      <lastmod>2026-09-07T05:57:15.218Z</lastmod>
+    </url>
+</urlset>

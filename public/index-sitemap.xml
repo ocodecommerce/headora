@@ -1,17 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
+ <url>
     <loc>https://headora.ocodecommerce.com</loc>
+    <lastmod>2026-09-07T05:57:15.223Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://headora.ocodecommerce.com/authenticity-promise/</loc>
+    <lastmod>2026-09-07T05:57:15.223Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://headora.ocodecommerce.com/give-away/</loc>
+    <url>
+    <loc>https://headora.ocodecommerce.com/bitpay-terms/</loc>
+    <lastmod>2026-09-07T05:57:15.223Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
-  <url>
-    <loc>https://headora.ocodecommerce.com/affirm-guide/</loc>
+   <url>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
