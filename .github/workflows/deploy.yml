@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - dev
+      - headora2.0
 
 jobs:
   gate:
@@ -19,7 +19,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: gate
-    environment: dev
+    environment: headora.20
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -37,10 +37,10 @@ jobs:
             git remote -v
 
             echo "=== PULLING DEV ==="
-            git fetch origin dev
+            git fetch origin headora2.0
             BEFORE=$(git rev-parse HEAD)
-            git checkout dev
-            git pull --ff-only origin dev
+            git checkout headora2.0
+            git pull --ff-only origin headora2.0
             AFTER=$(git rev-parse HEAD)
             echo "BEFORE=$BEFORE AFTER=$AFTER"
 
