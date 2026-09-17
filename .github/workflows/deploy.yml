@@ -8,19 +8,33 @@ on:
 jobs:
   gate:
     runs-on: ubuntu-latest
+    environment: headora.20
+
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with:
+          node-version: 20
+          cache: npm
+
       - run: npm ci
-      - run: npm run doctor
-      - run: 'npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"'
+
+      - name: Doctor
+        env:
+          MAGENTO_GRAPHQL_URL: ${{ vars.MAGENTO_GRAPHQL_URL }}
+        run: npm run doctor
+
+      - name: Typecheck
+        run: |
+          npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"
 
 
   deploy:
     runs-on: ubuntu-latest
     needs: gate
     environment: headora.20
+
     steps:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -29,37 +43,51 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: 22
+
           script: |
             set -Eeuxo pipefail
+
             cd /srv/headora/frontend
+
             echo "=== GIT REMOTE ==="
             git remote -v
-            echo "=== PULLING DEV ==="
+
+            echo "=== PULLING HEADORA 2.0 ==="
             git fetch origin headora2.0
+
             BEFORE=$(git rev-parse HEAD)
+
             git checkout headora2.0
             git pull --ff-only origin headora2.0
+
             AFTER=$(git rev-parse HEAD)
+
             echo "BEFORE=$BEFORE AFTER=$AFTER"
+
             echo "=== INSTALLING DEPENDENCIES ==="
             npm ci
+
             echo "=== DOCTOR ==="
             npm run doctor
+
             echo "=== BUILDING ==="
             npm run build --workspace sites/demo-fashion
-            echo "=== ZERO-DOWNTIME RELOAD (not restart) ==="
+
+            echo "=== ZERO-DOWNTIME RELOAD ==="
             if pm2 describe headora >/dev/null 2>&1; then
               pm2 reload headora --update-env
             else
               pm2 start ecosystem.config.cjs --env production
             fi
             pm2 save
+
             echo "=== HEALTH GATE ==="
             for i in $(seq 1 30); do
               if curl -fsS http://localhost:3000/api/health | grep -q '"ok":true'; then
                 echo "HEALTHY on attempt $i"
                 break
               fi
+
               if [ "$i" = "30" ]; then
                 echo "HEALTH CHECK FAILED — rolling back to $BEFORE"
                 git reset --hard "$BEFORE"
@@ -70,4 +98,5 @@ jobs:
               fi
               sleep 5
             done
+
             echo "=== DEPLOYMENT COMPLETE ==="
