@@ -14,7 +14,8 @@ jobs:
         with: { node-version: 20, cache: npm }
       - run: npm ci
       - run: npm run doctor
-      - run: npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"
+      - run: 'npx tsc --noEmit -p packages/core || echo "typecheck: no core tsconfig, skipping strict gate"'
+
 
   deploy:
     runs-on: ubuntu-latest
@@ -30,12 +31,9 @@ jobs:
           port: 22
           script: |
             set -Eeuxo pipefail
-
             cd /srv/headora/frontend
-
             echo "=== GIT REMOTE ==="
             git remote -v
-
             echo "=== PULLING DEV ==="
             git fetch origin headora2.0
             BEFORE=$(git rev-parse HEAD)
@@ -43,16 +41,12 @@ jobs:
             git pull --ff-only origin headora2.0
             AFTER=$(git rev-parse HEAD)
             echo "BEFORE=$BEFORE AFTER=$AFTER"
-
             echo "=== INSTALLING DEPENDENCIES ==="
             npm ci
-
             echo "=== DOCTOR ==="
             npm run doctor
-
             echo "=== BUILDING ==="
             npm run build --workspace sites/demo-fashion
-
             echo "=== ZERO-DOWNTIME RELOAD (not restart) ==="
             if pm2 describe headora >/dev/null 2>&1; then
               pm2 reload headora --update-env
@@ -60,7 +54,6 @@ jobs:
               pm2 start ecosystem.config.cjs --env production
             fi
             pm2 save
-
             echo "=== HEALTH GATE ==="
             for i in $(seq 1 30); do
               if curl -fsS http://localhost:3000/api/health | grep -q '"ok":true'; then
@@ -77,5 +70,4 @@ jobs:
               fi
               sleep 5
             done
-
             echo "=== DEPLOYMENT COMPLETE ==="
