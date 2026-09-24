@@ -1,0 +1,1 @@
+{ "preset": "bold", "extends": "@headora/preset-base", "style": "bold", "tokens": { "primary": "#0B1F3A", "accent": "#E53935" } }

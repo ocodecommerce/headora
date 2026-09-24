@@ -1,0 +1,1 @@
+{ "comment": "Vertical-agnostic. Sample data agnostic. Blocks bind to any catalog.", "home": ["Hero", "CategoryTiles", "ProductCarousel", "CMSHtml"], "plp": { "filters": true, "sort": true, "pagination": true }, "pdp": { "gallery": "slider", "options": "all-types", "tabs": ["description", "details", "reviews"], "upsell": true, "related": true } }
