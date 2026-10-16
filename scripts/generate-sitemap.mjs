@@ -1135,7 +1135,7 @@ async function getProductDetails(productSKU) {
               }
 
               console.log(`❌ Graphql Error 4: HTTP ${response.status}`, errorText);
-              //console.log(`❌ Graphql Query:`, query);
+              console.log(`❌ Graphql Query:`, query);
               return null;
       }
   } catch (error) {
