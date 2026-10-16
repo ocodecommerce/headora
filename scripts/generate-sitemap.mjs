@@ -239,18 +239,23 @@ query {
         } else {
           let errorText = "";
             try {
-              // Try reading JSON response (GraphQL usually returns JSON)
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              // Fallback: plain text error
-              errorText = await response.text();
-            }
+                  // Read the response body only once
+                  errorText = await response.text();
 
-            
-            console.log(`❌ Graphql Error:`, errorText);
-            console.log(`❌ Graphql Query:`, fetchSSGCategoriesQuery);
-            throw new Error('Failed to fetch data');
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error 1: HTTP ${response.status}`, errorText);
+              console.log(`❌ Graphql Query:`, fetchSSGCategoriesQuery);
+              throw new Error('Failed to fetch data');
         }
     } catch (error) {
     }
@@ -297,18 +302,23 @@ async function fetchBTCategories() {
            const data = await response.json();
              return data.data.categories.items[0];
          } else {
-          let errorText = "";
+           let errorText = "";
             try {
-              // Try reading JSON response (GraphQL usually returns JSON)
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              // Fallback: plain text error
-              errorText = await response.text();
-            }
+                  // Read the response body only once
+                  errorText = await response.text();
 
-            
-            console.log(`❌ Graphql Error:`, errorText);
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error 2: HTTP ${response.status}`, errorText);
             console.log(`❌ Graphql Query:`, fetchSSGCategoriesQuery);
              throw new Error('Failed to fetch data');
          }
@@ -525,23 +535,28 @@ async function fetchAllProducts(currentPage) {
             const data = await response.json();
             return data?.data?.products || { items: [], page_info: {} };
         } else {
-            let errorText = "";
+             let errorText = "";
             try {
-              // Try reading JSON response (GraphQL usually returns JSON)
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              // Fallback: plain text error
-              errorText = await response.text();
-            }
+                  // Read the response body only once
+                  errorText = await response.text();
 
-            
-            console.log(`❌ Graphql Error:`, errorText);
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error 3: HTTP ${response.status}`, errorText);
             console.log(`❌ Graphql Query:`, query);
             return { items: [], page_info: {} };
         }
     } catch (error) {
-
+        
     }
 }
 
@@ -1092,7 +1107,7 @@ async function getProductDetails(productSKU) {
                   await fs.writeFile(prooutputDir, JSON.stringify(returnData));
                 
               } catch (error) {
-                 
+                 console.log('Error adding to directory:', error);
               }
           return returnData;
       } else {
@@ -1101,17 +1116,26 @@ async function getProductDetails(productSKU) {
       }else{
             let errorText = "";
             try {
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              errorText = await response.text();
-            }
-            console.log(`❌ Graphql Error:`, errorText);
-            console.log(`❌ Graphql Query:`, query);
-            return null;
-    }
+                  // Read the response body only once
+                  errorText = await response.text();
+
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error 4: HTTP ${response.status}`, errorText);
+              //console.log(`❌ Graphql Query:`, query);
+              return null;
+      }
   } catch (error) {
-      console.log(`❌ Graphql Error: fetching product details for SKU: ${productSKU}`, error);
+      console.log(`❌ Graphql Error 5: fetching product details for SKU: ${productSKU}`, error);
       console.log(`❌ Graphql Query:`, query);
       return null;
   }
@@ -1143,14 +1167,21 @@ async function fetchPDPReturnCMSBlock(){
             } else {
             let errorText = "";
             try {
-              // Try reading JSON response (GraphQL usually returns JSON)
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              // Fallback: plain text error
-              errorText = await response.text();
-            }
-            console.log(`❌ Graphql Error:`, errorText);
+                  // Read the response body only once
+                  errorText = await response.text();
+
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error: HTTP ${response.status}`, errorText);
             console.log(`❌ Graphql Query:`, PDPReturnCMSBlock);
             }
         } catch (error) {
