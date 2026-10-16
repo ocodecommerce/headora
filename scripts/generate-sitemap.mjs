@@ -237,7 +237,7 @@ query {
           const data = await response.json();
             return data.data.categories.items[0];
         } else {
-          let errorText = "";
+            let errorText = "";
             try {
                   // Read the response body only once
                   errorText = await response.text();
@@ -258,6 +258,8 @@ query {
               throw new Error('Failed to fetch data');
         }
     } catch (error) {
+      console.log(`❌ Graphql Error 1.1:`, error.message);
+      throw new Error('Failed to fetch data');
     }
 }
 
@@ -319,11 +321,12 @@ async function fetchBTCategories() {
               }
 
               console.log(`❌ Graphql Error 2: HTTP ${response.status}`, errorText);
-            console.log(`❌ Graphql Query:`, fetchSSGCategoriesQuery);
-             throw new Error('Failed to fetch data');
+              console.log(`❌ Graphql Query:`, fetchSSGCategoriesQuery);
+              throw new Error('Failed to fetch data');
          }
      } catch (error) {
-          
+          console.log(`❌ Graphql Error 2.2: `, error.message);
+          throw new Error('Failed to fetch data');
      }
 }
  
@@ -552,11 +555,12 @@ async function fetchAllProducts(currentPage) {
               }
 
               console.log(`❌ Graphql Error 3: HTTP ${response.status}`, errorText);
-            console.log(`❌ Graphql Query:`, query);
-            return { items: [], page_info: {} };
+              //console.log(`❌ Graphql Query:`, query);
+              return { items: [], page_info: {} };
         }
     } catch (error) {
-        
+          console.log(`❌ Graphql Error 3.3: `, error.message);
+          return { items: [], page_info: {} };
     }
 }
 
@@ -1135,7 +1139,7 @@ async function getProductDetails(productSKU) {
               return null;
       }
   } catch (error) {
-      console.log(`❌ Graphql Error 5: fetching product details for SKU: ${productSKU}`, error);
+      console.log(`❌ Graphql Error 4.4: fetching product details for SKU: ${productSKU}`, error.message);
       console.log(`❌ Graphql Query:`, query);
       return null;
   }
@@ -1181,12 +1185,13 @@ async function fetchPDPReturnCMSBlock(){
                   errorText = `Unable to read response body: ${bodyError.message}`;
               }
 
-              console.log(`❌ Graphql Error: HTTP ${response.status}`, errorText);
-            console.log(`❌ Graphql Query:`, PDPReturnCMSBlock);
+               console.log(`❌ Graphql Error: HTTP ${response.status}`, errorText);
+               console.log(`❌ Graphql Query:`, PDPReturnCMSBlock);
+               return null;
             }
         } catch (error) {
              console.log(`❌ Graphql Error:`, error.message);
-             return "Error"
+             return null;
         }
     };
 
@@ -1224,21 +1229,27 @@ async function fetchAllReviewValue(){
             } else {
               let errorText = "";
             try {
-              // Try reading JSON response (GraphQL usually returns JSON)
-              const errJson = await response.json();
-              errorText = JSON.stringify(errJson, null, 2);
-            } catch (jsonError) {
-              // Fallback: plain text error
-              errorText = await response.text();
-            }
+                  // Read the response body only once
+                  errorText = await response.text();
 
-            
-            console.log(`❌ Graphql Error:`, errorText);
-            console.log(`❌ Graphql Query:`, ReviewsAllValues);
+                  try {
+                      // Parse the text if it contains valid JSON
+                      const errJson = JSON.parse(errorText);
+                      errorText = JSON.stringify(errJson, null, 2);
+                  } catch {
+                      // Keep the original text if it is not valid JSON
+                  }
+              } catch (bodyError) {
+                  errorText = `Unable to read response body: ${bodyError.message}`;
+              }
+
+              console.log(`❌ Graphql Error 5: HTTP ${response.status}`, errorText);
+              console.log(`❌ Graphql Query:`, ReviewsAllValues);
               return []
                  
             }
         } catch (error) {
+          console.log(`❌ Graphql Error 5.5:`, error.message);
              
           return []
         }
