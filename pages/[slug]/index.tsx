@@ -420,7 +420,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
   // At ISR/runtime, bypass these files and fetch fresh data.
   // =====================================================
 
-  //if (isBuildTime) {
+  if (isBuildTime) {
     for (const cachePath of cachePaths) {
       try {
         const cachedContent = await fs.readFile(
@@ -438,7 +438,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
         
       }
     }
-  //}
+  }
   
   // =====================================================
   // 2. ISR / RUNTIME: FETCH FRESH DATA
@@ -497,9 +497,9 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
     cachePath: string,
     responseData: any
   ) => {
-    // if (!isBuildTime) {
-    //   return;
-    // }
+     if (!isBuildTime) {
+       return;
+    }
 
     try {
       
@@ -802,7 +802,7 @@ const Collection = ({
   const productTitle = productData?.meta_title || productData?.name || '';
   const productCanonical = `${process.env.baseURLWithoutTrailingSlash}/${productData?.url_key || slug}`;
   const collectionCanonical = `${process.env.baseURLWithoutTrailingSlash}/${slug}`;
-  console.log('~~~~~~~~~~~~~~~~~~~'+view+'~~~~~~~~~~~~~~~~~~~~~~~')
+  
 
   return (
     <div key={urlPath || router.asPath}>
@@ -960,12 +960,12 @@ const Collection = ({
             productData={productData} 
           />
 
-          {/* 
+          {/* */}
           <RelatedBrands
             RelatedCategories={productData?.categories}
             categoriesList={categoriesList}
           />
-          */}
+          {/* */}
 
           
 

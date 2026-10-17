@@ -122,9 +122,11 @@ import styles from "../../styles/ProductDetail.module.css";
     if (!relatedBrands) return null;
 
     // Flatten and extract brand names
-    const brands = relatedBrands.flatMap((brandGroup: Record<string, any>) =>
+    const brands = Array.isArray(relatedBrands)
+  ? relatedBrands.flatMap((brandGroup: any) =>
       Object.keys(brandGroup)
-    );
+    )
+  : Object.keys(relatedBrands);
 
   
     
