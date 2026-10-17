@@ -960,12 +960,12 @@ const Collection = ({
             productData={productData} 
           />
 
-          {/* */}
+          {/* 
           <RelatedBrands
             RelatedCategories={productData?.categories}
             categoriesList={categoriesList}
           />
-          {/* */}
+           */}
 
           
 
