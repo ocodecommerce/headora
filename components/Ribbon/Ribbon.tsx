@@ -11,7 +11,7 @@ function Ribbon({isMobile}:any) {
 
   const { isLoggedIn, setIsLoggedIn } = useAuth();
   const router = useRouter();
-console.log(isLoggedIn,'isLoggedIn')
+
 useEffect(() => {
     const checkUserLogin = async () => {
       try {

@@ -5,16 +5,16 @@ import Link from 'next/link';
 import { Currency } from '../Currency/currency';
 import WishlistCompareButtons from './WishlistCompareButtons';
 
-function CrossSellProducts({ Data }: any) {
+function CrossSellProducts({ productData }: any) {
 // console.log("CrossSellProducts Data:", Data);
 
   const level2CategoryName =
-  Data?.categories?.find(
+  productData?.categories?.find(
     (cat:any) => cat.level === 2 && cat.id !== 35 && cat.id !== 2563
   )?.name || "Products";
 
   // If no cross-sell products, don't render
-  if (!Data?.crosssell_products || Data.crosssell_products.length === 0) {
+  if (!productData?.crosssell_products || productData.crosssell_products.length === 0) {
     return null;
   }
 
@@ -53,27 +53,12 @@ function CrossSellProducts({ Data }: any) {
       <h2 className={styles.title}>Other {level2CategoryName} you may like</h2>
 
       <div className={styles.Updated_slider}>
-        {/* Prev Button - Visible only on desktop */}
-        {/* <button 
-          className={styles.Updated_prevButton} 
-          onClick={() => {
-            const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
-            container?.scrollBy({ left: -340, behavior: 'smooth' });
-          }}
-          aria-label="Previous products"
-        >
-          <Image 
-            src="/Images/leftGoldenArrow.png" 
-            alt="Left Arrow" 
-            width={10} 
-            height={40} 
-          />
-        </button> */}
+        
 
         {/* Scrollable Container - Touch friendly */}
         <div className={styles.Updated_productsContainer2}>
           <div className={styles.Updated_productsGrid}>
-            {Data.crosssell_products.slice(0, 10).map((product: any) => {
+            {productData.crosssell_products.slice(0, 10).map((product: any) => {
               let selectedVariant = null;
 
               if (product?.__typename === "ConfigurableProduct") {
@@ -110,11 +95,7 @@ function CrossSellProducts({ Data }: any) {
          ? configurableFinalPrice(selectedVariant?.product || product)
          : finalPrice(variantProduct)}
                       </span>
-                      {/* <span className={styles.regular}>
-                        {product.__typename === "ConfigurableProduct"
-    ? configurableFinalPrice(selectedVariant?.product || product)
-    : finalPrice(variantProduct)}
-                      </span> */}
+                      
                     </p>
 
 
@@ -128,22 +109,7 @@ function CrossSellProducts({ Data }: any) {
           </div>
         </div>
 
-        {/* Next Button - Visible only on desktop */}
-        {/* <button 
-          className={styles.Updated_nextButton} 
-          onClick={() => {
-            const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
-            container?.scrollBy({ left: 340, behavior: 'smooth' });
-          }}
-          aria-label="Next products"
-        >
-          <Image 
-            src="/Images/rightGoldenArrow.png" 
-            alt="Right Arrow" 
-            width={10} 
-            height={40} 
-          />
-        </button> */}
+        
       </div>
     </div>
   );

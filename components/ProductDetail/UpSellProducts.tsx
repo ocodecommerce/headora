@@ -5,16 +5,15 @@ import Link from 'next/link';
 import { Currency } from '../Currency/currency';
 import WishlistCompareButtons from './WishlistCompareButtons';
 
-function UpSellProducts({ Data }: any) {
-// console.log("CrossSellProducts Data:", Data);
-
+function UpSellProducts({ productData }: any) {
+  
   const level2CategoryName =
-  Data?.categories?.find(
+  productData?.categories?.find(
     (cat:any) => cat.level === 2 && cat.id !== 35 && cat.id !== 2563
   )?.name || "Products";
 
   // If no cross-sell products, don't render
-  if (!Data?.upsell_products || Data.upsell_products.length === 0) {
+  if (!productData?.upsell_products || productData.upsell_products.length === 0) {
     return null;
   }
 
@@ -53,28 +52,12 @@ function UpSellProducts({ Data }: any) {
       <h2 className={styles.title}>Similar {level2CategoryName}</h2>
 
       <div className={styles.Updated_slider}>
-        {/* Prev Button - Visible only on desktop -- Uncomment to show Scroll bar -- bottom button as well */}
-
-        {/* <button 
-          className={styles.Updated_prevButton} 
-          onClick={() => {
-            const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
-            container?.scrollBy({ left: -340, behavior: 'smooth' });
-          }}
-          aria-label="Previous products"
-        >
-          <Image 
-            src="/Images/leftGoldenArrow.png" 
-            alt="Left Arrow" 
-            width={10} 
-            height={40} 
-          />
-        </button> */}
+        
 
         {/* Scrollable Container - Touch friendly */}
         <div className={styles.Updated_productsContainer2}>
           <div className={styles.Updated_productsGrid}>
-            {Data.upsell_products.slice(0, 10).map((product: any) => {
+            {productData.upsell_products.slice(0, 10).map((product: any) => {
               let selectedVariant = null;
 
               if (product?.__typename === "ConfigurableProduct") {
@@ -111,15 +94,10 @@ function UpSellProducts({ Data }: any) {
          ? configurableFinalPrice(selectedVariant?.product || product)
          : finalPrice(variantProduct)}
                       </span>
-                      {/* <span className={styles.regular}>
-                        {product.__typename === "ConfigurableProduct"
-    ? configurableFinalPrice(selectedVariant?.product || product)
-    : finalPrice(variantProduct)}
-                      </span> */}
+                      
                     </p>
 
-                                          {/* Reusable Wishlist + Compare */}
-                                          <WishlistCompareButtons product={variantProduct} />
+                  <WishlistCompareButtons product={variantProduct} />
                   </Link>
                 </div>
               );
@@ -127,24 +105,7 @@ function UpSellProducts({ Data }: any) {
           </div>
         </div>
 
-        {/* Next Button - Visible only on desktop-- Uncomment to show Scroll bar  */}
-
-
-        {/* <button 
-          className={styles.Updated_nextButton} 
-          onClick={() => {
-            const container = document.querySelector(`.${styles.Updated_productsContainer2}`);
-            container?.scrollBy({ left: 340, behavior: 'smooth' });
-          }}
-          aria-label="Next products"
-        >
-          <Image 
-            src="/Images/rightGoldenArrow.png" 
-            alt="Right Arrow" 
-            width={10} 
-            height={40} 
-          />
-        </button> */}
+       
       </div>
     </div>
   );

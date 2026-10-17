@@ -27,7 +27,7 @@ import ShortDescriptionNavBars from "./ShortDescriptionNavBars";
 import { manufacturer } from "../Category/ManufacturerData"
 
 function ProductDetail({
-  Data,
+  productData,
   aggregations,
   
   // breadcrumbs,
@@ -36,12 +36,12 @@ function ProductDetail({
   AllReviews
 }: any) {
 
-  console.log("ProductDetail Data:", Data);
-  const reviewCount = Data?.reviews?.items?.length || 0;
+  
+  const reviewCount = productData?.reviews?.items?.length || 0;
   const averageRating =
-  Data?.reviews?.items?.[0]?.average_rating || 0;
+  productData?.reviews?.items?.[0]?.average_rating || 0;
 
-  if (!Data) return null;
+  if (!productData) return null;
   const router = useRouter();
 
   const [showMoadal, setShowMoadal] = useState<any>(false);
@@ -58,7 +58,7 @@ function ProductDetail({
 
   const [currentVariant, setCurrentVariant] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<any>(
-    currentVariant?.media_gallery?.[0]?.url || Data?.image?.url
+    currentVariant?.media_gallery?.[0]?.url || productData?.image?.url
   );
   const [SelectedOptionsID, setSelectedOptionsID] = useState<any>({});
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -104,11 +104,11 @@ const getCompareItems = (): any[] => {
 
 const isInCompare = () => {
   const items = getCompareItems();
-  const currentId = currentVariant?.id || Data?.id;
+  const currentId = currentVariant?.id || productData?.id;
   return items.some((item: any) => item.id === currentId);
 };
 
-const category = Data?.categories?.find(
+const category = productData?.categories?.find(
   (cat:any) =>  cat.id !== 35 && cat.id !== 2563
 );
 
@@ -129,24 +129,20 @@ const handleAddToCompare = () => {
   setLoading(true);
   const items = getCompareItems();
 
-  // if (items.length >= 4) {
-  //   setCompareMessage("You can compare up to 4 products only. Please remove one first.");
-  //   setTimeout(() => setCompareMessage(""), 4000);
-  //   return;
-  // }
+  
 
-  const currentId = currentVariant?.id || Data?.id;
-  const productName = currentVariant?.variant_name || Data?.name;
+  const currentId = currentVariant?.id || productData?.id;
+  const productName = currentVariant?.variant_name || productData?.name;
 
   const currentProduct = {
     id: currentId,
     name: productName,
-    sku: currentVariant?.sku || Data?.sku,
+    sku: currentVariant?.sku || productData?.sku,
     price: currentVariant?.priceRange?.maximum_price?.final_price?.value || 
-           Data?.priceRange?.maximum_price?.final_price?.value,
-    image: currentVariant?.media_gallery?.[0]?.url || Data?.image?.url,
-    url_key: Data?.url_key || currentVariant?.url_key,
-    description: Data?.description || Data?.description,
+           productData?.priceRange?.maximum_price?.final_price?.value,
+    image: currentVariant?.media_gallery?.[0]?.url || productData?.image?.url,
+    url_key: productData?.url_key || currentVariant?.url_key,
+    description: productData?.description || productData?.description,
   };
 
   if (items.some((item) => item.id === currentId)) {
@@ -158,12 +154,7 @@ const handleAddToCompare = () => {
 
   setLoading(null);
 
-  // Nice message with link
-  // setCompareMessage(
-  //   `You added product <strong>${productName}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.`
-  // );
-
-  // setTimeout(() => setCompareMessage(""), 5000);
+  
 };
 
 
@@ -208,7 +199,7 @@ const handleAddToCompare = () => {
         })
         const updatedWishlistItems: { [productId: string]: boolean } = {}
         const updatedWishlistItemIds: { [productId: string]: number } = {}
-        Data.forEach((productItem: any) => {
+        productData.forEach((productItem: any) => {
           const product = productItem
           let variantProduct = product
           if (product?.__typename === "ConfigurableProduct") {
@@ -358,10 +349,10 @@ const handleAddToCompare = () => {
   }, [])
 
   useEffect(() => {
-    if (userLoggedIn && Data.length > 0) {
+    if (userLoggedIn && productData.length > 0) {
       syncWishlistItems()
     }
-  }, [userLoggedIn, Data, showRibbon])
+  }, [userLoggedIn, productData, showRibbon])
 
 
   // ======================================WishList End 
@@ -381,7 +372,7 @@ const handleAddToCompare = () => {
 
   // Helper function to get product image URL
   const getProductImageUrl = () => {
-    const imageUrl = currentVariant?.media_gallery?.[0]?.url || Data?.image?.url
+    const imageUrl = currentVariant?.media_gallery?.[0]?.url || productData?.image?.url
     if (imageUrl && typeof window !== "undefined") {
       // Convert relative URL to absolute URL
       return imageUrl.startsWith("http") ? imageUrl : `${window.location.origin}${imageUrl}`
@@ -391,19 +382,19 @@ const handleAddToCompare = () => {
 
   // Helper function to get product name for sharing
   const getProductName = () => {
-    return Data.__typename === "ConfigurableProduct" ? currentVariant?.variant_name || Data?.name : Data?.name
+    return productData.__typename === "ConfigurableProduct" ? currentVariant?.variant_name || productData?.name : productData?.name
   }
 
 
   // Limit Data.name to 50 characters and add ellipsis if necessary
   const displayName =
-    Data.name.length > 30 ? `${Data.name.slice(0, 50)}...` : Data.name;
+    productData.name.length > 30 ? `${productData.name.slice(0, 50)}...` : productData.name;
   const client = new Client();
 
   const fetchStockData = async () => {
     setLoadingStockStatus(true);
     try {
-      const data = await client.fetchStockStatus(Data?.url_key);
+      const data = await client.fetchStockStatus(productData?.url_key);
       if (data) {
         setStockStatus(data?.products?.items?.[0]?.stock_status); // Adjust based on response structure
       } else {
@@ -472,8 +463,8 @@ const handleAddToCompare = () => {
 
   useEffect(() => {
     let slugArray: any = router.query;
-    if (Data && Data.configurable_options) {
-      Data.configurable_options.forEach((configuration: any) => {
+    if (productData && productData.configurable_options) {
+      productData.configurable_options.forEach((configuration: any) => {
         if (slugArray[configuration.attribute_code]) {
           let optvalue = slugArray[configuration.attribute_code];
           optvalue = optvalue.replaceAll("_", " ");
@@ -490,11 +481,8 @@ const handleAddToCompare = () => {
       });
     }
 
-    // setSelectedOptions((prevOptions: any) => ({
-    //   ...prevOptions,
-    //   [attributeCode]: selectedOptions[attributeCode]!=optvalue?optvalue:'',
-    // }));
-  }, [router.query, Data]);
+    
+  }, [router.query, productData]);
 
   const gotToReviews = () => {
     if (typeof document !== "undefined") {
@@ -517,7 +505,7 @@ const handleAddToCompare = () => {
   const updateAffirm = async () => {
     let final_price =
       currentVariant?.priceRange?.maximum_price?.final_price?.value ||
-      Data?.priceRange?.maximum_price?.final_price?.value;
+      productData?.priceRange?.maximum_price?.final_price?.value;
     let affirm_show = await affirmUpdate(final_price);
     let affirm_price = await processAffirmPrice(final_price);
     setAffirmPrice(affirm_price);
@@ -525,11 +513,11 @@ const handleAddToCompare = () => {
   };
 
   useEffect(() => {
-    if (Data?.__typename == "ConfigurableProduct") {
+    if (productData?.__typename == "ConfigurableProduct") {
       setCartError(0);
 
       const OptionAttributeId: { [key: string]: string } = {};
-      Data?.configurable_options.forEach((option: any) => {
+      productData?.configurable_options.forEach((option: any) => {
         const selectedOption = selectedOptions[option.attribute_code];
         const selectedOptionValue = option.values.find(
           (value: any) => value.label === selectedOption
@@ -547,10 +535,10 @@ const handleAddToCompare = () => {
   }, [selectedOptions]);
 
   useEffect(() => {
-    if (Data?.__typename == "ConfigurableProduct") {
+    if (productData?.__typename == "ConfigurableProduct") {
       // setDefailtOption(0);
     }
-  }, [Data]);
+  }, [productData]);
 
   useEffect(() => {
     setAffirmShow(false);
@@ -562,7 +550,7 @@ const handleAddToCompare = () => {
     let allActiveFilters: any = [];
     let tag: any;
     const initialOptions: { [key: number]: string } = {};
-    await Data?.configurable_options?.forEach((option: any, indx: any) => {
+    await productData?.configurable_options?.forEach((option: any, indx: any) => {
       if (indx === 0) {
         initialOptions[option.attribute_code] = option.values[0]?.label;
         tag =
@@ -582,7 +570,7 @@ const handleAddToCompare = () => {
     });
     getDisableOptions(allActiveFilters);
     let isValidConfiguration = await validateConfigurations(
-      Data,
+      productData,
       allActiveFilters
     );
 
@@ -602,7 +590,7 @@ const handleAddToCompare = () => {
         let allDisableFilters: any = [];
         if (optionstring != "") {
           let optionArrayStr = strToArray(optionstring + "", "--");
-          await Data?.configurable_options?.forEach(async (option: any) => {
+          await productData?.configurable_options?.forEach(async (option: any) => {
             if (option.attribute_code !== optionArrayStr[0]) {
               await option.values.forEach(async (opt: any) => {
                 let filters: any = [];
@@ -612,7 +600,7 @@ const handleAddToCompare = () => {
                 filters.push(newTag);
 
                 let isValidConfiguration = await validateConfigurations(
-                  Data,
+                  productData,
                   filters
                 );
                 if (!isValidConfiguration) {
@@ -637,18 +625,18 @@ const handleAddToCompare = () => {
 
   useEffect(() => {
     // Only process variants for configurable products
-    if (Data.__typename === "ConfigurableProduct") {
+    if (productData.__typename === "ConfigurableProduct") {
       getDisableOptions(activeFilters);
       let isValidConfiguration = true; // validateConfigurations(Data, activeFilters)
       if (isValidConfiguration) {
-        let selectedVariant = updateProduct(Data, activeFilters);
-        setCurrentVariant(Data.variants[selectedVariant]);
+        let selectedVariant = updateProduct(productData, activeFilters);
+        setCurrentVariant(productData.variants[selectedVariant]);
       }
     } else {
       // Clear currentVariant for simple products
       setCurrentVariant(null);
     }
-  }, [activeFilters, Data]);
+  }, [activeFilters, productData]);
 
   const generateVideoThumbnail = (file: any) => {
     return new Promise((resolve) => {
@@ -673,7 +661,7 @@ const handleAddToCompare = () => {
   };
 
   useEffect(() => {
-    if (Data.__typename != "SimpleProduct") {
+    if (productData.__typename != "SimpleProduct") {
       let newActiveFilter: any = [];
       Object.keys(selectedOptions).forEach(function (key, idx, arr) {
         if (selectedOptions[key]) {
@@ -701,7 +689,7 @@ const handleAddToCompare = () => {
         [attributeCode]: optvalue,
       }));
 
-      Data?.configurable_options.forEach((opt: any) => {
+      productData?.configurable_options.forEach((opt: any) => {
         if (opt.attribute_code != attributeCode && opt.values.length == 1) {
           setSelectedOptions((prevOptions: any) => ({
             ...prevOptions,
@@ -746,7 +734,7 @@ const handleAddToCompare = () => {
   
   const handleAddToCart = async (redirect: any) => {
     let errorCount = 0;
-    if (Data.__typename != "SimpleProduct") {
+    if (productData.__typename != "SimpleProduct") {
       Object.keys(selectedOptions).forEach(function (key) {
         if (selectedOptions[key]) {
         } else {
@@ -767,7 +755,7 @@ const handleAddToCompare = () => {
         }
       }
       setAddToLoading(true);
-      const product = Data?.id;
+      const product = productData?.id;
       const superAttributes = Object.keys(SelectedOptionsID).map((key) => ({
         id: key,
         value: SelectedOptionsID[key],
@@ -835,23 +823,23 @@ const handleAddToCompare = () => {
   }
   function finalPrice() {
    
-    const isConfigurable = Data.__typename === "ConfigurableProduct";
+    const isConfigurable = productData.__typename === "ConfigurableProduct";
     const final_price = (isConfigurable && currentVariant)
       ? currentVariant?.priceRange?.maximum_price?.final_price?.value
-      : Data?.priceRange?.maximum_price?.final_price?.value;
-    let currency: any = Data?.price?.regularPrice?.amount?.currency;
+      : productData?.priceRange?.maximum_price?.final_price?.value;
+    let currency: any = productData?.price?.regularPrice?.amount?.currency;
     return `${Currency[currency]}${formatPrice(final_price)}`;
   }
 
   function regularPrice() {
-    const isConfigurable = Data.__typename === "ConfigurableProduct";
+    const isConfigurable = productData.__typename === "ConfigurableProduct";
     const final_price = isConfigurable
       ? currentVariant?.priceRange?.maximum_price?.final_price?.value
-      : Data?.priceRange?.maximum_price?.final_price?.value;
+      : productData?.priceRange?.maximum_price?.final_price?.value;
     const regular_price = isConfigurable
       ? currentVariant?.priceRange?.maximum_price?.regular_price?.value
-      : Data?.priceRange?.maximum_price?.regular_price?.value;
-    let currency: any = Data?.price?.regularPrice?.amount?.currency;
+      : productData?.priceRange?.maximum_price?.regular_price?.value;
+    let currency: any = productData?.price?.regularPrice?.amount?.currency;
     if (regular_price != final_price) {
       return `${Currency[currency]}${formatPrice(regular_price)}`;
     } else {
@@ -861,11 +849,11 @@ const handleAddToCompare = () => {
   function savingPrice() {
     let final_price =
       currentVariant?.priceRange?.maximum_price?.final_price?.value ||
-      Data?.priceRange?.maximum_price?.final_price?.value;
+      productData?.priceRange?.maximum_price?.final_price?.value;
 
     let regular_price =
       currentVariant?.priceRange?.maximum_price?.regular_price?.value ||
-      Data?.priceRange?.maximum_price?.regular_price?.value;
+      productData?.priceRange?.maximum_price?.regular_price?.value;
 
     // Calculate savings
     if (regular_price) {
@@ -891,7 +879,7 @@ const handleAddToCompare = () => {
     setQuantity(value);
   };
 
-  if (!Data) {
+  if (!productData) {
     return <PDPSkeletonLoader />;
   }
   const calculateOverallRating = (reviews: any[]) => {
@@ -905,7 +893,7 @@ const handleAddToCompare = () => {
     // Calculate the average rating out of 100 and map to a 5-star scale
     return totalAverageRating / reviews.length / 20;
   };
-  const reviews = Data.reviews?.items || [];
+  const reviews = productData.reviews?.items || [];
   const overallRating = calculateOverallRating(reviews);
 
   // =======================Find Lead Time===========================
@@ -949,7 +937,7 @@ const handleAddToCompare = () => {
       {isMounted && (isInCompare() || loading === null )&& (
           <div 
             className={styles.compareNotification}
-            dangerouslySetInnerHTML={{ __html: `You added product <strong>${currentVariant?.variant_name || Data?.name}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.` }}
+            dangerouslySetInnerHTML={{ __html: `You added product <strong>${currentVariant?.variant_name || productData?.name}</strong> to the <a href="/compare" style="color:#e67e22; text-decoration:underline;">comparison list</a>.` }}
           />
         )}
 
@@ -1050,7 +1038,7 @@ const handleAddToCompare = () => {
           {/* Brand, Review and Product Name Repeat For Mobile View */}
           <div className={styles.mobileBlock}>
             <div className={`${styles.brandReviewWrapper}`}>
-              <p className={styles.brand}>{manufacturer.find(c => c.value === String(Data?.manufacturer))?.["data-title"] || ""}</p>
+              <p className={styles.brand}>{manufacturer.find(c => c.value === String(productData?.manufacturer))?.["data-title"] || ""}</p>
               {reviews.length > 0 && (
                 <div className={styles.Breakdown}>
                   {Array.from({ length: 5 }).map((_, idx) => {
@@ -1104,8 +1092,8 @@ const handleAddToCompare = () => {
 
           <div className={styles.productImages}>
             <GallerySection
-              currentVariantData={currentVariant ? currentVariant : Data}
-              Data={currentVariant ? Data : null}
+              currentVariantData={currentVariant ? currentVariant : productData}
+              Data={currentVariant ? productData : null}
               isMobile={isMobile}
             />
           </div>
@@ -1114,50 +1102,7 @@ const handleAddToCompare = () => {
 
           <div className={styles.productInfo}>
             <div className={styles.desktopBlock}>
-              {/* <div className={`${styles.brandReviewWrapper}`}>
-                <p className={styles.brand}>{brandname}</p>
-                {reviews.length > 0 && (
-                  <div className={styles.Breakdown}>
-
-                    {Array.from({ length: 5 }).map((_, idx) => {
-                      const starValue = overallRating - idx;
-                      if (starValue >= 1) {
-                        return (
-                          <Image
-                            key={idx}
-                            src="/Images/Filled.png"
-                            alt="Full Star"
-                            height={12}
-                            width={12}
-                          />
-                        );
-                      } else if (starValue >= 0.5) {
-                        return (
-                          <Image
-                            key={idx}
-                            src="/Images/Half filled.png"
-                            alt="Half Star"
-                            height={12}
-                            width={12}
-                          />
-                        );
-                      } else {
-                        return (
-                          <Image
-                            key={idx}
-                            src="/Images/Unfilled.png"
-                            alt="Empty Star"
-                            height={12}
-                            width={12}
-                          />
-                        );
-                      }
-                    })}
-
-
-                  </div>
-                )}
-              </div> */}
+              
             </div>
             <div
               className={`${styles.priceTitleWrapper} ${styles.desktopBlockREMOBED}`}
@@ -1166,15 +1111,11 @@ const handleAddToCompare = () => {
           
               <div className={styles.subTitelWrapper}>
                 <h1>
-                  {/* {Data.__typename === "ConfigurableProduct"
-                    ? currentVariant?.variant_name || Data?.name
-                    :
-                     Data?.name} */}
-                    { Data?.name}
+                  
+                    { productData?.name}
                 </h1>
     
-              {/* <p onClick={scrollToBottom} className={styles.paymentInfo} style={{ cursor: 'pointer' }}>Be the first to review this product</p> */}
-          
+              
               </div>
 
 
@@ -1279,24 +1220,8 @@ const handleAddToCompare = () => {
                 ) :( 
                 <b >In Stock</b>)}
 
-                  <p>SKU#: {currentVariant ? currentVariant.sku : Data?.sku}</p>
-                {/* {isMounted && (
-                  <span className={styles.tooltipWrapper}>
-                    <span className={styles.tooltipIcon}>?</span>
-                    <div className={styles.tooltipContainer}>
-                      <div className={styles.tooltipContent}>
-                        <div className={styles.tooltipTitle}>OUR PRICING PROMISE</div>
-                        <div className={styles.tooltipText}>
-                          We're committed to offering the most transparent and fair pricing to you. We determine market
-                          pricing based on the type of item it is, brand, and model and measure that against all closest
-                          competitors.
-                        </div>
-                        <div className={styles.tooltipTitle}>CONTACT OUR CONCIERGE</div>
-                        <div className={styles.tooltipText}>support@headora.com or1-234-5623-9.</div>
-                      </div>
-                    </div>
-                  </span>
-                )} */}
+                  <p>SKU#: {currentVariant ? currentVariant.sku : productData?.sku}</p>
+                
               </div>
 
 
@@ -1307,11 +1232,11 @@ const handleAddToCompare = () => {
             
          
 
-            {Data?.__typename === "ConfigurableProduct" && (
+            {productData?.__typename === "ConfigurableProduct" && (
               <div
                 className={styles.ConfigurableWrapper + " ConfigurableProduct"}
               >
-                {Data?.configurable_options?.map((option: any) => (
+                {productData?.configurable_options?.map((option: any) => (
                   <>
                     <AttributeSlider
                       aggregations={aggregations}
@@ -1336,18 +1261,7 @@ const handleAddToCompare = () => {
                 data-amount={affirmPrice}
               />
             )}
-            {/* <div className={styles.mobileBlock}>
-              <p className={`${styles.price} `}>
-                <span className={styles.special}>{finalPrice()}</span>
-                <span className={styles.regular}>{regularPrice()}</span>
-                {savingPrice() && (
-                  <span className={styles.mobilePriceDiscount}>
-                    {savingPrice()}
-                  </span>
-                )}
-              </p>
-              <p className={styles.AnticipatedDeliveryText}>Anticipated Delivery: {leadTimeOption?.label || "3 - 4 Week"} </p>
-            </div> */}
+            
 
             <div className={styles.quantityActionWrapper}>
               {/* Quantity Selector */}
@@ -1426,9 +1340,9 @@ const handleAddToCompare = () => {
                             onClick={() => handleAddToCart(false)}
                             disabled={
                               addToLoading ||
-                              Data?.__typename === "ConfigurableProduct" && (SelectedOptionsID &&
+                              productData?.__typename === "ConfigurableProduct" && (SelectedOptionsID &&
                                 Object.keys(SelectedOptionsID).length !==
-                                  Data?.configurable_options?.length)
+                                  productData?.configurable_options?.length)
                             }
                           >
                             {addToLoading ? (
@@ -1449,13 +1363,13 @@ const handleAddToCompare = () => {
 
 
                     <div className={styles.WishListIconWrraper}>
-                            {wishlistLoading[Data.id] || wishlistItemsLoading ? (
+                            {wishlistLoading[productData.id] || wishlistItemsLoading ? (
                               <div className={styles.SearchLoader}></div>
-                            ) : wishlistItems[Data.id] ? (
+                            ) : wishlistItems[productData.id] ? (
                               <button
                                 onClick={(e) => {
                                   e.preventDefault()
-                                  handleRemoveWishlist(wishlistItemIds[Data.id])
+                                  handleRemoveWishlist(wishlistItemIds[productData.id])
                                 }}
                                 className={styles.wishwithcomparButton}
                               >
@@ -1471,7 +1385,7 @@ const handleAddToCompare = () => {
                               <button
                                 onClick={(e) => {
                                   e.preventDefault()
-                                  handleWishlist(Data.sku, Data.id)
+                                  handleWishlist(productData.sku, productData.id)
                                 }}
                                 className={styles.wishwithcomparButton}
                               >
@@ -1504,61 +1418,23 @@ const handleAddToCompare = () => {
                       </button>
                       </div>
 
-              {/* Offer Component */}
-              {/* {stockStatus !== "OUT_OF_STOCK" && !loadingStockStatus && (
-                <MakeAOffer
-                  productID={Data?.id}
-                  sku={currentVariant ? currentVariant.sku : Data?.sku}
-                  productName={
-                    Data.__typename === "ConfigurableProduct"
-                      ? currentVariant?.variant_name || Data?.name
-                      : Data?.name
-                  }
-                  price={
-                    regularPrice()?.length == 0 ? finalPrice() : regularPrice()
-                  }
-                  specialPrice={
-                    regularPrice()?.length == 0 ? "$0" : finalPrice()
-                  }
-                />
-              )} */}
-              {/* <button
-                    className={styles.buyNow}
-                    onClick={() => handleAddToCart(false)}
-                  >
-                    Buy It Now
-                  </button> */}
+              
             </div>
 
 
 
      
 
-            {/* <div className={styles.wishlist_container}>
-
-              <Link href={'/customer/account/login/'} style={{ display: 'flex', gap: '10px' }}>
-                <Image src={'/Images/wishlistIcon.png'} height={24} width={27} alt="wishlist icon" />
-                <Image src={'/Images/wishlistIconFill.png'} height={24} width={27} alt="wishlist icon"/>
-                <p className={styles.wishlist}>Wishlist</p>
-              </Link>
-            </div> */}
-
-            {/* <ShortDescriptionNavBars
-              currentVariant={currentVariant ? currentVariant : Data}
-              configurableOptions={Data?.configurable_options}
-              Data={Data}
-              aggregations={aggregations}
-              ReturnDataCMSBlock={ReturnDataCMSBlock}
-            /> */}
+            
 
           </div>
 
 
         </div>
         <ShortDescriptionNavBars
-              currentVariant={currentVariant ? currentVariant : Data}
-              configurableOptions={Data?.configurable_options}
-              Data={Data}
+              currentVariant={currentVariant ? currentVariant : productData}
+              configurableOptions={productData?.configurable_options}
+              Data={productData}
               aggregations={aggregations}
               ReturnDataCMSBlock={ReturnDataCMSBlock}
               AllReviews={AllReviews}

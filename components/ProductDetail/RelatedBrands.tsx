@@ -100,18 +100,34 @@ import styles from "../../styles/ProductDetail.module.css";
 
   function RelatedBrands({ RelatedCategories, categoriesList }: any) {
   
-    const brandsCategory = categoriesList.data.categories.items?.[0]?.children.find(
-      (category: any) => category.name.toLowerCase() === "brands",
-    )
-    // console.log(RelatedCategories,"RelatedCategories",brandsCategory,"brandsCategory")
-    let RelatedCategory:any = ""
-    let Data = categoriesList?.data?.categories?.items?.[0]?.children
-    const relatedBrands:any = Data[RelatedCategory];
+    // const brandsCategory = categoriesList.data.categories.items?.[0]?.children.find(
+    //   (category: any) => category.name.toLowerCase() === "brands",
+    // )
+    // // console.log(RelatedCategories,"RelatedCategories",brandsCategory,"brandsCategory")
+    // let RelatedCategory:any = ""
+    // let Data = categoriesList?.data?.categories?.items?.[0]?.children
+    // const relatedBrands:any = Data[RelatedCategory];
   
-    if (!relatedBrands) return null;
-  
+    // if (!relatedBrands) return null;
     // Flatten and extract brand names
-    const brands = relatedBrands.flatMap((brandGroup: {}) => Object.keys(brandGroup));
+    //const brands = relatedBrands.flatMap((brandGroup: {}) => Object.keys(brandGroup));
+
+    const RelatedCategory: number = 0;
+
+    const RelatedCategoryData =
+      categoriesList?.data?.categories?.items?.[0]?.children;
+
+    const relatedBrands = RelatedCategoryData?.[RelatedCategory];
+
+    if (!relatedBrands) return null;
+
+    // Flatten and extract brand names
+    const brands = relatedBrands.flatMap((brandGroup: Record<string, any>) =>
+      Object.keys(brandGroup)
+    );
+
+  
+    
   
     return (
       <div className={styles.relatedBrandsContainer}>

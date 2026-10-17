@@ -342,7 +342,14 @@ export const getStaticPaths: GetStaticPaths = async () => {
     let allCategories = JSON.parse(await fs.readFile(allCategoriesPathFile, 'utf-8')).map(
       (item: any) => item.replace(/\.html$/, '')
     );
-    let allProducts = JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
+
+    // let allProducts = JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8')).map(
+    //   (item: any) => item.replace(/\.html$/, '')
+    // );
+     
+     let allProducts = JSON.parse(await fs.readFile(allProductsPathFile, 'utf-8'));
+
+    
 
     const combinedPaths = [...allCategories, ...allProducts];
 
@@ -382,152 +389,277 @@ export const getStaticPaths: GetStaticPaths = async () => {
 // Static Props
 export const getStaticProps: GetStaticProps = async ({ params, query }: any) => {
   const { slug } = params as { slug: string };
+  
   const urlPath = slug.replace(/\.html$/, '');
+  
+  
+  const cacheStaticProps = createHash('md5')
+                .update(urlPath + '.html')
+                .digest('hex');
 
-  const cacheStaticProps = createHash('md5').update(slug).digest('hex');
 
-  let cacheStaticPropsPath: any;
-  let cacheProductPropsPath: any;
+  const cacheStaticPropsPath = path.resolve(
+    `./cacheM/category/${cacheStaticProps}.json`
+  );
+
+  const cacheProductPropsPath = path.resolve(
+    `./cacheM/product/${cacheStaticProps}.json`
+  );
+
+  const cachePaths = [
+    cacheStaticPropsPath,
+    cacheProductPropsPath,
+  ];
 
   const isBuildTime = process.env.BUILD_MODE === 'build';
+  console.log(`Generating Page for URL Path:-  ${urlPath}`);
+ 
+  // =====================================================
+  // 1. BUILD-TIME CACHE
+  // Read custom JSON cache only during next build.
+  // At ISR/runtime, bypass these files and fetch fresh data.
+  // =====================================================
 
-  // ====================== BUILD TIME ============================
-  if (isBuildTime) {
-    cacheStaticPropsPath = path.resolve(`./cacheM/category/${cacheStaticProps}.json`);
-    cacheProductPropsPath = path.resolve(`./cacheM/product/${cacheStaticProps}.json`);
-
-    const cachePaths = [
-      path.resolve(`./cacheM/category/${cacheStaticProps}.json`),
-      path.resolve(`./cacheM/product/${cacheStaticProps}.json`),
-    ];
-
-    console.log(`[BUILD] Using cache for: ${urlPath}`);
-
+  //if (isBuildTime) {
     for (const cachePath of cachePaths) {
       try {
-        let cachedProps = JSON.parse(await fs.readFile(cachePath, 'utf-8'));
+        const cachedContent = await fs.readFile(
+          cachePath,
+          "utf-8"
+        );
+
+        const cachedProps = JSON.parse(cachedContent);
+
         return {
           ...cachedProps,
           revalidate: 10,
         };
-      } catch (error) {
-        // continue
+      } catch (error: any) {
+        
       }
     }
-  }
+  //}
+  
+  // =====================================================
+  // 2. ISR / RUNTIME: FETCH FRESH DATA
+  // This section executes when no build cache is used.
+  // =====================================================
 
-  // ====================== ISR / RUNTIME ======================
-  console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
+  //console.log(`[ISR] Fetching fresh data for: ${urlPath}`);
 
   const client = new Client();
-  const page = query?.page ? parseInt(query.page as string, 10) : 1;
 
-  const fetchCategoryByURLKey = async (urlKey: string, page: number) => {
+  const page = query?.page
+    ? parseInt(String(query.page), 10)
+    : 1;
+
+  const fetchCategoryByURLKey = async (
+    urlKey: string,
+    currentPage: number
+  ) => {
     try {
-      const response = await client.fetchSubCategoryDataByUrlKey(urlKey, page);
-      return response?.categoryList[0] || null;
-    } catch (error) {
+      const response =
+        await client.fetchSubCategoryDataByUrlKey(
+          urlKey,
+          currentPage
+        );
+
+      return response?.categoryList?.[0] || null;
+    } catch (error: any) {
+      console.error(
+        `[CATEGORY ERROR] ${urlKey}: ${error.message}`
+      );
+
       return null;
     }
   };
 
-  try {
-    const collectionData = await client.fetchCollectionPage(urlPath as string);
-    const collection = collectionData?.data?.categoryList?.[0] || null;
-
-    if (collection) {
-      console.log('Generating collection ' + urlPath);
-      const category = (await fetchCategoryByURLKey(urlPath as string, page)) || null;
-      const uid = category?.uid || null;
-
-      let allProductList: any[] = [];
-
-      const fetchProductsByUID = async (uid: string, currentPage: number) => {
-        try {
-          const response = await client.fetchSubCategoryData(uid, currentPage);
-          return response || null;
-        } catch (error) {
-          return null;
-        }
-      };
-
-      let productsRes = uid ? await fetchProductsByUID(uid, page) : null;
-
-      if (productsRes?.products) {
-        productsRes.products.items.forEach((item: any) => {
-          allProductList.push(item);
-        });
-      }
-
-      let responseData = {
-        props: {
-          allProductList,
-          category,
-          currentPage: page,
-          productsRes,
-          collection,
-          generatedAt: new Date().toISOString(),
-          view: 'collection',
-          urlPath: urlPath,
-        },
-        revalidate: 10,
-      };
-
-      if (isBuildTime) {
-        await fs.writeFile(cacheStaticPropsPath, JSON.stringify(responseData));
-      }
-      return responseData;
-    } else {
-      const product = await client.fetchProductDetail(urlPath);
-      let productsResult = product.data.products || null;
-
-      if (productsResult) {
-        console.log('Generating Product...' + urlPath);
-      }
-
-      const reviews = (await client.fetchAllReviewValue()) || null;
-      const ReturnDataCMSBlock = (await client.fetchPDPReturnCMSBlock()) || null;
-
-      let { filters, optionValueMap } = createFiltersFromAggregations(productsResult.aggregations);
-      let configuredProducts = createProductsFromMagProducts(
-        productsResult.items,
-        filters,
-        optionValueMap
+  const fetchProductsByUID = async (
+    uid: string,
+    currentPage: number
+  ) => {
+    try {
+      return await client.fetchSubCategoryData(
+        uid,
+        currentPage
+      );
+    } catch (error: any) {
+      console.error(
+        `[PRODUCT LIST ERROR] ${uid}: ${error.message}`
       );
 
-      const productData = configuredProducts[0] || null;
-      const aggregations = productsResult.aggregations || [];
-
-      let responseData = {
-        props: {
-          productData,
-          aggregations,
-          reviews,
-          ReturnDataCMSBlock,
-          view: 'product',
-          urlPath: urlPath,
-          generatedAt: new Date().toISOString(),
-        },
-        revalidate: 10,
-      };
-
-      if (isBuildTime) {
-        await fs.writeFile(cacheProductPropsPath, JSON.stringify(responseData));
-      }
-      return responseData;
+      return null;
     }
-  } catch (error: any) {
-    return {
+  };
+
+  // Write the custom cache only during the build.
+  const saveBuildCache = async (
+    cachePath: string,
+    responseData: any
+  ) => {
+    // if (!isBuildTime) {
+    //   return;
+    // }
+
+    try {
+      
+      await fs.mkdir(path.dirname(cachePath), {
+        recursive: true,
+      });
+
+      await fs.writeFile(
+        cachePath,
+        JSON.stringify(responseData),
+        "utf-8"
+      );
+
+      console.log(`[CACHE SAVED] ${cachePath}`);
+    } catch (error: any) {
+      console.error(
+        `[CACHE WRITE ERROR] ${cachePath}: ${error.message}`
+      );
+    }
+  };
+
+  try {
+  // ===================================================
+  // 3. CHECK WHETHER THIS URL IS A COLLECTION
+  // ===================================================
+
+  const collectionData =
+    await client.fetchCollectionPage(
+      urlPath as string
+    );
+
+  const collection =
+    collectionData?.data?.categoryList?.[0] || null;
+
+  if (collection) {
+    console.log(`[ISR] Generating collection: ${urlPath}`);
+
+    const category =
+      (await fetchCategoryByURLKey(
+        urlPath as string,
+        page
+      )) || null;
+
+    const uid = category?.uid || null;
+
+    let productsRes = uid
+      ? await fetchProductsByUID(uid, page)
+      : null;
+
+    const allProductList: any[] =
+      productsRes?.products?.items || [];
+
+    const responseData = {
       props: {
-        allProductList: [],
-        category: null,
+        allProductList,
+        category,
         currentPage: page,
-        productsRes: null,
-        collection: null,
+        productsRes,
+        collection,
+        generatedAt: new Date().toISOString(),
+        view: "collection",
+        urlPath,
       },
       revalidate: 10,
     };
+
+    await saveBuildCache(
+      cacheStaticPropsPath,
+      responseData
+    );
+
+    return responseData;
   }
+
+  // ===================================================
+  // 4. NOT A COLLECTION: FETCH PRODUCT DETAILS
+  // ===================================================
+
+  console.log(`[ISR] Generating product: ${urlPath}`);
+
+  const product = await client.fetchProductDetail(
+    urlPath as string
+  );
+
+  const productsResult =
+    product?.data?.products || null;
+
+  if (!productsResult?.items?.length) {
+    throw new Error(
+      `No product data returned by Magento for ${urlPath}`
+    );
+  }
+
+  // Fetch supplementary data.
+  const [reviews, ReturnDataCMSBlock] =
+    await Promise.all([
+      client.fetchAllReviewValue().catch((error: any) => {
+        console.error(
+          `[REVIEWS ERROR] ${error.message}`
+        );
+        return null;
+      }),
+
+      client.fetchPDPReturnCMSBlock().catch((error: any) => {
+        console.error(
+          `[CMS BLOCK ERROR] ${error.message}`
+        );
+        return null;
+      }),
+    ]);
+
+  const aggregations =
+    productsResult.aggregations || [];
+
+  const {
+    filters,
+    optionValueMap,
+  } = createFiltersFromAggregations(aggregations);
+
+  const configuredProducts =
+    createProductsFromMagProducts(
+      productsResult.items,
+      filters,
+      optionValueMap
+    );
+
+  const productData =
+    configuredProducts[0] || null;
+
+  const responseData = {
+    props: {
+      productData,
+      aggregations,
+      reviews,
+      ReturnDataCMSBlock,
+      view: "product",
+      urlPath,
+      generatedAt: new Date().toISOString(),
+    },
+    revalidate: 10,
+  };
+
+  await saveBuildCache(
+    cacheProductPropsPath,
+    responseData
+  );
+
+  return responseData;
+
+} catch (error: any) {
+  console.error(
+    `[PAGE GENERATION ERROR] ${urlPath}:`,
+    error
+  );
+
+  // Avoid silently treating an API failure as a valid page.
+  // Throwing lets Next.js handle a failed regeneration rather
+  // than replacing the existing generated page with empty props.
+  throw error;
+}
 };
 
 // ==================== PAGE COMPONENT ====================
@@ -670,6 +802,7 @@ const Collection = ({
   const productTitle = productData?.meta_title || productData?.name || '';
   const productCanonical = `${process.env.baseURLWithoutTrailingSlash}/${productData?.url_key || slug}`;
   const collectionCanonical = `${process.env.baseURLWithoutTrailingSlash}/${slug}`;
+  console.log('~~~~~~~~~~~~~~~~~~~'+view+'~~~~~~~~~~~~~~~~~~~~~~~')
 
   return (
     <div key={urlPath || router.asPath}>
@@ -794,7 +927,7 @@ const Collection = ({
             <meta itemProp="description" content={metaDiscription} />
             <meta itemProp="image" content={absoluteSchemaImage || ''} />
           </Head>
-
+           
           <BreadcrumbSchema breadcrumbs={productBreadcrumbs} />
 
           <ProductSchema
@@ -806,7 +939,7 @@ const Collection = ({
           />
 
           <ProductDetail
-            Data={productData}
+            productData={productData}
             aggregations={aggregations}
             breadcrumbs={productBbreadcrumbs}
             setPrice={setPrice}
@@ -815,14 +948,29 @@ const Collection = ({
             AllReviews={reviews}
           />
 
-          <CrossSellProducts Data={productData} />
-          <UpSellProducts Data={productData} />
-          <ReletedProducts Data={productData} />
+          <CrossSellProducts 
+            productData={productData} 
+          />
 
+          <UpSellProducts 
+            productData={productData} 
+          />
+
+          <ReletedProducts 
+            productData={productData} 
+          />
+
+          {/* 
           <RelatedBrands
             RelatedCategories={productData?.categories}
             categoriesList={categoriesList}
           />
+          */}
+
+          
+
+          
+          
         </>
       )}
     </div>

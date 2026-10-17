@@ -693,6 +693,7 @@ async function productsSitemapToFile(deployType, pageUrls) {
 }
 
 async function processProductsInBatches(items) {
+  console.log('processProductsInBatches:- '+items.length)
   for (let i = 0; i < items.length; i += 20) {
       const batch = items.slice(i, i + 20);
 
