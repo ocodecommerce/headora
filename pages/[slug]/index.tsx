@@ -411,7 +411,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
     cacheProductPropsPath,
   ];
 
-  const isBuildTime = process.env.BUILD_MODE === 'build';
+  const isBuildTime = true;//process.env.BUILD_MODE === 'build';
   console.log(`Generating Page for URL Path:-  ${urlPath}`);
  
   // =====================================================

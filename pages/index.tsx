@@ -417,6 +417,7 @@ export async function getStaticProps() {
 
   try {
     CMSPageData = await client.fetchCMSPages();
+    
   } catch (error) {
     console.error("Error fetching CMS data", error);
   }

@@ -6,12 +6,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "BUILD_MODE=build NODE_OPTIONS='--max-old-space-size=8192' NEXT_PRIVATE_BUILD_WORKERS=10 next build",
-    "start": "BUILD_MODE=false next start",
+    "start": "BUILD_MODE=build next start",
     "lint": "next lint",
-    "prebuild": "rm -rf cacheM/category/* && node scripts/generate-sitemap.mjs"
+    "prebuild": "node scripts/generate-sitemap.mjs"
   },
   "dependencies": {
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "lucide-react": "^0.555.0",
     "next": "15.1.2",
     "react": "^19.0.0",
@@ -25,6 +25,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "serve": "^14.2.6",
     "typescript": "^5"
   }
 }

@@ -601,7 +601,8 @@ export class Client {
                 const data = await response.json();
                 return data
             } else {
-                // Handle errors
+                console.log('query',query)
+                return null
                  
             }
         } catch (error) {
@@ -769,7 +770,7 @@ export class Client {
                 const data = await response.json();
                 return data.data
             } else {
-                // Handle errors
+                return null
                  
             }
         } catch (error) {

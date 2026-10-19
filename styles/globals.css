@@ -7574,3 +7574,65 @@ display: none;
       right: -8px;
     }
   }
+
+
+
+
+
+
+
+
+  :root {
+  --theme-primary: #2563eb;
+  --theme-secondary: #64748b;
+  --theme-background: #ffffff;
+  --theme-surface: #f8fafc;
+  --theme-text: #171717;
+  --theme-muted-text: #64748b;
+  --theme-border: #e5e7eb;
+  --theme-font: Arial, sans-serif;
+  --theme-radius: 8px;
+  --theme-columns: 4;
+}
+
+body {
+  background-color: var(--theme-background);
+  color: var(--theme-text);
+  font-family: var(--theme-font);
+}
+
+a {
+  color: var(--theme-primary);
+}
+
+.theme-card,
+.product-card {
+  color: var(--theme-text);
+  background-color: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
+}
+
+/* Default button */
+button {
+  background-color: var(--button-bg-color);
+  color: var(--button-text-color);
+  border: 1px solid var(--button-border-color);
+  border-radius: var(--theme-radius);
+  padding: 10px 18px;
+}
+
+/* Rounded theme buttons */
+:root[data-button-style="rounded"] button {
+  border-radius: 999px;
+}
+
+/* Square theme buttons */
+:root[data-button-style="square"] button {
+  border-radius: 0;
+}
+
+/* Solid theme buttons */
+:root[data-button-style="solid"] button {
+  border-radius: var(--theme-radius);
+}
