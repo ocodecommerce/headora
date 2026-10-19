@@ -9,6 +9,7 @@ import {
 
 type StorefrontTheme = {
   activeTheme: string;
+  navigationColor: string;
   primaryColor: string;
   secondaryColor: string;
   backgroundColor: string;
@@ -34,6 +35,7 @@ type ThemeContextType = {
 
 const DEFAULT_THEME: StorefrontTheme = {
   activeTheme: "default",
+  navigationColor: "#e31616",
   primaryColor: "#2563eb",
   secondaryColor: "#64748b",
   backgroundColor: "#ffffff",
@@ -50,21 +52,22 @@ const DEFAULT_THEME: StorefrontTheme = {
   productColumns: 4,
 };
 
-const RAMAN_THEME: StorefrontTheme = {
+const PINK_THEME: StorefrontTheme = {
   activeTheme: "raman",
-  primaryColor: "#444",
+  navigationColor: "#000",
+  primaryColor: "#000",
   secondaryColor: "#171717",
   backgroundColor: "#ffffff",
   surfaceColor: "#f8fafc",
-  textColor: "#171717",
+  textColor: "#444",
   mutedTextColor: "#64748b",
   borderColor: "#e5e7eb",
   fontFamily: "Muli",
   borderRadius: "8px",
   buttonStyle: "rounded",
-  buttonBGColor: "#2563eb",
+  buttonBGColor: "#dd18a9",
   buttonColor: "#fff",
-  buttonBorderColor: "#2563eb",
+  buttonBorderColor: "#dd18a9",
   productColumns: 3,
 };
 
@@ -76,6 +79,7 @@ function applyTheme(theme: StorefrontTheme) {
   root.dataset.theme = theme.activeTheme;
 
   const variables: Record<string, string> = {
+    "--theme-navigation": theme.navigationColor,
     "--theme-primary": theme.primaryColor,
     "--theme-secondary": theme.secondaryColor,
     "--theme-background": theme.backgroundColor,
@@ -119,7 +123,7 @@ export function StorefrontThemeProvider({
 
   const refreshTheme = useCallback(async () => {
     try {
-      setTheme(RAMAN_THEME)
+      setTheme(PINK_THEME)
       // const response = await fetch("/api/storefront-theme");
 
       // if (!response.ok) {

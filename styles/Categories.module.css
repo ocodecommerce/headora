@@ -104,7 +104,7 @@
   gap: 6px;
   padding: 0 18px;
   background: #ffffff;
-  border: 2px solid #111827;
+  border: 1px solid var(--theme-text);
   border-radius: 6px;
   display: flex;
   align-items: center;
@@ -117,7 +117,6 @@
 .updatedSortButton span {
   font-size: 16px;
   font-weight: 500;
-  color: #2b2b2b;
   white-space: nowrap;
 }
 
@@ -139,7 +138,7 @@
   right: 0;
   width: 92%;
   background: #ffffff;
-  border: 1px solid #d8d8d8;
+  border: 1px solid var(--theme-text);
   border-radius: 4px;
   overflow: hidden;
   z-index: 999;
@@ -183,7 +182,6 @@
 .updatedSortOption label span {
   font-size: 15px;
   font-weight: 400;
-  color: #2d2d2d;
 }
 
 /* Hide Checkbox */
@@ -422,7 +420,6 @@
 }
 
 .lightSpan {
-  color: #111827;
   font-size: 16px;
 }
 

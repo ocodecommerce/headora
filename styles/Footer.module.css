@@ -4,7 +4,6 @@
   margin: auto;
   max-width: 1440px;
   margin-top: 50px;
-
   background-color: white;
   margin-bottom: 50px;
   @media (max-width: 1000px) {
@@ -42,19 +41,19 @@
   grid-column: span 3 / span 3;
 }
 .column span {
-
+color:var(--theme-navigation);
   /* color: rgb(17 24 39 / 1); */
   font-weight: 600;
 }
 .footerDescription{
   line-height: 1.5;
-  
+
   
 }
 
 .column a {
   text-decoration: none;
- 
+  color:var(--theme-navigation);
 }
 
 .column a:hover {
@@ -83,7 +82,7 @@
 .subscribeInput {
   height: 100%;
   min-width: 50px;
-  border: 2px solid rgb(17 24 39 / 1);
+  border: 1px solid var(--theme-text);
   border-right: none;
   border-radius: 5px 0 0 5px;
   padding: 5px;
@@ -91,7 +90,7 @@
   width: 100%;
   @media screen and (max-width:1000px) {
  padding: 12px;
- border-right: 2px solid rgb(17 24 39 / 1);
+ border-right: 2px solid var(--theme-text);
  border-radius: 6px;
   }
 
@@ -100,7 +99,7 @@
 .subscribeButton {
   padding: 0 10px;
   background-color: white;
-  border: 2px solid rgb(17 24 39 / 1);
+  border: 1px solid var(--theme-text);
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   border-left: none;
@@ -146,7 +145,6 @@
 
 
 .copyright {
-  color: #666;
   /* font-size: 0.875rem; */
 }
 
@@ -156,12 +154,11 @@
 }
 
 .legalLinks a {
-  color: #666;
   text-decoration: none;
 }
 
 .legalLinks a:hover {
-  color: #333;
+  
 }
 .footerLogo{
   font-size: 22px;
