@@ -52,20 +52,20 @@ const DEFAULT_THEME: StorefrontTheme = {
 
 const RAMAN_THEME: StorefrontTheme = {
   activeTheme: "raman",
-  primaryColor: "#eb258f",
-  secondaryColor: "#64748b",
+  primaryColor: "#444",
+  secondaryColor: "#171717",
   backgroundColor: "#ffffff",
   surfaceColor: "#f8fafc",
   textColor: "#171717",
   mutedTextColor: "#64748b",
   borderColor: "#e5e7eb",
-  fontFamily: "Arial, sans-serif",
+  fontFamily: "Muli",
   borderRadius: "8px",
-  buttonStyle: "square",
-  buttonBGColor: "#eb258f",
+  buttonStyle: "rounded",
+  buttonBGColor: "#2563eb",
   buttonColor: "#fff",
-  buttonBorderColor: "#eb258f",
-  productColumns: 4,
+  buttonBorderColor: "#2563eb",
+  productColumns: 3,
 };
 
 const ThemeContext = createContext<ThemeContextType | null>(null);

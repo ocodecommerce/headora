@@ -54,7 +54,7 @@
   width: 30px;
   height: 30px;
   /* border-radius: 50%; */
-  color: #1d1d1d;
+  color: var(--theme-primary);
   font-size: 15px;
   transition: all .2s ease;
   display: flex;
@@ -337,7 +337,7 @@
   padding: 0;
   background: none;
   border: none;
-  color: #333;
+  color: var(--theme-secondary);
   font-size: 13px;
   line-height: 18px;
   text-decoration: underline;
@@ -1102,13 +1102,15 @@
 }
 
 .item {
-  background-color: white;
+  color: var(--theme-text);
+  background-color: var(--theme-surface);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--theme-radius);
   display: flex;
   flex-direction: column;
   position: relative;
   text-align: center;
   cursor: pointer;
-  color: #000;
   text-decoration: none;
   /* justify-content: flex-end; */
   /* gap: 5px; */
@@ -1117,17 +1119,14 @@
 }
 
 .item.search {
-  background-color: white;
   display: flex;
   flex-direction: column;
   position: relative;
   text-align: center;
   cursor: pointer;
- color: rgba(102, 102, 102, 0.9);
   text-decoration: none;
   gap: 5px;
   font-size: 14px;
-  font-family: var(--sansSerif);
   align-items: center;
 }
 
@@ -1153,11 +1152,9 @@
   font-size: 16px;
   text-transform: capitalize;
   letter-spacing: 0.036em;
-  color: rgba(21, 21, 21, 0.9);
   padding: 0 5px;
   line-height: 22px;
-  font-family: var(--sansSerif);
-  font-weight: 500;
+   font-weight: 500;
 
 }
 
@@ -1190,8 +1187,6 @@
 .brandName {
   font-weight: bold;
   text-transform: uppercase;
-  font-family: var(--Muli);
-  color: #4c4d4fe6;
   display: inline-block;
 
   font-size: 9px;
@@ -1233,7 +1228,6 @@
 }
 
 .price {
-  color: #111827;
   font-family: var(--Secondary);
 }
 

@@ -7602,7 +7602,7 @@ body {
 }
 
 a {
-  color: var(--theme-primary);
+  color: var(--theme-secondary);
 }
 
 .theme-card,

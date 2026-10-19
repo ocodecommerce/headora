@@ -90,7 +90,7 @@ text-decoration: underline;
     align-items: center;
     gap: 5px;
     font-size: 16px;
-    color: #333;
+    color: var(--theme-primary);
     cursor: pointer;
     letter-spacing: 0.02em;
   }
@@ -130,6 +130,7 @@ text-decoration: underline;
   display: flex;
   align-items: center;
   justify-content: center;
+  color:var(--theme-primary)
   }
   .navItem span.icon {
     margin-left: 8px; /* Adjust spacing for the arrow icon */
@@ -456,7 +457,6 @@ text-decoration: underline;
   }
   .categoryGrid span a {
     font-size: 14px;
-    color: #333;
     text-decoration: none;
     font-weight: 600;
     text-transform: capitalize;

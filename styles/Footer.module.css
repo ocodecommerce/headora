@@ -48,17 +48,17 @@
 }
 .footerDescription{
   line-height: 1.5;
-  color: #666;
+  
+  
 }
 
 .column a {
-  color: #666;
   text-decoration: none;
  
 }
 
 .column a:hover {
-  color: #333;
+  
 }
 
 .socialLinks {

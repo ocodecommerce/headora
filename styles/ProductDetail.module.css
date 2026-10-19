@@ -506,7 +506,6 @@ padding: 10px 12px 10px 0px;
 .sectionHeading{
   font-weight: 600;
   font-size: 16px !important;
-  color: #333;
   margin-bottom: 10px;
 }
 
@@ -606,7 +605,7 @@ padding: 10px 12px 10px 0px;
 .breadcrumbList li:not(:last-child)::after {
   content: "/";
   margin: 0 8px;
-  color: #999;
+  
 }
 
 .breadcrumbList a {
@@ -647,11 +646,9 @@ padding: 10px 12px 10px 0px;
 .cartegoryHeadeBreadcrumbs span {
   text-decoration: none;
   text-transform: capitalize;
-  color: rgb(16 24 39);
 }
 
 .cartegoryHeadeBreadcrumbs a {
-  color: rgb(16 24 39);
     text-decoration: none;
     font-weight: 500;
     font-size: 14x;
@@ -778,7 +775,6 @@ padding: 10px 12px 10px 0px;
 }
 
 .priceTitleWrapper p {
-  color: rgb(41 84 255);
   cursor: pointer;
 }
 
@@ -837,7 +833,6 @@ font-size: 46px;
 .price {
   font-size: 26px;
   font-weight: 600;
-  color: #111827;
   width: auto;
   text-align: right;
   display: flex;
@@ -905,7 +900,6 @@ font-size: 46px;
 
 .paymentInfo {
   font-size: 14px;
-  color: #777;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -920,17 +914,17 @@ font-size: 46px;
 
 .paymentInfo a {
   text-decoration: none;
-  color: #000;
+  
 }
 
 .paymentInfo p {
 
-  color: #000;
+  
 }
 
 .paymentInfo b {
   text-transform: uppercase;
-  color: #000;
+  font-weight: 600;
 }
 .actionButtons {
   margin: unset;
@@ -1445,10 +1439,6 @@ display: flex;
   flex: 1;
   height: 44px;
   padding: 0 16px;
-
-  background-color: rgb(48, 89, 252); /* strong CTA yellow */
-  color: white;
-
   border: none;
   border-radius: 2px;
 border-radius: 50px;
@@ -1478,7 +1468,6 @@ border-radius: 50px;
 
 /* Active – click feedback */
 .shopNow:active {
-  background-color: rgb(0, 38, 192);
   transform: translateY(0);
 }
 
@@ -1490,9 +1479,9 @@ border-radius: 50px;
 
 /* Disabled (out of stock etc.) */
 .shopNow:disabled {
-  background-color: #809eb567;
   /* color: #777; */
   cursor: not-allowed;
+  opacity: 0.4;
 }
 
 .shopNow:hover {
@@ -1721,14 +1710,12 @@ border-radius: 50px;
   margin-bottom: 24px;
 }
 .productDetailNewDescriptionContainer{
-  color: #777;
   /* padding-bottom: 18px; */
   line-height: 26px;
   font-size: 14px;
 }
 
 .productDetailNewDescriptionContainerDetails{
-  color: #777;
   /* padding-bottom: 18px; */
   line-height: 26px;
   font-size: 14px;
@@ -2051,8 +2038,7 @@ border-radius: 50px;
 .ReviewNickname {
   font-weight: bold;
   font-size: 18px;
-  color: #333;
-
+  
   @media screen and (max-width:1000px) {
     font-size: 16px;
   }
@@ -2124,17 +2110,13 @@ border-radius: 50px;
 
 .RatingLabel {
   font-weight: bold;
-  color: #333;
   text-decoration: none;
 }
 
-.RatingValue {
-  color: #666;
-}
+
 
 .NoReviews {
   font-size: 18px;
-  color: #666;
   text-align: center;
   padding: 14px;
 }
@@ -2492,7 +2474,6 @@ border-radius: 6px;
 .selectedFilter {
   margin-top: 10px;
   font-size: 16px;
-  color: #000;
   text-transform: capitalize;
 }
 
@@ -2652,7 +2633,6 @@ border-radius: 6px;
 
 .ShortDescriptionProductAttributes {
   font-size: 14px;
-  color: #3a3a3a;
   line-height: 1.5;
   /* padding-bottom: 10px; */
 }
@@ -2704,7 +2684,6 @@ border-radius: 6px;
 
 .productDetailNewDescriptionContainer p{
   font-size: 14px;
-  color: #333;
   @media screen and (max-width:1000px) {
     font-size: 12px;
   }
@@ -2735,7 +2714,6 @@ border-radius: 6px;
 .ShortDescriptionProductAttributes {
   font-size: 14px;
   line-height: 1.6;
-  color: #333;
 
 }
 
@@ -2747,9 +2725,6 @@ border-radius: 6px;
 
 .ShortDescriptionProductAttributes span {
   display: inline-block;
-  /* background-color: #f5f5f5; */
-  color: #333;
-  /* padding: 2px 8px; */
   margin: 4px 6px 4px 0;
   border-radius: 4px;
   font-size: 13px;
@@ -2774,9 +2749,8 @@ margin-top: 50px;
   display: flex;
   align-items: center;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  color: #666;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   border: 1px solid transparent;
@@ -2788,10 +2762,11 @@ margin-top: 50px;
 }
 
 .ShortDescriptionActiveTab {
-  color: #000 !important;
   border: 1px solid #ccc !important;
   border-bottom: 1px solid #fff !important;
   background-color: #fff !important;
+  font-weight: 800!important;
+  
 }
 .productDetailNewDescriptionContainer ul {
   margin: 1rem 0;
@@ -2804,8 +2779,7 @@ margin-top: 50px;
   margin-bottom: 6px;
   font-size: 14px;
   line-height: 1.6;
-  color: #333;
-    list-style-type: disc; /* default bullets */
+  list-style-type: disc; /* default bullets */
 }
 
 
@@ -2886,7 +2860,6 @@ margin-top: 50px;
 
 .StaticCustomer {
   font-weight: bold;
-  color: #333;
 }
 
 .StaticReviewsWrapper {
