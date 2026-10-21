@@ -1,10 +1,13 @@
-import { magentoFetch } from "../../lib/magento.js";
-import { getHomeBlocks, getPresetName } from "../../lib/theme.js";
-import { BlockRenderer } from "../../components/blocks/BlockRenderer.js";
+//import { magentoFetch } from "../../lib/magento.js";
+import { magentoFetch } from "../../../../packages/core/lib/magento.js";
+import { getHomeBlocks, getPresetName } from "../../../../packages/core/lib/theme.js";
+import { BlockRenderer } from "../../../../packages/core/components/blocks/BlockRenderer.js";
 const QUERY = `query Home($id: String!){ cmsBlocks(identifiers:[$id]){ items{ identifier content } } }`;
 export const revalidate = 300;
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
+  console.log('HomePageHomePageHomePageHomePageHomePageHomePageHomePage')
   const { locale } = await params;
+  
   const preset = getPresetName();
   let blocks = getHomeBlocks().map((type) => ({ type }));
   try {

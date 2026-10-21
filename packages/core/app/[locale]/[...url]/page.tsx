@@ -2,18 +2,24 @@ import { magentoFetch, URL_RESOLVE_QUERY } from "../../../lib/magento.js";
 import { PDP_QUERY, REVIEWS_QUERY, CATEGORY_QUERY, CMS_QUERY } from "../../../graphql/catalog.js";
 import { PdpTabs } from "../../../components/product/PdpTabs.js";
 export const revalidate = 120;
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; url: string[] }> }) {
   const { url } = await params;
   return { title: url?.join(" / ") ?? "Store", alternates: { canonical: `/${url?.join("/") ?? ""}` } };
 }
+
 export default async function CatchAll({ params }: { params: Promise<{ locale: string; url: string[] }> }) {
   const { locale, url } = await params;
   const path = `/${url?.join("/") ?? ""}`;
+  console.log('path',path)
   const resolved = await magentoFetch<{ urlResolver: { type: string; id?: number } | null }>(
     URL_RESOLVE_QUERY, { url: path }, { tags: [`url:${path}`, `locale:${locale}`], revalidate: 120, locale }
   ).catch(() => ({ urlResolver: null }));
   if (!resolved.urlResolver) return <main><h1>Not found</h1><p>{path}</p></main>;
+  
   const kind = resolved.urlResolver.type;
+  
+  
   if (kind === "PRODUCT") {
     const slug = url?.[url.length - 1]?.replace(/\.html$/, "") ?? "";
     const pdp = await magentoFetch<any>(PDP_QUERY, { urlKey: slug }, { tags: [`pdp:${slug}`, `locale:${locale}`], revalidate: 120, locale }).catch(() => null);
@@ -37,10 +43,13 @@ export default async function CatchAll({ params }: { params: Promise<{ locale: s
       </main>
     );
   }
+
+
   if (kind === "CATEGORY") {
     const data = await magentoFetch<any>(CATEGORY_QUERY, { id: path.replace(/^\//, "") }, { tags: [`cat:${path}`, `locale:${locale}`], revalidate: 300, locale }).catch(() => null);
     return <main style={{ padding: 24 }}><h1>{data?.categories?.items?.[0]?.name ?? kind}</h1><p>{path}</p></main>;
   }
+
   const cmsId = url?.[url.length - 1]?.replace(/\.html$/, "") ?? "home";
   const cms = await magentoFetch<any>(CMS_QUERY, { id: cmsId }, { tags: [`cms:${cmsId}`, `locale:${locale}`], revalidate: 300, locale }).catch(() => null);
   if (cms?.cmsPage) return <main style={{ padding: 24 }}><h1>{cms.cmsPage.title}</h1><div dangerouslySetInnerHTML={{ __html: cms.cmsPage.content }} /></main>;
