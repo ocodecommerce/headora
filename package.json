@@ -9,7 +9,11 @@
     "sites/*"
   ],
   "scripts": {
+<<<<<<< Updated upstream
     "dev:fashion": "npm run dev --workspace sites/demo-fashion -- --port 3010",
+=======
+    "dev:fashion": "npm run dev --workspace sites/demo-fashion",
+>>>>>>> Stashed changes
     "build:core": "npm run build --workspace sites/demo-fashion",
     "doctor": "node packages/cli/doctor.mjs",
     "audit:cms": "node packages/cli/audit-cms.mjs"

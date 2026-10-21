@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@/*": ["../../packages/core/*"]
+    },
     "target": "ES2017",
     "lib": [
       "dom",
