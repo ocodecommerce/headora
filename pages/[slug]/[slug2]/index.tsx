@@ -200,7 +200,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async ({ params, query }: any) => {
   const { slug, slug2 } = params as { slug: string; slug2: string };
   const urlPath = slug + '/' + slug2.replace(/\.html$/, '');
-
+  console.log('getStaticProps 2',urlPath)
   const cacheStaticProps = createHash('md5')
     .update(urlPath)
     .digest('hex');

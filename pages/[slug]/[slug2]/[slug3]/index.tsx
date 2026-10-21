@@ -241,7 +241,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
     slug3: string;
   };
   const urlPath = slug + '/' + slug2 + '/' + slug3?.replace(/\.html$/, '');
-
+  console.log('getStaticProps 3',urlPath)
   const cacheStaticProps = createHash('md5').update(urlPath).digest('hex');
 
   let cacheStaticPropsPath: any;

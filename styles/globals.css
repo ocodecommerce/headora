@@ -7600,6 +7600,11 @@ body {
   color: var(--theme-text);
   font-family: var(--theme-font);
 }
+.page_error{
+  text-align: center;
+  padding: 20px;
+  color: red;
+}
 
 a {
   color: var(--theme-secondary);

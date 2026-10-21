@@ -391,7 +391,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
   const { slug } = params as { slug: string };
   
   const urlPath = slug.replace(/\.html$/, '');
-  
+  console.log('getStaticProps 1',urlPath)
   
   const cacheStaticProps = createHash('md5')
                 .update(urlPath + '.html')
@@ -411,7 +411,7 @@ export const getStaticProps: GetStaticProps = async ({ params, query }: any) => 
     cacheProductPropsPath,
   ];
 
-  const isBuildTime = true;//process.env.BUILD_MODE === 'build';
+  const isBuildTime = process.env.BUILD_MODE === 'build';
   console.log(`Generating Page for URL Path:-  ${urlPath}`);
  
   // =====================================================

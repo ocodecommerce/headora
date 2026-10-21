@@ -98,7 +98,7 @@ function Footer() {
       )}
         </Link>
         <div className={styles.copyright}>
-          Copyright © 2026 oCodecommerce.com, All rights reserved.
+          Copyright © {new Date().getFullYear()} oCodecommerce.com, All rights reserved.
         </div>
         <div className={styles.legalLinks}>
           <Link href="/terms">Terms of Use</Link>

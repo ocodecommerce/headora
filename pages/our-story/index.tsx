@@ -64,7 +64,14 @@ function OurStory({CMSPageData}:any){
         <meta name="twitter:data1" content="1 minute" />
       </Head>
        <div className="returns_page_free_space"></div>
+
         <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+        {CMSPageData.errors && (
+          <>
+          <div className="page_error"> {CMSPageData.errors[0]?.message}</div>
+          </>
+        )}
+
 
 
         </>
@@ -76,18 +83,19 @@ export default OurStory
 export async function getStaticProps() {
   const client = new Client();
   let CMSPageData = null;
+  let error=null
 
   try {
     CMSPageData = await client.fetchOurStoryCMSPages();
+    console.log('CMSPageData',CMSPageData)
 
   } catch (error) {
-
+    console.log('console error',error)
   }
 
   return {
     props: {
       CMSPageData,
-   
     },
 
 

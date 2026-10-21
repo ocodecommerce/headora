@@ -4,6 +4,7 @@
   margin: auto;
   max-width: 1440px;
   margin-top: 50px;
+
   background-color: white;
   margin-bottom: 50px;
   @media (max-width: 1000px) {
@@ -41,19 +42,18 @@
   grid-column: span 3 / span 3;
 }
 .column span {
-color:var(--theme-navigation);
+
   /* color: rgb(17 24 39 / 1); */
   font-weight: 600;
 }
 .footerDescription{
   line-height: 1.5;
-
-  
+  color: #666;
 }
 
 .column a {
   text-decoration: none;
-  color:var(--theme-navigation);
+ 
 }
 
 .column a:hover {
@@ -82,7 +82,7 @@ color:var(--theme-navigation);
 .subscribeInput {
   height: 100%;
   min-width: 50px;
-  border: 1px solid var(--theme-text);
+  border: 2px solid rgb(17 24 39 / 1);
   border-right: none;
   border-radius: 5px 0 0 5px;
   padding: 5px;
@@ -90,7 +90,7 @@ color:var(--theme-navigation);
   width: 100%;
   @media screen and (max-width:1000px) {
  padding: 12px;
- border-right: 2px solid var(--theme-text);
+ border-right: 2px solid rgb(17 24 39 / 1);
  border-radius: 6px;
   }
 
@@ -99,7 +99,7 @@ color:var(--theme-navigation);
 .subscribeButton {
   padding: 0 10px;
   background-color: white;
-  border: 1px solid var(--theme-text);
+  border: 2px solid rgb(17 24 39 / 1);
   border-radius: 0 4px 4px 0;
   cursor: pointer;
   border-left: none;
@@ -145,6 +145,7 @@ color:var(--theme-navigation);
 
 
 .copyright {
+  color: #666;
   /* font-size: 0.875rem; */
 }
 
@@ -154,11 +155,12 @@ color:var(--theme-navigation);
 }
 
 .legalLinks a {
+  color: #666;
   text-decoration: none;
 }
 
 .legalLinks a:hover {
-  
+  color: #333;
 }
 .footerLogo{
   font-size: 22px;

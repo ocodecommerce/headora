@@ -66,18 +66,26 @@ function returns({ CMSPageData }: any) {
       </Head>
       <div className="returns_page_free_space"></div>
       <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+      {CMSPageData.errors && (
+          <>
+          <div className="page_error"> {CMSPageData.errors[0]?.message}</div>
+          </>
+        )}
     </>
   );
 }
 export default returns;
 
 export async function getStaticProps() {
+  console.log('getStaticProps fetchReturnsCMSPages')
   const client = new Client();
   let CMSPageData = null;
 
   try {
     CMSPageData = await client.fetchReturnsCMSPages();
-  } catch (error) {}
+  } catch (error) {
+    console.log(error)
+  }
 
   return {
     props: {

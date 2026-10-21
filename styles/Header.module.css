@@ -54,7 +54,7 @@
   
   .navItem {
     font-size: 16px;
-    color:var(--theme-navigation);
+    color: #333;
     cursor: pointer;
     display: flex;
   }
@@ -75,7 +75,7 @@ text-decoration: underline;
     letter-spacing: 0.036em;
     font-family: var(--Secondary);
 
-    color:var(--theme-navigation);
+    color: #000000;
     cursor: pointer;
   }
   
@@ -90,7 +90,7 @@ text-decoration: underline;
     align-items: center;
     gap: 5px;
     font-size: 16px;
-    color: var(--theme-navigation);
+    color: #333;
     cursor: pointer;
     letter-spacing: 0.02em;
   }
@@ -112,6 +112,7 @@ text-decoration: underline;
   /* =================Drop Down============ */
   .navItem {
     font-size: 16px;
+    color: #4c4d4f;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -129,7 +130,6 @@ text-decoration: underline;
   display: flex;
   align-items: center;
   justify-content: center;
-  color:var(--theme-navigation);
   }
   .navItem span.icon {
     margin-left: 8px; /* Adjust spacing for the arrow icon */

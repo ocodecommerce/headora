@@ -99,6 +99,11 @@ function WatchWarranty({ CMSPageData }: any) {
       </Head>
       <div className="warranty-free-space"></div>
       <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+      {CMSPageData.errors && (
+          <>
+          <div className="page_error"> {CMSPageData.errors[0]?.message}</div>
+          </>
+        )}
     </>
   );
 }

@@ -63,6 +63,11 @@ function PrivacyPolicy({CMSPageData}:any){
         <meta name="twitter:data1" content="1 minute" />
       </Head>
         <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+        {CMSPageData.errors && (
+          <>
+          <div className="page_error"> {CMSPageData.errors[0]?.message}</div>
+          </>
+        )}
 
         </>
     )
@@ -70,6 +75,7 @@ function PrivacyPolicy({CMSPageData}:any){
 export default PrivacyPolicy
 
 export async function getStaticProps() {
+  console.log('getStaticProps fetchPrivacyPolicyCMSPages')
   const client = new Client();
   let CMSPageData = null;
 

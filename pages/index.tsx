@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Hero from "@/components/HomePage/hero";
 
 export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any) {
+  console.log('CMSPageData',CMSPageData)
   const sliderRef = useRef<HTMLDivElement | null>(null);
 
   // Function to transform product URLs
@@ -333,6 +334,11 @@ export default function Home({ CMSPageData, BouitqueCMSPages, showRibbon }: any)
       {/* CMS Content */}
       <div ref={sliderRef}>
         <div dangerouslySetInnerHTML={{ __html: transformedHtml }} />
+        {CMSPageData.errors && (
+          <>
+          <div className="page_error"> {CMSPageData.errors[0]?.message}</div>
+          </>
+        )}
       </div>
     </>
   );
