@@ -8,6 +8,9 @@ import TopRibbon from "@/components/TopRibbon/TopRibbon";
 import { AuthProvider } from "../context/auth-context";
 import { Client } from "@/graphql/client";
 import Ribbon from "@/components/Ribbon/Ribbon";
+import {
+  StorefrontThemeProvider,
+} from "@/components/StorefrontThemeProvider";
 
 
 function App({ 
@@ -58,6 +61,7 @@ function App({
   }, []);
 
   return (
+    <StorefrontThemeProvider>
     <AuthProvider>
       <Layout>
         {showRibbon && <TopRibbon 
@@ -86,6 +90,7 @@ function App({
         <Footer />
       </Layout>
     </AuthProvider>
+    </StorefrontThemeProvider>
   );
 }
 
