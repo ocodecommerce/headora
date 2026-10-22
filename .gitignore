@@ -14,7 +14,7 @@
 /.next/
 /out/
 /outs/
-
+/sites/demo-fashion/.next/
 
 # production
 /build
