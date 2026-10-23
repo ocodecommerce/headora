@@ -5,10 +5,11 @@ import { useEffect, useRef, type ReactNode } from "react";
 // unless a filter is already applied, so products stay above the fold.
 export function FiltersPanel({ hasActive, children }: { hasActive: boolean; children: ReactNode }) {
   const ref = useRef<HTMLDetailsElement>(null);
-  // Phone width: the panel is the FILTER BY drawer (legacy): keep it open, start every group closed.
+  // Phone width: the panel is the FILTER BY drawer (legacy): keep it open, start every group
+  // closed except ones with a selection (so a pick stays in view after the page reloads).
   useEffect(() => {
     if (!window.matchMedia("(max-width: 1000px)").matches) return;
-    ref.current?.querySelectorAll<HTMLDetailsElement>(".hd-filter").forEach((d) => { d.open = false; });
+    ref.current?.querySelectorAll<HTMLDetailsElement>(".hd-filter:not([data-active])").forEach((d) => { d.open = false; });
   }, [hasActive]);
   // Legacy accordion: opening one filter group closes the others.
   useEffect(() => {

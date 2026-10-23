@@ -6,7 +6,7 @@ const SHOWN = 5;
 
 // Layered navigation sidebar. Plain links (no JS): each option toggles itself in the URL.
 // Matches the legacy storefront: groups in reverse Magento order, the first 3 open
-// (plus any with a selection), no option counts, 5 options then "Show More".
+// (plus any with a selection), no option counts.
 export function Filters({
   path, facets, selected, sort, priceLabel, currencySymbol = "$",
 }: {
@@ -24,23 +24,34 @@ export function Filters({
   });
   const optionLabel = (f: Facet, o: Facet["options"][number]) => (f.attribute_code === "price" ? priceLabel(o.value, o.label) : o.label);
 
-  const list = (f: Facet, options: Facet["options"]) => (
-    <ul className="hd-filter__options">
-      {options.map((o) => {
-        const on = selected[f.attribute_code]?.includes(o.value) ?? false;
-        return (
-          <li key={o.value}>
-            <a href={plpHref(path, { selected: toggle(selected, f.attribute_code, o.value), sort })}
-              className="hd-filter__option" aria-current={on ? "true" : undefined} rel="nofollow">
-              <span className="hd-check" aria-hidden="true" />
-              <span>{optionLabel(f, o)}</span>
-              {on ? <span className="hd-visually-hidden">(selected)</span> : null}
-            </a>
-          </li>
-        );
-      })}
-    </ul>
-  );
+  // Legacy shows 5 options then "Show More" / "Show Less" below the list. A hidden checkbox
+  // toggles the extras so it works without JS; the phone drawer shows every option.
+  const list = (f: Facet) => {
+    const extra = f.options.length > SHOWN;
+    const id = `hd-more-${f.attribute_code}`;
+    return (
+      <>
+        {extra ? <input type="checkbox" id={id} className="hd-filter__more-toggle" hidden
+          defaultChecked={f.options.slice(SHOWN).some((o) => selected[f.attribute_code]?.includes(o.value))} /> : null}
+        <ul className="hd-filter__options">
+          {f.options.map((o, i) => {
+            const on = selected[f.attribute_code]?.includes(o.value) ?? false;
+            return (
+              <li key={o.value} className={i >= SHOWN ? "hd-filter__extra" : undefined}>
+                <a href={plpHref(path, { selected: toggle(selected, f.attribute_code, o.value), sort })}
+                  className="hd-filter__option" aria-current={on ? "true" : undefined} rel="nofollow">
+                  <span className="hd-check" aria-hidden="true" />
+                  <span>{optionLabel(f, o)}</span>
+                  {on ? <span className="hd-visually-hidden">(selected)</span> : null}
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+        {extra ? <label htmlFor={id} className="hd-filter__more" /> : null}
+      </>
+    );
+  };
 
   // Bounds come from Magento's price buckets ("10_20", "20_30" -> 10..30).
   const priceSlider = (f: Facet) => {
@@ -58,30 +69,25 @@ export function Filters({
     <FiltersPanel hasActive={active.length > 0}>
       <summary className="hd-filters__title"><span>Filters</span></summary>
       {active.length ? (
-        <div className="hd-filters__active">
-          <ul>
-            {active.map((a) => (
-              <li key={`${a.code}:${a.value}`}>
-                <a href={plpHref(path, { selected: toggle(selected, a.code, a.value), sort })} rel="nofollow"
-                  aria-label={`Remove ${a.facet}: ${a.label}`}>
-                  {a.code === "price" ? priceLabel(a.value, a.label) : a.label} ×
-                </a>
-              </li>
-            ))}
-          </ul>
-          <a className="hd-filters__clear" href={plpHref(path, { selected: {}, sort })} rel="nofollow">Clear all</a>
-        </div>
+        <ul className="hd-filters__active">
+          {active.map((a) => (
+            <li key={`${a.code}:${a.value}`}>
+              {/* legacy chip: "╳ Gold" on desktop, "× Fashion Color: Gold" in the phone drawer */}
+              <a href={plpHref(path, { selected: toggle(selected, a.code, a.value), sort })} rel="nofollow"
+                aria-label={`Remove ${a.facet}: ${a.label}`}>
+                <span className="hd-chip__x" aria-hidden="true" />
+                <span className="hd-chip__facet">{a.facet}:</span>
+                {a.code === "price" ? priceLabel(a.value, a.label) : a.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       ) : null}
       {[...facets].reverse().map((f, i) => (
-        <details key={f.attribute_code} className="hd-filter" open={i < 3 || Boolean(selected[f.attribute_code]?.length)}>
+        <details key={f.attribute_code} className="hd-filter" data-active={selected[f.attribute_code]?.length ? "true" : undefined}
+          open={i < 3 || Boolean(selected[f.attribute_code]?.length)}>
           <summary className="hd-filter__title">{f.label}</summary>
-          {f.attribute_code === "price" ? priceSlider(f) : list(f, f.options.slice(0, SHOWN))}
-          {f.attribute_code !== "price" && f.options.length > SHOWN ? (
-            <details className="hd-filter__more" open={f.options.slice(SHOWN).some((o) => selected[f.attribute_code]?.includes(o.value))}>
-              <summary>Show More</summary>
-              {list(f, f.options.slice(SHOWN))}
-            </details>
-          ) : null}
+          {f.attribute_code === "price" ? priceSlider(f) : list(f)}
         </details>
       ))}
     </FiltersPanel>

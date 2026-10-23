@@ -283,10 +283,11 @@ body { margin: 0; }
 .hd-filters > summary::-webkit-details-marker, .hd-filter > summary::-webkit-details-marker, .hd-filter__more > summary::-webkit-details-marker { display: none; }
 .hd-filters__title { padding: 10px 0; margin-bottom: 6px; border-bottom: 1px solid #ccc; pointer-events: none; } /* legacy has an empty 6px filter group below */
 .hd-filters__title span { font-size: 20px; line-height: normal; font-weight: 200; color: #000; }
-.hd-filters__active { padding: 12px 0; border-bottom: 1px solid var(--headora-border); }
-.hd-filters__active ul { list-style: none; margin: 0 0 8px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
-.hd-filters__active a { display: inline-block; padding: 4px 10px; border: 1px solid var(--headora-border); border-radius: var(--headora-btn-radius); font-size: 12px; text-decoration: none; }
-.hd-filters__clear { font-size: 12px; color: var(--headora-accent); }
+/* Active filter chips (legacy .filterLabelContainer / .filterGroupLabel): 6px title margin + 12px = legacy 3px group + 15px padding. */
+.hd-filters__active { list-style: none; margin: 0; padding: 12px 0 18px; display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #ccc; }
+.hd-filters__active a { display: flex; gap: 5px; padding: 10px; border: 1px solid #ccc; border-radius: 6px; background: #374151; color: #fff; font-size: 14px; text-decoration: none; }
+.hd-chip__x::before { content: "╳"; }
+.hd-chip__facet { display: none; }
 .hd-filter { padding: 3px 0; border-bottom: 1px solid #ccc; }
 .hd-filter__title { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; font-size: 16px; line-height: normal; font-weight: 200; letter-spacing: 1px; color: #333; }
 /* legacy up-arrow.png / down-arrow.png, inlined */
@@ -294,15 +295,19 @@ body { margin: 0; }
 .hd-filter:not([open]) > .hd-filter__title::after { background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAArQAAAK0BVE7WMAAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAADfSURBVEiJ3dXNasJAGIXh94iXUorV9iZSf25dpFC6Kl0KQqt7defpwomkmJ/JNNnkg9mE+d4nq0S26XNGvdaHA+g6466ikm4vPpL0CHwCO0mrDuIZsJX0IekBYAM4nDOwsk3KATLgWOitAd4KD3Jk2UHcwDvABPguQRb/jB+Al/zCE/CTgtTFbVO8WIacgHlq/A/QgLymxO+AsDgF9nVIbLwUaECyNvFKICCzEuTYJl4L1CDR8UYgIM8h1DoeBVQgUfFooIB8hRMVt43CctTkn2Hbl+idNkDKDOSX2ef8AmEGcamUceXmAAAAAElFTkSuQmCC"); }
 .hd-filter__options { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
 .hd-filter[open] > .hd-filter__options:last-child, .hd-filter__more { padding-bottom: 25px; }
+.hd-filter__extra { display: none; }
+.hd-filter__more-toggle:checked + .hd-filter__options .hd-filter__extra { display: list-item; }
 .hd-filter__option { display: flex; align-items: center; gap: 12px; height: 20px; font-size: 16px; line-height: 16px; font-weight: 400; color: rgb(17 24 39 / .89); text-decoration: none; }
 .hd-filter__option:hover { color: var(--headora-accent); }
 .hd-filter__count { margin-left: auto; font-size: 11px; color: var(--headora-muted); }
 .hd-check { flex: none; width: 20px; height: 20px; border: 2px solid rgb(17 24 39 / .604); border-radius: 4px; background: #fff; }
-.hd-filter__option[aria-current="true"] .hd-check { background: var(--headora-primary); box-shadow: inset 0 0 0 3px #fff; }
-.hd-filter__option[aria-current="true"] { font-weight: 600; }
-.hd-filter__more > summary { font: 400 13px/18px Arial, sans-serif; color: #333; text-transform: capitalize; text-decoration: underline; margin-top: 20px; }
-.hd-filter__more[open] > summary { display: none; }
-.hd-filter__more .hd-filter__options { margin-top: 12px; }
+/* legacy checked box: white, #706e6e border, bold black \2713 */
+.hd-filter__option[aria-current="true"] .hd-check { display: grid; place-content: center; border-color: #706e6e; }
+.hd-filter__option[aria-current="true"] .hd-check::after { content: "\2713"; color: #000; font-size: 14px; font-weight: bold; line-height: 1; }
+.hd-filter__more { display: table; margin-top: 20px; font: 400 13px/18px Arial, sans-serif; color: #333; text-decoration: underline; cursor: pointer; }
+.hd-filter__more:hover { text-decoration: none; }
+.hd-filter__more::after { content: "Show More"; }
+.hd-filter__more-toggle:checked ~ .hd-filter__more::after { content: "Show Less"; }
 /* Price slider (legacy Categories.module.css .priceSliderContainer / .sliderWrapper / .priceSlider). */
 .hd-price-slider { padding: 10px 0 25px; }
 .hd-price-slider__labels { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #333; }
@@ -768,6 +773,17 @@ body { margin: 0; }
   .hd .hd-filters > .hd-filters__title, .hd .hd-filters[open] > .hd-filters__title { pointer-events: none; margin: 0 0 6px; padding: 10px 0; border-bottom: 1px solid #ccc; }
   .hd .hd-filters__title span { font-size: 24px; line-height: 30px; font-weight: 400; }
   .hd .hd-filter__title { padding: 12px 0; }
+  /* phone drawer (legacy Filter.tsx): every option listed, chips read "× Fashion Color: Gold" */
+  .hd .hd-filter__extra { display: list-item; }
+  .hd .hd-filter__more { display: none; }
+  .hd .hd-filter__option { box-sizing: border-box; height: 21px; padding-top: 5px; line-height: 14px; font-weight: 200; align-items: flex-end; }
+  .hd .hd-check { width: 16px; height: 16px; }
+  .hd .hd-chip__x { margin: 0 6px 0 12px; font: 13px Arial, sans-serif; }
+  .hd .hd-filter[open] > .hd-filter__options { padding-bottom: 25px; }
+  .hd .hd-filters__active { padding: 7px 0 13px; }
+  .hd .hd-filters__active a { display: block; font-size: 12px; }
+  .hd .hd-chip__x::before { content: "×"; }
+  .hd .hd-chip__facet { display: inline; margin-right: .3em; }
 
   /* Two-column cards (legacy: 10px gaps, 14px semi-bold name/price). */
   .hd .hd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 40px; }

@@ -17,8 +17,14 @@ export function MobilePlpBar({ total, sort, hrefs }: { total: number; sort: Sort
   const [filters, setFilters] = useState(false);
   const [sorting, setSorting] = useState(false);
 
+  // Picking a filter reloads the page; legacy keeps the drawer open, so remember it for this path.
+  useEffect(() => {
+    try { if (sessionStorage.getItem("hd-filters-open") === location.pathname) setFilters(true); } catch {}
+  }, []);
+
   useEffect(() => {
     document.documentElement.classList.toggle("hd-filters-open", filters);
+    try { if (filters) sessionStorage.setItem("hd-filters-open", location.pathname); else sessionStorage.removeItem("hd-filters-open"); } catch {}
     return () => document.documentElement.classList.remove("hd-filters-open");
   }, [filters]);
 
