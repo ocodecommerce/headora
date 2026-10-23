@@ -11,6 +11,10 @@ export function withHeadora(config = {}) {
   return {
     ...config,
     transpilePackages: [...new Set([...(config.transpilePackages ?? []), "@headora/core"])],
+    // Next 15.2+ streams page metadata into <body> for most user agents and lets JS hoist it.
+    // Pages here render fully before sending, so nothing is gained; keep title/description/
+    // canonical/OG in <head> for every crawler and link-preview bot.
+    htmlLimitedBots: config.htmlLimitedBots ?? /.*/,
     // Core serves app/[locale]/* only; "/" goes to the default locale.
     async redirects() {
       const own = config.redirects ? await config.redirects() : [];

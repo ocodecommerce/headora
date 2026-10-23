@@ -19,7 +19,7 @@ const CAROUSEL_SIZE = 8;
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const page = HOME_PAGE ? await magentoFetch<any>(CMS_QUERY, { id: HOME_PAGE }, { tags: ["home", "cms", `locale:${locale}`, `cms:${HOME_PAGE}`], revalidate: 300, locale }).catch(() => null) : null;
-  const description = describe(page?.cmsPage?.meta_description);
+  const description = describe(page?.cmsPage?.meta_description, page?.cmsPage?.content);
   // The layout template would give "Home page | Headora"; the homepage is just the store name.
   const title = page?.cmsPage?.meta_title || siteName();
   return { title: { absolute: title }, description, alternates: alternates(locale, ""), openGraph: { title, description, url: `/${locale}` } };
