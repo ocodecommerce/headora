@@ -12,7 +12,7 @@ query Pdp($urlKey: String!) {
       categories { name url_path level }
       ... on SimpleProduct { stock_status }
       ... on ConfigurableProduct { configurable_options { attribute_code label values { uid label value_index swatch_data { value } } } variants { product { sku stock_status media_gallery { url label position disabled } price_range { minimum_price { regular_price { value currency } final_price { value currency } } } } attributes { code value_index } } }
-      ... on BundleProduct { items { title options { label quantity } } }
+      ... on BundleProduct { dynamic_price items { uid title required type position options { uid label quantity is_default can_change_quantity position price price_type product { stock_status price_range { minimum_price { final_price { value currency } } } } } } }
       ... on GroupedProduct { items { product { sku name } qty } }
       ... on DownloadableProduct { downloadable_product_links { title price } }
       ... on VirtualProduct { stock_status }

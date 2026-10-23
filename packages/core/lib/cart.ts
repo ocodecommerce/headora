@@ -1,4 +1,5 @@
 import { getConfig } from "./config.js";
+import { originalImages } from "./magento.js";
 
 // Masked guest cart id lives in an httpOnly cookie; the browser never sees it.
 export const CART_COOKIE = "headora_cart";
@@ -45,7 +46,7 @@ export async function cartGql(query: string, variables: Record<string, unknown>,
     body: JSON.stringify({ query, variables }),
   });
   if (!res.ok) throw new Error(`MAGENTO_${res.status}`);
-  return res.json();
+  return JSON.parse(originalImages(await res.text()));
 }
 
 // Cart gone (ordered, expired, other store): caller should drop the cookie / start a new cart.
@@ -67,7 +68,10 @@ export function toSummary(cart: any): CartSummary {
       url_key: i.product?.url_key ?? "",
       image: i.configured_variant?.small_image?.url ?? i.product?.small_image?.url ?? null,
       rowTotal: i.prices?.row_total ?? null,
-      options: (i.configurable_options ?? []).map((o: any) => `${o.option_label}: ${o.value_label}`),
+      options: [
+        ...(i.configurable_options ?? []).map((o: any) => `${o.option_label}: ${o.value_label}`),
+        ...(i.bundle_options ?? []).map((o: any) => `${o.label}: ${o.values.map((v: any) => `${v.quantity > 1 ? `${v.quantity} x ` : ""}${v.label}`).join(", ")}`),
+      ],
     })),
   };
 }

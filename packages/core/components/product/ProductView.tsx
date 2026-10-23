@@ -2,7 +2,8 @@
 import { useMemo, useState } from "react";
 import { Gallery, type GalleryImage } from "./Gallery.js";
 import { CompareButton } from "./CompareButton.js";
-import { Price, type CardProduct } from "../catalog/ProductCard.js";
+import { BundleOptions, type BundleItem, type BundleState } from "./BundleOptions.js";
+import { Price, money, type CardProduct } from "../catalog/ProductCard.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { useWishlist } from "../catalog/wishlistStore.js";
 
@@ -25,10 +26,12 @@ export type PdpItem = {
   short_description?: { html: string } | null;
   configurable_options?: Option[];
   variants?: Variant[];
+  dynamic_price?: boolean | null;
+  items?: BundleItem[];
 };
 
 // Product types the headless cart supports; the rest buy on the native Magento page.
-const SUPPORTED = new Set(["SimpleProduct", "VirtualProduct", "ConfigurableProduct"]);
+const SUPPORTED = new Set(["SimpleProduct", "VirtualProduct", "ConfigurableProduct", "BundleProduct"]);
 // Legacy labels options by attribute code ("fashion_color" -> "fashion color", CSS capitalises).
 const optionLabel = (o: Option) => o.attribute_code.replaceAll("_", " ");
 const isHex = (v?: string | null) => /^#[0-9a-f]{3,8}$/i.test(v ?? "");
@@ -45,11 +48,13 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const wishlist = useWishlist(locale);
+  const isBundle = item.__typename === "BundleProduct";
+  const [bundle, setBundle] = useState<BundleState>({ uids: [], missing: [], total: null });
 
   const matches = (v: Variant, sel: Record<string, number>) =>
     Object.entries(sel).every(([c, vi]) => v.attributes.some((a) => a.code === c && a.value_index === vi));
   // Full match -> that variant; partial (e.g. colour only) -> first matching variant for its images.
-  const complete = options.every((o) => picked[o.attribute_code] != null);
+  const complete = isBundle ? !bundle.missing.length : options.every((o) => picked[o.attribute_code] != null);
   const exact = complete && options.length ? variants.find((v) => matches(v, picked)) : undefined;
   const preview = Object.keys(picked).length ? variants.find((v) => matches(v, picked)) : undefined;
 
@@ -73,12 +78,13 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
   async function add() {
     if (!inStock || busy) return;
     if (!complete) {
-      setMsg({ ok: false, text: `Please select ${options.filter((o) => picked[o.attribute_code] == null).map(optionLabel).join(" and ")}.` });
+      const missing = isBundle ? bundle.missing : options.filter((o) => picked[o.attribute_code] == null).map(optionLabel);
+      setMsg({ ok: false, text: `Please select ${missing.join(" and ")}.` });
       return;
     }
     setBusy(true);
     setMsg(null);
-    const selected = options.map((o) => o.values.find((v) => v.value_index === picked[o.attribute_code])!.uid);
+    const selected = isBundle ? bundle.uids : options.map((o) => o.values.find((v) => v.value_index === picked[o.attribute_code])!.uid);
     try {
       const res = await fetch("/api/cart", {
         method: "POST",
@@ -148,6 +154,13 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
             </fieldset>
           );
         })}
+
+        {isBundle && item.items?.length ? (
+          <>
+            <BundleOptions items={item.items} dynamic={item.dynamic_price !== false} locale={locale} onChange={setBundle} />
+            {bundle.total ? <p className="hd-bundle__total">Price as configured: <strong>{money(bundle.total, locale)}</strong></p> : null}
+          </>
+        ) : null}
 
         {supported ? (
           <>

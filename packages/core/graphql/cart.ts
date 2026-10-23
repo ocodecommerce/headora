@@ -6,6 +6,7 @@ const CART_FIELDS = `total_quantity
     product { sku name url_key small_image { url label } }
     prices { row_total { value currency } }
     ... on ConfigurableCartItem { configurable_options { option_label value_label } configured_variant { sku small_image { url } } }
+    ... on BundleCartItem { bundle_options { label values { label quantity } } }
   }`;
 export const CREATE_CART_MUTATION = `mutation NewCart { createEmptyCart }`;
 export const CART_QUERY = `query Cart($id: String!) { cart(cart_id: $id) { ${CART_FIELDS} } }`;

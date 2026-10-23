@@ -371,6 +371,15 @@ html.hd-plp-loading .hd-pager, html.hd-plp-loading .hd-empty { visibility: hidde
 .hd-opt__box--swatch[aria-pressed="true"] { color: #000; }
 .hd-opt__box:disabled { opacity: .35; cursor: not-allowed; background-image: linear-gradient(to top right, transparent 47%, #999 49%, #999 51%, transparent 53%); }
 .hd-opt__selected { margin: 28px 0 0; /* legacy: 18px gap + 10px margin (no collapsing) */ font-size: 16px; font-weight: 200; text-transform: capitalize; }
+/* Bundle options (Luma-style form; Venia has no bundle UI) */
+.hd-bundle__req { color: #e02b27; }
+.hd-bundle__list { clear: both; list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-size: 16px; }
+.hd-bundle__list label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.hd-bundle__list input { width: 18px; height: 18px; margin: 0; accent-color: #000; }
+.hd-bundle__select { clear: both; display: block; width: 100%; height: 46px; padding: 0 12px; border: 1px solid #ccc; background: #fff; font: 16px var(--headora-font); color: #000; }
+.hd-bundle__qty { display: flex; align-items: center; gap: 12px; margin-top: 14px; font-size: 14px; }
+.hd-bundle__qty input { width: 64px; height: 36px; padding: 0 8px; border: 1px solid #ccc; font: 16px var(--headora-font); }
+.hd-bundle__total { margin: 18px 0 0; font-size: 16px; }
 
 .hd-qty { display: grid; gap: 18px; justify-items: start; padding: 18px 0; border-bottom: 1px solid rgb(189 189 189); color: #000; }
 .hd-qty__label { font-size: 16px; font-weight: 600; }
