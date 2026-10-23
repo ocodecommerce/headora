@@ -32,7 +32,10 @@ const repo = typeof flags.local === "string" ? resolve(flags.local) : resolve(he
 const bundled = join(here, "template");
 const template = existsSync(bundled) && !flags.local ? bundled : join(repo, "sites", "demo-fashion");
 const local = template !== bundled;
-if (!existsSync(join(template, "package.json"))) fail(`template not found at ${template}`);
+// npm 9 npx copies a local package into its cache, so the repo can't be found from there.
+if (!existsSync(join(template, "package.json"))) {
+  fail(`template not found at ${template}\n  Run the CLI with node instead of npx: node <headora-repo>/packages/cli/init.mjs my-store\n  or pass the repo: --local=<headora-repo>`);
+}
 
 const rl = process.stdin.isTTY && !flags.yes ? createInterface({ input: process.stdin, output: process.stdout }) : null;
 const ask = async (question, fallback) => {
@@ -41,16 +44,48 @@ const ask = async (question, fallback) => {
 };
 const str = (v) => (typeof v === "string" ? v : undefined);
 
+// Ask until valid (flags and non-interactive runs fail instead). check() returns an error message or "".
+const askValid = async (flag, question, fallback, check) => {
+  for (;;) {
+    const value = str(flags[flag]) ?? (await ask(question, fallback));
+    const error = check(value);
+    if (!error) return value;
+    if (!rl || str(flags[flag])) fail(error);
+    console.log(`  ${error}`);
+  }
+};
+
 const dir = resolve(positional[0] ?? (await ask("Project folder", "my-headora-store")));
 if (existsSync(dir) && readdirSync(dir).length) fail(`${dir} already exists and is not empty`);
-const graphqlUrl = (str(flags.url) ?? (await ask("Magento GraphQL URL", "https://magento.test/graphql"))).replace(/\/+$/, "");
-try { new URL(graphqlUrl); } catch { fail(`not a URL: ${graphqlUrl}`); }
-const store = str(flags.store) ?? (await ask("Magento store view code", "default"));
+// A base URL is accepted too: https://shop.example.com -> https://shop.example.com/graphql
+const toGraphqlUrl = (v) => v.replace(/\/+$/, "").replace(/^(https?:\/\/[^/]+)$/i, "$1/graphql");
+const graphqlUrl = toGraphqlUrl(await askValid("url", "Magento GraphQL URL", "https://magento.test/graphql", (v) =>
+  /^https?:\/\/[^/\s]+/i.test(v) ? "" : `not an http(s) URL: ${v}`));
+// Store view code, e.g. "default" (Stores > All Stores). Not a URL: it is sent as Magento's Store header.
+const store = await askValid("store", "Magento store view code", "default", (v) =>
+  /^[a-z0-9_]+$/i.test(v) ? "" : `"${v}" is not a store view code. Use the code from Magento Stores > All Stores, e.g. default`);
 const currency = (str(flags.currency) ?? (await ask("Currency", "USD"))).toUpperCase();
 const preset = (str(flags.preset) ?? (await ask(`Preset (${PRESETS.join("/")})`, "minimal"))).toLowerCase();
 if (!PRESETS.includes(preset)) fail(`preset must be one of: ${PRESETS.join(", ")}`);
 const siteName = str(flags["site-name"]) ?? (await ask("Store name", "Headora"));
 rl?.close();
+
+// Check Magento before writing anything: a wrong store code makes every page render empty.
+try {
+  const res = await fetch(graphqlUrl, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Store: store },
+    body: JSON.stringify({ query: "{ storeConfig { store_name } }" }),
+    signal: AbortSignal.timeout(10000),
+  });
+  const json = await res.json().catch(() => null);
+  const name = json?.data?.storeConfig?.store_name;
+  if (name) console.log(`✔ Magento answered: store "${name}"`);
+  else if (json?.errors?.length) fail(`Magento rejected store "${store}": ${json.errors[0].message}`);
+  else console.log(`! ${graphqlUrl} did not answer like Magento GraphQL (HTTP ${res.status}). Check MAGENTO_GRAPHQL_URL in .env.`);
+} catch (e) {
+  console.log(`! Could not reach ${graphqlUrl} (${e.cause?.code ?? e.name}). Fix MAGENTO_GRAPHQL_URL in .env later.`);
+}
 
 // 1. Copy the storefront template.
 cpSync(template, dir, { recursive: true, filter: (src) => !SKIP.has(basename(src)) });
@@ -97,20 +132,6 @@ if (local) {
 }
 writeFileSync(pkgFile, JSON.stringify(pkg, null, 2) + "\n");
 console.log(`✔ Created ${dir} (preset ${preset}${local ? ", local @headora packages" : ""})`);
-
-// 4. Is Magento reachable? A warning only: the store can be configured later in .env.
-try {
-  const res = await fetch(graphqlUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Store: store },
-    body: JSON.stringify({ query: "{ storeConfig { store_name } }" }),
-    signal: AbortSignal.timeout(10000),
-  });
-  const name = (await res.json())?.data?.storeConfig?.store_name;
-  console.log(name ? `✔ Magento answered: store "${name}"` : `! Magento answered without a storeConfig (HTTP ${res.status}); check store code "${store}"`);
-} catch (e) {
-  console.log(`! Could not reach ${graphqlUrl} (${e.cause?.code ?? e.name}). Fix MAGENTO_GRAPHQL_URL in .env.`);
-}
 
 // 5. Install.
 if (!flags["no-install"]) execSync("npm install", { cwd: dir, stdio: "inherit" });

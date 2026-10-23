@@ -1,6 +1,18 @@
 import { getConfig, storeForLocale } from "./config.js";
 export { getConfig, storeForLocale };
-export async function magentoFetch<T>(query: string, variables = {}, opts: { tags?: string[]; revalidate?: number; store?: string; currency?: string; locale?: string } = {}): Promise<T> {
+type FetchOpts = { tags?: string[]; revalidate?: number; store?: string; currency?: string; locale?: string };
+// Pages catch these errors and render without the data (empty menu, preset homepage),
+// so log the reason here or a misconfigured store fails silently.
+export async function magentoFetch<T>(query: string, variables = {}, opts: FetchOpts = {}): Promise<T> {
+  try {
+    return await fetchGraphql<T>(query, variables, opts);
+  } catch (e: any) {
+    const name = /^\s*(?:query|mutation)\s+(\w+)/.exec(query)?.[1] ?? "query";
+    console.error(`[headora] Magento ${name} failed: ${e.message} (MAGENTO_GRAPHQL_URL=${process.env.MAGENTO_GRAPHQL_URL ?? "unset"})`);
+    throw e;
+  }
+}
+async function fetchGraphql<T>(query: string, variables: object, opts: FetchOpts): Promise<T> {
   const c = getConfig();
   const mapped = opts.locale ? storeForLocale(opts.locale) : { store: c.NEXT_PUBLIC_STORE, currency: c.NEXT_PUBLIC_CURRENCY };
   const store = opts.store ?? mapped.store;
