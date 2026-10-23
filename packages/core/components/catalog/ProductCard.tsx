@@ -21,7 +21,7 @@ function cardImage(p: CardProduct): string | undefined {
   const first = p.configurable_options?.[0]?.values?.[0]?.value_index;
   if (first != null) pick = p.variants?.find((v) => v.attributes?.some((a) => a.value_index === first))?.product ?? pick;
   const url = pick?.image?.url?.includes("placeholder") ? pick.media_gallery?.[0]?.url : pick?.image?.url;
-  return (url ?? p.small_image?.url)?.replace(/\/cache\/.*?\//, "/");
+  return url ?? p.small_image?.url;
 }
 
 // Explicit locale: Intl with `undefined` resolves to the server locale during SSR and the
