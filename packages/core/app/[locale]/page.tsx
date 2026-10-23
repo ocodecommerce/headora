@@ -4,6 +4,8 @@ import { getHomeBlocks, getPresetName } from "../../lib/theme.js";
 import { rewriteCmsLinks } from "../../lib/cms.js";
 import { BlockRenderer } from "../../components/blocks/BlockRenderer.js";
 import { CmsHome } from "../../components/blocks/CmsHome.js";
+import type { Metadata } from "next";
+import { alternates, describe, JsonLd, siteName, siteUrl } from "../../lib/seo.js";
 
 export const revalidate = 300;
 
@@ -14,8 +16,27 @@ const HOME_PAGE = process.env.HEADORA_HOME_PAGE ?? "home";
 const HERO_BLOCK = process.env.HEADORA_HERO_BLOCK ?? "venia-personalized-content";
 const CAROUSEL_SIZE = 8;
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const page = HOME_PAGE ? await magentoFetch<any>(CMS_QUERY, { id: HOME_PAGE }, { tags: ["home", "cms", `locale:${locale}`, `cms:${HOME_PAGE}`], revalidate: 300, locale }).catch(() => null) : null;
+  const description = describe(page?.cmsPage?.meta_description);
+  // The layout template would give "Home page | Headora"; the homepage is just the store name.
+  const title = page?.cmsPage?.meta_title || siteName();
+  return { title: { absolute: title }, description, alternates: alternates(locale, ""), openGraph: { title, description, url: `/${locale}` } };
+}
+
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const base = await siteUrl();
+  // Organization + WebSite (with the sitelinks search box) on the homepage only.
+  const siteLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Organization", "@id": `${base}/#org`, name: siteName(), url: `${base}/${locale}` },
+      { "@type": "WebSite", "@id": `${base}/#site`, name: siteName(), url: `${base}/${locale}`, publisher: { "@id": `${base}/#org` },
+        potentialAction: { "@type": "SearchAction", target: `${base}/${locale}/search?query={search_term_string}`, "query-input": "required name=search_term_string" } },
+    ],
+  };
   const preset = getPresetName();
   const tags = ["home", "cms", `locale:${locale}`];
 
@@ -23,7 +44,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     ? await magentoFetch<any>(CMS_QUERY, { id: HOME_PAGE }, { tags: [...tags, `cms:${HOME_PAGE}`], revalidate: 300, locale }).catch(() => null)
     : null;
   const cmsHtml: string = page?.cmsPage?.content?.trim() ?? "";
-  if (cmsHtml) return <CmsHome html={rewriteCmsLinks(cmsHtml, locale, getConfig().MAGENTO_BASE_URL)} />;
+  if (cmsHtml) return <><JsonLd data={siteLd} /><CmsHome html={rewriteCmsLinks(cmsHtml, locale, getConfig().MAGENTO_BASE_URL)} /></>;
 
   const data = await magentoFetch<any>(
     HOME_QUERY,
@@ -44,5 +65,5 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   };
   const blocks = getHomeBlocks().map((type) => ({ type, locale, ...(props[type] ?? {}) }));
 
-  return <BlockRenderer blocks={blocks} variant={preset} />;
+  return <><JsonLd data={siteLd} /><BlockRenderer blocks={blocks} variant={preset} /></>;
 }

@@ -20,7 +20,7 @@ query Pdp($urlKey: String!) {
   }
 }`;
 export const CATEGORY_QUERY = `query Cat($id: String!) {
-  categories(filters: { url_path: { eq: $id } }) { items { uid name description breadcrumbs { category_name category_url_path } } }
+  categories(filters: { url_path: { eq: $id } }) { items { uid name description meta_title meta_description image breadcrumbs { category_name category_url_path } } }
 }`;
 // Category listing with layered navigation. `facets` = aggregations for the category alone
 // (all options stay visible while filtering); `products` = the filtered, sorted page.
@@ -59,10 +59,10 @@ query Home($cmsId: String!, $carouselSize: Int!) {
 // Header/footer data: menu tree (store root, 2 levels), branding, store switcher list.
 export const SHELL_QUERY = `query Shell {
   categoryList { children { uid name url_path image include_in_menu position children { uid name url_path include_in_menu position children { uid name url_path include_in_menu position } } } }
-  storeConfig { store_code store_name copyright secure_base_media_url header_logo_src logo_alt }
+  storeConfig { store_code store_name copyright secure_base_media_url header_logo_src logo_alt default_description }
   availableStores { store_code store_name }
 }`;
-export const CMS_QUERY =`query Cms($id: String!) { cmsPage(identifier: $id) { title content_heading content } }`;
+export const CMS_QUERY =`query Cms($id: String!) { cmsPage(identifier: $id) { title content_heading content meta_title meta_description } }`;
 export const STORES_QUERY = `query Stores { storeConfig { store_name base_currency_code locale } availableStores { store_code store_name } currency { base_currency_code available_currency_codes } }`;
 export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 10, currentPage: 1) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
 export const CREATE_REVIEW_MUTATION = `mutation Write($sku: String!, $nick: String!, $sum: String!, $text: String!, $ratings: [ProductReviewRatingInput!]!) {
@@ -71,3 +71,6 @@ export const CREATE_REVIEW_MUTATION = `mutation Write($sku: String!, $nick: Stri
 // Values included: option IDs differ per store. Never assume 1-5.
 export const RATINGS_QUERY = `query Meta { productReviewRatingsMetadata { items { id name values { value_id value } } } }`;
 export const FORGOT_MUTATION = `mutation Forgot($email: String!) { requestPasswordResetEmail(email: $email) }`;
+// sitemap.xml: every category (3 levels) and every visible product, per store view.
+export const SITEMAP_CATEGORIES_QUERY = `query SitemapCats { categoryList { children { url_path updated_at children { url_path updated_at children { url_path updated_at } } } } }`;
+export const SITEMAP_PRODUCTS_QUERY = `query SitemapProducts($page: Int!) { products(search: "", pageSize: 300, currentPage: $page) { page_info { total_pages } items { url_key updated_at } } }`;
