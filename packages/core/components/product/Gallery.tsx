@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, type PointerEvent } from "react";
 
 export type GalleryImage = { url: string; label?: string | null; position?: number | null; disabled?: boolean | null };
 
@@ -33,14 +33,12 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
           ))}
         </ul>
       ) : null}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className="hd-gallery__main" src={main.url} alt={main.label || name} />
+      <Zoomable key={main.url} className="hd-gallery__zoom" imgClass="hd-gallery__main" src={main.url} alt={main.label || name} />
 
       <div className="hd-gallery__slider" aria-roledescription="carousel" aria-label={`${name} images`}>
         <div className="hd-gallery__track" ref={track} onScroll={onScroll}>
           {list.map((img, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={img.url} src={img.url} alt={img.label || name} loading={i ? "lazy" : undefined} />
+            <Zoomable key={img.url} src={img.url} alt={img.label || name} lazy={i > 0} />
           ))}
         </div>
         {list.length > 1 ? (
@@ -51,6 +49,44 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
           </div>
         ) : null}
       </div>
+    </div>
+  );
+}
+
+// Legacy Swiper zoom (maxRatio 3): click/tap zooms 3x from the centre, drag pans within the
+// image, click again resets.
+const ZOOM = 3;
+function Zoomable({ src, alt, className = "", imgClass, lazy }: { src: string; alt: string; className?: string; imgClass?: string; lazy?: boolean }) {
+  const [z, setZ] = useState({ on: false, x: 0, y: 0 });
+  const drag = useRef<{ px: number; py: number; x: number; y: number; moved: boolean } | null>(null);
+  const clamp = (v: number, size: number) => Math.max(-(ZOOM - 1) * size / 2, Math.min((ZOOM - 1) * size / 2, v));
+
+  const down = (e: PointerEvent<HTMLDivElement>) => {
+    drag.current = { px: e.clientX, py: e.clientY, x: z.x, y: z.y, moved: false };
+    if (z.on) e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const move = (e: PointerEvent<HTMLDivElement>) => {
+    const d = drag.current;
+    if (!d) return;
+    const dx = e.clientX - d.px, dy = e.clientY - d.py;
+    if (Math.abs(dx) + Math.abs(dy) > 5) d.moved = true;
+    if (z.on && d.moved) {
+      const r = e.currentTarget.getBoundingClientRect();
+      setZ({ on: true, x: clamp(d.x + dx, r.width), y: clamp(d.y + dy, r.height) });
+    }
+  };
+  const up = () => {
+    const d = drag.current;
+    drag.current = null;
+    if (d && !d.moved) setZ((p) => ({ on: !p.on, x: 0, y: 0 }));
+  };
+
+  return (
+    <div className={`hd-zoom ${className}`} data-zoomed={z.on} onPointerDown={down} onPointerMove={move} onPointerUp={up}
+      onPointerCancel={() => { drag.current = null; }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img className={imgClass} src={src} alt={alt} loading={lazy ? "lazy" : undefined} draggable={false}
+        style={{ transform: z.on ? `translate(${z.x}px, ${z.y}px) scale(${ZOOM})` : undefined, transition: drag.current?.moved ? "none" : undefined }} />
     </div>
   );
 }
