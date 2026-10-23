@@ -9,10 +9,12 @@ function sanitize(html: string): string {
     .replace(/\son\w+='[^']*'/gi, "");
 }
 type Tab = "desc" | "details" | "reviews";
+export type DetailRow = { label: string; values: string[] };
+
 export function PdpTabs({ description, details, reviews, reviewCount, ratingSummary, sku, locale, loginUrl }: {
-  description: string; details: string; reviews: ReviewItem[]; reviewCount: number; ratingSummary: number; sku: string; locale?: string; loginUrl?: string;
+  description: string; details: DetailRow[]; reviews: ReviewItem[]; reviewCount: number; ratingSummary: number; sku: string; locale?: string; loginUrl?: string;
 }) {
-  const tabs = (["desc", "details", "reviews"] as Tab[]).filter((t) => t === "reviews" || (t === "desc" ? description : details));
+  const tabs = (["desc", "details", "reviews"] as Tab[]).filter((t) => t === "reviews" || (t === "desc" ? description : details.length));
   const [tab, setTab] = useState<Tab>(tabs[0]);
   // "Be the first to review this product." links to #hd-tab-reviews: open that tab.
   useEffect(() => {
@@ -33,7 +35,13 @@ export function PdpTabs({ description, details, reviews, reviewCount, ratingSumm
       </div>
       <div className="hd-tabs__panel" role="tabpanel" id={`hd-panel-${tab}`} aria-labelledby={`hd-tab-${tab}`}>
         {tab === "desc" && <div dangerouslySetInnerHTML={{ __html: sanitize(description) }} />}
-        {tab === "details" && <div dangerouslySetInnerHTML={{ __html: sanitize(details) }} />}
+        {tab === "details" && (
+          <div className="hd-details">
+            {details.map((d) => (
+              <p key={d.label}><b>{d.label.replaceAll("_", " ")}:</b>{d.values.map((v) => <span key={v}> {v}</span>)}</p>
+            ))}
+          </div>
+        )}
         {tab === "reviews" && <ReviewsList items={reviews} count={reviewCount} ratingSummary={ratingSummary} sku={sku} locale={locale} />}
       </div>
     </section>

@@ -11,16 +11,18 @@ const HIDDEN = new Set(["category_uid", "category_id"]);
 
 export const SORTS = {
   position: { label: "Position", sort: { position: "ASC" } },
-  name_asc: { label: "Name: A to Z", sort: { name: "ASC" } },
-  price_asc: { label: "Price: Low to High", sort: { price: "ASC" } },
-  price_desc: { label: "Price: High to Low", sort: { price: "DESC" } },
+  price_desc: { label: "Price High to Low", sort: { price: "DESC" } },
+  price_asc: { label: "Price Low to High", sort: { price: "ASC" } },
+  name_asc: { label: "Product Name A-Z", sort: { name: "ASC" } },
+  name_desc: { label: "Product Name Z-A", sort: { name: "DESC" } },
 } as const;
 export type SortKey = keyof typeof SORTS;
 
 const first = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? "";
 
 export function visibleFacets(facets: Facet[]): Facet[] {
-  return facets.filter((f) => !HIDDEN.has(f.attribute_code) && f.options.length > 1);
+  // Price stays even with one bucket: it is a slider, like the legacy storefront.
+  return facets.filter((f) => !HIDDEN.has(f.attribute_code) && (f.options.length > 1 || (f.attribute_code === "price" && f.options.length > 0)));
 }
 
 // attribute_code -> selected values, validated against facets.
@@ -28,7 +30,9 @@ export function selectedFilters(search: Search, facets: Facet[]): Record<string,
   const out: Record<string, string[]> = {};
   for (const f of visibleFacets(facets)) {
     const allowed = new Set(f.options.map((o) => o.value));
-    const picked = first(search[f.attribute_code]).split(",").filter((v) => allowed.has(v));
+    // Price also accepts any "from_to" range set by the price slider.
+    const ok = (v: string) => allowed.has(v) || (f.attribute_code === "price" && /^\d+(\.\d+)?_\d+(\.\d+)?$/.test(v));
+    const picked = first(search[f.attribute_code]).split(",").filter(ok);
     if (picked.length) out[f.attribute_code] = f.attribute_code === "price" ? picked.slice(0, 1) : picked;
   }
   return out;
@@ -45,8 +49,8 @@ export function pageNumber(search: Search): number {
 }
 
 // Magento filter input: select attributes use `in`; price "0_100" becomes a range.
-export function toGraphqlFilter(categoryUid: string, selected: Record<string, string[]>) {
-  const filter: Record<string, unknown> = { category_uid: { eq: categoryUid } };
+export function toGraphqlFilter(categoryUid: string | null, selected: Record<string, string[]>) {
+  const filter: Record<string, unknown> = categoryUid ? { category_uid: { eq: categoryUid } } : {};
   for (const [code, values] of Object.entries(selected)) {
     if (code === "price") {
       const [from, to] = values[0].split("_");
@@ -66,7 +70,7 @@ export function plpHref(path: string, state: { selected: Record<string, string[]
   if (state.sort !== "position") q.set("sort", state.sort);
   if (state.page && state.page > 1) q.set("page", String(state.page));
   const s = q.toString();
-  return s ? `${path}?${s}` : path;
+  return s ? `${path}${path.includes("?") ? "&" : "?"}${s}` : path;
 }
 
 export function toggle(selected: Record<string, string[]>, code: string, value: string): Record<string, string[]> {

@@ -9,7 +9,20 @@ export type CardProduct = {
   stock_status?: string | null;
   price_range?: { minimum_price?: { regular_price?: Money; final_price?: Money } };
   small_image?: { url: string; label?: string | null };
+  image?: { url: string; label?: string | null } | null;
+  configurable_options?: { values?: { value_index: number }[] }[];
+  variants?: { attributes?: { value_index: number }[]; product?: { image?: { url: string } | null; media_gallery?: { url: string }[] } }[];
 };
+
+// Same picture as the legacy cards: the variant of the first option value (e.g. the first
+// colour), Magento placeholders swapped for the first gallery image, resize cache dropped.
+function cardImage(p: CardProduct): string | undefined {
+  let pick: { image?: { url: string } | null; media_gallery?: { url: string }[] } | undefined = p;
+  const first = p.configurable_options?.[0]?.values?.[0]?.value_index;
+  if (first != null) pick = p.variants?.find((v) => v.attributes?.some((a) => a.value_index === first))?.product ?? pick;
+  const url = pick?.image?.url?.includes("placeholder") ? pick.media_gallery?.[0]?.url : pick?.image?.url;
+  return (url ?? p.small_image?.url)?.replace(/\/cache\/.*?\//, "/");
+}
 
 // Explicit locale: Intl with `undefined` resolves to the server locale during SSR and the
 // browser locale on the client (en-US vs en-GB renders "$48.00" vs "US$48.00") -> hydration mismatch.
@@ -41,12 +54,13 @@ export function Price({ range, locale, trim = false }: { range?: CardProduct["pr
 
 export function ProductCard({ product: p, locale, actions = false }: { product: CardProduct; locale: string; actions?: boolean }) {
   const href = `/${locale}/${p.url_key}.html`;
+  const img = cardImage(p);
   return (
     <div className="hd-card">
       <a href={href}>
-        {p.small_image?.url ? (
+        {img ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img className="hd-card__img" src={p.small_image.url} alt={p.small_image.label ?? p.name} loading="lazy" />
+          <img className="hd-card__img" src={img} alt={p.name} loading="lazy" />
         ) : (
           <div className="hd-card__img" />
         )}

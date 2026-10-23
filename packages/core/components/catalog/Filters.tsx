@@ -1,17 +1,21 @@
 import { plpHref, toggle, type Facet, type SortKey } from "../../lib/plp.js";
 import { FiltersPanel } from "./FiltersPanel.js";
+import { PriceSlider } from "./PriceSlider.js";
 
 const SHOWN = 5;
 
 // Layered navigation sidebar. Plain links (no JS): each option toggles itself in the URL.
+// Matches the legacy storefront: groups in reverse Magento order, the first 3 open
+// (plus any with a selection), no option counts, 5 options then "Show More".
 export function Filters({
-  path, facets, selected, sort, priceLabel,
+  path, facets, selected, sort, priceLabel, currencySymbol = "$",
 }: {
   path: string;
   facets: Facet[];
   selected: Record<string, string[]>;
   sort: SortKey;
   priceLabel: (value: string, label: string) => string;
+  currencySymbol?: string;
 }) {
   if (!facets.length) return null;
   const active = Object.entries(selected).flatMap(([code, values]) => {
@@ -30,7 +34,6 @@ export function Filters({
               className="hd-filter__option" aria-current={on ? "true" : undefined} rel="nofollow">
               <span className="hd-check" aria-hidden="true" />
               <span>{optionLabel(f, o)}</span>
-              <span className="hd-filter__count">{o.count}</span>
               {on ? <span className="hd-visually-hidden">(selected)</span> : null}
             </a>
           </li>
@@ -39,9 +42,21 @@ export function Filters({
     </ul>
   );
 
+  // Bounds come from Magento's price buckets ("10_20", "20_30" -> 10..30).
+  const priceSlider = (f: Facet) => {
+    const nums = f.options.flatMap((o) => o.value.split("_")).map(Number).filter((n) => Number.isFinite(n) && String(n) !== "");
+    if (!nums.length) return null;
+    const min = Math.floor(Math.min(...nums)), max = Math.ceil(Math.max(...nums));
+    const [from, to] = selected.price?.[0]?.split("_").map(Number) ?? [min, max];
+    const rest = { ...selected };
+    delete rest.price;
+    return <PriceSlider key={selected.price?.[0] ?? "all"} min={min} max={max} from={Math.max(min, from)} to={Math.min(max, to)}
+      baseHref={plpHref(path, { selected: rest, sort })} symbol={currencySymbol} />;
+  };
+
   return (
     <FiltersPanel hasActive={active.length > 0}>
-      <summary className="hd-filters__title">Filters</summary>
+      <summary className="hd-filters__title"><span>Filters</span></summary>
       {active.length ? (
         <div className="hd-filters__active">
           <ul>
@@ -57,13 +72,13 @@ export function Filters({
           <a className="hd-filters__clear" href={plpHref(path, { selected: {}, sort })} rel="nofollow">Clear all</a>
         </div>
       ) : null}
-      {facets.map((f) => (
-        <details key={f.attribute_code} className="hd-filter" open>
+      {[...facets].reverse().map((f, i) => (
+        <details key={f.attribute_code} className="hd-filter" open={i < 3 || Boolean(selected[f.attribute_code]?.length)}>
           <summary className="hd-filter__title">{f.label}</summary>
-          {list(f, f.options.slice(0, SHOWN))}
-          {f.options.length > SHOWN ? (
+          {f.attribute_code === "price" ? priceSlider(f) : list(f, f.options.slice(0, SHOWN))}
+          {f.attribute_code !== "price" && f.options.length > SHOWN ? (
             <details className="hd-filter__more" open={f.options.slice(SHOWN).some((o) => selected[f.attribute_code]?.includes(o.value))}>
-              <summary>Show more</summary>
+              <summary>Show More</summary>
               {list(f, f.options.slice(SHOWN))}
             </details>
           ) : null}

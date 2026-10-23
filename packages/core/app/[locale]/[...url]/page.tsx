@@ -3,6 +3,7 @@ import { ProductView } from "../../../components/product/ProductView.js";
 import { PDP_QUERY, REVIEWS_QUERY, CATEGORY_QUERY, CMS_QUERY, PLP_QUERY } from "../../../graphql/catalog.js";
 import { Filters } from "../../../components/catalog/Filters.js";
 import { SortSelect } from "../../../components/catalog/SortSelect.js";
+import { MobilePlpBar } from "../../../components/catalog/MobilePlpBar.js";
 import { Pagination } from "../../../components/catalog/Pagination.js";
 import { money } from "../../../components/catalog/ProductCard.js";
 import { SORTS, pageNumber, plpHref, selectedFilters, sortKey, toGraphqlFilter, visibleFacets, type Facet, type Search, type SortKey } from "../../../lib/plp.js";
@@ -19,7 +20,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 function Message({ title, text }: { title: string; text: string }) {
   return <div className="hd-container hd-empty"><h1>{title}</h1><p>{text}</p></div>;
 }
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 21; // legacy storefront page size
 export default async function CatchAll({ params, searchParams }: { params: Promise<{ locale: string; url: string[] }>; searchParams: Promise<Search> }) {
   const { locale, url } = await params;
   const path = `/${url?.join("/") ?? ""}`;
@@ -43,7 +44,7 @@ export default async function CatchAll({ params, searchParams }: { params: Promi
     const rev = await magentoFetch<any>(REVIEWS_QUERY, { sku: item.sku }, { tags: [`reviews:${item.sku}`, `locale:${locale}`], revalidate: 60, locale }).catch(() => null);
     const node = rev?.products?.items?.[0] ?? { reviews: { items: [] }, review_count: 0, rating_summary: 0 };
     // Deepest assigned category gives the breadcrumb trail.
-    const cat = [...(item.categories ?? [])].sort((a: any, b: any) => (b.level ?? 0) - (a.level ?? 0))[0];
+    const cat = item.categories?.[0]; // legacy breadcrumb: the product's first category
     const crumbs: Crumb[] = [home, ...(cat ? [{ label: cat.name, href: `/${locale}/${cat.url_path}.html` }] : []), { label: item.name }];
     const reviewCount = node.review_count ?? 0;
     return (
@@ -52,7 +53,11 @@ export default async function CatchAll({ params, searchParams }: { params: Promi
         <ProductView item={{ ...item, short_description: null }} reviewCount={reviewCount} locale={locale} magentoBaseUrl={getConfig().MAGENTO_BASE_URL} />
         <PdpTabs
           description={item.description?.html ?? ""}
-          details={item.short_description?.html ?? ""}
+          details={(pdp?.products?.aggregations ?? [])
+            // Legacy Details tab: the product's own layered-navigation values, minus price/category.
+            .filter((a: any) => !["price", "category_id", "category_uid"].includes(a.attribute_code))
+            .map((a: any) => ({ label: a.label, values: (a.options ?? []).map((o: any) => o.label).filter((l: string) => l && l !== "0") }))
+            .filter((a: any) => a.values.length)}
           reviews={node.reviews?.items ?? []}
           reviewCount={reviewCount}
           ratingSummary={node.rating_summary ?? 0}
@@ -103,15 +108,17 @@ export default async function CatchAll({ params, searchParams }: { params: Promi
           <h1>{cat.name}</h1>
           {cat.description ? <div className="hd-plp__desc" dangerouslySetInnerHTML={{ __html: cat.description }} /> : null}
         </header>
+        <div className="hd-plp__bar">
+          <p className="hd-plp__count" role="status">{total} Result{total === 1 ? "" : "s"}</p>
+          <SortSelect value={sort} hrefs={sortHrefs} />
+        </div>
+        <MobilePlpBar total={total} sort={sort} hrefs={sortHrefs} />
         <div className={`hd-plp${facets.length ? "" : " hd-plp--nofilters"}`}>
           <aside className="hd-plp__aside" aria-label="Product filters">
-            <Filters path={here} facets={facets} selected={selected} sort={sort} priceLabel={priceLabel} />
+            <Filters path={here} facets={facets} selected={selected} sort={sort} priceLabel={priceLabel}
+              currencySymbol={(money({ value: 0, currency }, locale) ?? "$").replace(/[\d.,\s]/g, "")} />
           </aside>
           <div>
-            <div className="hd-plp__bar">
-              <p className="hd-plp__count" role="status">{total} Result{total === 1 ? "" : "s"}</p>
-              <SortSelect value={sort} hrefs={sortHrefs} />
-            </div>
             <ProductGrid items={items} locale={locale} variant={preset} />
             <Pagination current={Math.min(page, pages)} total={pages} href={(p) => plpHref(here, { selected, sort, page: p })} />
           </div>

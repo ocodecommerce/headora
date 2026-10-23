@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { Gallery, type GalleryImage } from "./Gallery.js";
+import { CompareButton } from "./CompareButton.js";
 import { Price, type CardProduct } from "../catalog/ProductCard.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { useWishlist } from "../catalog/wishlistStore.js";
@@ -20,6 +21,7 @@ export type PdpItem = {
   price_range?: CardProduct["price_range"];
   media_gallery?: GalleryImage[];
   small_image?: GalleryImage | null;
+  description?: { html?: string | null } | null;
   short_description?: { html: string } | null;
   configurable_options?: Option[];
   variants?: Variant[];
@@ -162,7 +164,7 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
             ) : null}
             <div className="hd-pdp__actions">
               {inStock ? (
-                <button type="button" className="hd-pdp__atc" onClick={add} disabled={busy}>
+                <button type="button" className="hd-pdp__atc" onClick={add} disabled={busy} data-ready={complete ? "true" : "false"}>
                   {busy ? "Adding…" : "Add to cart"}
                 </button>
               ) : (
@@ -181,6 +183,11 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
             <HeartIcon filled={wished} width={20} height={18} />
             {wished ? "Added To Favorites" : "Add To Favorites"}
           </button>
+          <CompareButton product={{
+            id: sku, name: item.name, sku, url_key: item.url_key, image: images[0]?.url ?? null,
+            price: priceRange?.minimum_price?.final_price?.value ?? null, currency: priceRange?.minimum_price?.final_price?.currency ?? null,
+            description: item.description?.html ?? null,
+          }} />
         </div>
 
         {item.short_description?.html ? <div className="hd-pdp__short" dangerouslySetInnerHTML={{ __html: item.short_description.html }} /> : null}
