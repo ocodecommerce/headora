@@ -2,7 +2,7 @@
 import { useState } from "react";
 
 // Legacy storefront price filter: two-thumb slider between the lowest and highest price.
-// Releasing a thumb reloads the listing with ?price=<from>_<to> (page reset).
+// Releasing a thumb loads ?price=<from>_<to> (page reset) through FiltersPanel's in-place navigation.
 export function PriceSlider({ min, max, from, to, baseHref, symbol }: {
   min: number; max: number; from: number; to: number; baseHref: string; symbol: string;
 }) {
@@ -14,7 +14,7 @@ export function PriceSlider({ min, max, from, to, baseHref, symbol }: {
     url.searchParams.delete("page");
     if (range[0] <= min && range[1] >= max) url.searchParams.delete("price");
     else url.searchParams.set("price", `${range[0]}_${range[1]}`);
-    window.location.assign(url.pathname + url.search);
+    window.dispatchEvent(new CustomEvent("headora:filter-nav", { detail: url.pathname + url.search }));
   };
   const set = (i: 0 | 1, v: number) =>
     setRange(([lo, hi]) => (i === 0 ? [Math.min(v, hi), hi] : [lo, Math.max(v, lo)]));

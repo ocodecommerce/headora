@@ -66,7 +66,7 @@ export function Filters({
   };
 
   return (
-    <FiltersPanel hasActive={active.length > 0}>
+    <FiltersPanel hasActive={active.length > 0} stateKey={plpHref(path, { selected, sort })}>
       <summary className="hd-filters__title"><span>Filters</span></summary>
       {active.length ? (
         <ul className="hd-filters__active">

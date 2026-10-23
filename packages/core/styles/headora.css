@@ -240,6 +240,14 @@ body { margin: 0; }
 
 /* ---------- Product card + grid ---------- */
 .hd-grid { list-style: none; margin: 0; padding: 0; display: grid; gap: 15px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Skeleton while a filter loads in place (legacy grey image block + two text bars). */
+html.hd-plp-loading .hd-grid > li { position: relative; }
+html.hd-plp-loading .hd-grid > li::before, html.hd-plp-loading .hd-grid > li::after { content: ""; position: absolute; inset: 0; z-index: 2; }
+html.hd-plp-loading .hd-grid > li::before { background: #fff; }
+html.hd-plp-loading .hd-grid > li::after { animation: hd-pulse 1.2s ease-in-out infinite alternate;
+  background: linear-gradient(#ececec 0 0) top / 100% 72% no-repeat, linear-gradient(#ececec 0 0) 0 80% / 70% 14px no-repeat, linear-gradient(#ececec 0 0) 0 88% / 40% 14px no-repeat; }
+html.hd-plp-loading .hd-pager, html.hd-plp-loading .hd-empty { visibility: hidden; }
+@keyframes hd-pulse { from { opacity: 1; } to { opacity: .55; } }
 .hd-card a { display: block; text-decoration: none; }
 /* Legacy .item img: natural image shape, at most 98% of the card width, slight zoom on hover. */
 .hd-card__img { max-width: 98%; height: auto; object-fit: scale-down; background: #fff; border-radius: var(--headora-radius); transition: transform .2s; }
