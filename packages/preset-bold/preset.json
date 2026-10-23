@@ -1,1 +1,1 @@
-{ "preset": "bold", "extends": "@headora/preset-base", "style": "bold", "tokens": { "primary": "#0B1F3A", "accent": "#E53935" } }
+{ "preset": "bold", "extends": "@headora/preset-base", "style": "bold", "tokens": { "primary": "#0B1F3A", "accent": "#E53935", "accentDark": "#B71C1C", "ribbonBg": "#0B1F3A", "storeBarBg": "#fdecea", "surface": "#E8ECF2", "radius": 6, "buttonRadius": 6 } }

@@ -1,5 +1,7 @@
 import { Client } from "@/graphql/client";
 import Head from "next/head";
+import styles from "@/styles/VeniaCms.module.css";
+import { preparePageBuilder } from "@/lib/pagebuilder";
 
 function PrivacyPolicy({CMSPageData}:any){
     const sanitizedHtml = CMSPageData?.data?.cmsPage?.content;
@@ -62,7 +64,10 @@ function PrivacyPolicy({CMSPageData}:any){
         <meta name="twitter:label1" content="Time to read" />
         <meta name="twitter:data1" content="1 minute" />
       </Head>
-        <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+        <article id="html-body" className={styles.root}>
+          {CMSPageData?.data?.cmsPage?.content_heading ? <h1 className={styles.heading}>{CMSPageData.data.cmsPage.content_heading}</h1> : null}
+          <div dangerouslySetInnerHTML={{ __html: preparePageBuilder(sanitizedHtml ?? "") }} />
+        </article>
 
         </>
     )

@@ -35,8 +35,7 @@ class Revalidate implements ObserverInterface {
         CURLOPT_TIMEOUT => 3,
         CURLOPT_CONNECTTIMEOUT => 2,
       ]);
-      curl_exec($ch);
-      curl_close($ch);
+      curl_exec($ch); // no curl_close(): no-op since PHP 8.0, deprecated in 8.5
     } catch (\Throwable $e) {
       // best-effort only
     }

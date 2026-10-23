@@ -1,1 +1,33 @@
-{ "comment": "Vertical-agnostic. Sample data agnostic. Blocks bind to any catalog.", "home": ["Hero", "CategoryTiles", "ProductCarousel", "CMSHtml"], "plp": { "filters": true, "sort": true, "pagination": true }, "pdp": { "gallery": "slider", "options": "all-types", "tabs": ["description", "details", "reviews"], "upsell": true, "related": true } }
+{
+  "comment": "Vertical-agnostic. Sample data agnostic. Blocks bind to any catalog. Footer hrefs: {locale} and {magento} are substituted; auth:login / auth:register open the headless auth modals; #newsletter jumps to the subscribe box.",
+  "home": ["Hero", "CategoryTiles", "ProductCarousel", "CMSHtml"],
+  "plp": { "filters": true, "sort": true, "pagination": true },
+  "pdp": { "gallery": "slider", "options": "all-types", "tabs": ["description", "details", "reviews"], "upsell": true, "related": true },
+  "footer": {
+    "columns": [
+      { "title": "Account", "links": [
+        { "label": "Sign In", "href": "auth:login" },
+        { "label": "Register", "href": "auth:register" },
+        { "label": "Order Status", "href": "{magento}/sales/order/history/" },
+        { "label": "Returns", "href": "/{locale}/customer-service" }
+      ] },
+      { "title": "About Us", "links": [
+        { "label": "Our Story", "href": "/{locale}/about-us" },
+        { "label": "Email Signup", "href": "#newsletter" },
+        { "label": "Give Back", "href": "/{locale}/about-us" }
+      ] },
+      { "title": "Help", "links": [
+        { "label": "Customer Service", "href": "/{locale}/customer-service" },
+        { "label": "Contact Us", "href": "/{locale}/contact-us" },
+        { "label": "Order Status", "href": "{magento}/sales/order/history/" },
+        { "label": "Returns", "href": "/{locale}/customer-service" }
+      ] }
+    ],
+    "follow": { "title": "Follow Us!", "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore." },
+    "subscribe": { "title": "Subscribe to {site}", "text": "Recieve the latest news, update and special offers right to your inbox." },
+    "legal": [
+      { "label": "Terms of Use", "href": "/{locale}/terms-of-service" },
+      { "label": "Privacy Policy", "href": "/{locale}/privacy-policy-cookie-restriction-mode" }
+    ]
+  }
+}

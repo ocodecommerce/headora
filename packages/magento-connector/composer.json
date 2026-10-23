@@ -1,1 +1,21 @@
-{ "name": "ocode/headora-connector", "type": "magento2-module", "license": "MIT", "require": { "php": ">=8.1" }, "autoload": { "files": ["registration.php"], "psr-4": { "Ocode\\Headora\\": "" } } }
+{
+    "name": "ocode/headora-connector",
+    "description": "Magento 2 backend connector for the Headora headless storefront (headoraConfig GraphQL, checkout handoff, cache revalidation).",
+    "type": "magento2-module",
+    "version": "1.0.0-beta.0",
+    "license": "MIT",
+    "require": {
+        "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",
+        "magento/framework": "*",
+        "magento/module-catalog": "*",
+        "magento/module-checkout": "*",
+        "magento/module-customer": "*",
+        "magento/module-graph-ql": "*",
+        "magento/module-quote": "*",
+        "magento/module-store": "*"
+    },
+    "autoload": {
+        "files": ["registration.php"],
+        "psr-4": { "Ocode\\Headora\\": "" }
+    }
+}

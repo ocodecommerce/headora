@@ -1,0 +1,8 @@
+type Query {
+    headoraConfig: HeadoraConfig @resolver(class: "Ocode\\Headora\\Model\\Resolver\\Config") @doc(description: "Headora storefront settings for the store in the Store header.")
+}
+
+type HeadoraConfig {
+    preset: String @doc(description: "Style variant: minimal | bold | classic.")
+    blocks: String @doc(description: "JSON block layout override; empty means preset default.")
+}

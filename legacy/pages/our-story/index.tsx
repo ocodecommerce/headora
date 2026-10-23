@@ -1,5 +1,7 @@
 import { Client } from "@/graphql/client";
 import Head from "next/head";
+import styles from "@/styles/VeniaCms.module.css";
+import { preparePageBuilder } from "@/lib/pagebuilder";
 
 
 function OurStory({CMSPageData}:any){
@@ -63,8 +65,7 @@ function OurStory({CMSPageData}:any){
         <meta name="twitter:label1" content="Time to read" />
         <meta name="twitter:data1" content="1 minute" />
       </Head>
-       <div className="returns_page_free_space"></div>
-        <div dangerouslySetInnerHTML={{ __html: sanitizedHtml }} />
+        <article id="html-body" className={styles.root} dangerouslySetInnerHTML={{ __html: preparePageBuilder(sanitizedHtml ?? "") }} />
 
 
         </>
@@ -79,7 +80,15 @@ export async function getStaticProps() {
 
   try {
     CMSPageData = await client.fetchOurStoryCMSPages();
-
+    // Venia sample data names this page "about-us"; IONOS renamed it "our-story".
+    if (!CMSPageData?.data?.cmsPage) {
+      const res = await fetch(`${process.env.magentoEndpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: `{ cmsPage(identifier: "about-us") { title content meta_description meta_keywords } }` }),
+      });
+      CMSPageData = await res.json();
+    }
   } catch (error) {
 
   }

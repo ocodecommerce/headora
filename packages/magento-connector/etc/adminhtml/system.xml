@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="headora" translate="label" sortOrder="900" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Headora Storefront</label>
+            <tab>general</tab>
+            <resource>Ocode_Headora::config</resource>
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="preset" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Style Preset</label>
+                    <source_model>Ocode\Headora\Model\Config\Source\Preset</source_model>
+                </field>
+                <field id="blocks" translate="label comment" type="textarea" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Block Layout (JSON)</label>
+                    <comment>Leave empty to use the preset default.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

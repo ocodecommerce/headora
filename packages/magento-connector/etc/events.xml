@@ -1,1 +1,7 @@
-<config><event name="catalog_product_save_after"><observer name="headora_revalidate" instance="Ocode\Headora\Observer\Revalidate" /></event></config>
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_save_after">
+        <observer name="headora_revalidate" instance="Ocode\Headora\Observer\Revalidate"/>
+    </event>
+</config>

@@ -50,7 +50,12 @@ npm run dev:fashion    # dev server for the demo site
 
 ## Architecture
 
-- **Presets, not verticals.** `packages/preset-base` (`tokens.json`, `blocks.json`) plus `minimal` / `bold` / `classic` variants (`preset.json`). Switching theme is config (`HEADORA_PRESET`); `packages/core/lib/theme.ts` validates and resolves tokens. Child override: `sites/<site>/themes/child/tokens.json` (deep-merge).
+- **Presets, not verticals.** `@headora/preset-base` (`tokens.json`, `blocks.json`) plus `@headora/preset-minimal` / `-bold` / `-classic` (`preset.json` token overrides) are workspace packages that core imports directly — no hand-kept copy. Switching theme is config (`HEADORA_PRESET`); `packages/core/lib/theme.ts` validates and resolves tokens into `--headora-*` CSS variables. Child override: `sites/<site>/themes/child/tokens.json` (planned, not wired yet).
+- **Styling.** One stylesheet, `@headora/core/styles/headora.css` (imported by the site root layout), uses only `--headora-*` variables. Base tokens carry the legacy v1 look (Muli, `#3d3fe0` pill buttons, dark promo ribbon); `minimal` = that look, `bold` / `classic` recolour it. The locale layout renders the shell: promo ribbon (`header.ribbon` token), store switcher (when `NEXT_PUBLIC_STORES` maps >1 store), category mega-menu, footer. `HEADORA_SITE_NAME` sets the brand text when Magento has no logo.
+- **Homepage.** Renders the Magento CMS page `HEADORA_HOME_PAGE` (default `home`) exactly like legacy v1: `@headora/core/styles/cms-home.css` is the legacy CMS stylesheet ported verbatim, `CmsHome` wires the hero slider and new-products carousel, and same-store links are rewritten to `/<locale>/…`. Empty/missing page → preset block layout (Hero, CategoryTiles, ProductCarousel).
+- **Cart.** Header bag opens the legacy-style slide-in drawer (items, SKU, remove, order summary, Proceed to Checkout via `/api/handoff`).
+- **Category cards.** Legacy v1 card actions: blue "Add to cart" pill + wishlist heart (bag icon on mobile). Simple/virtual products add qty 1 and open the cart drawer; configurable/bundle/grouped/downloadable go to the product page to choose options. Heart opens the login modal when signed out.
+- **Header / footer.** Same layout and measurements as legacy v1: closable promo ribbon, store bar, 80px header (Search, Sign In, bag + count), and the Account / About Us / Help / Follow Us! / Subscribe footer with bottom bar. Footer columns and legal links live in `@headora/preset-base/blocks.json` (`footer`); `HEADORA_COPYRIGHT` and `HEADORA_SOCIAL_LINKS` (`instagram=https://…,facebook=…`) are per-site `.env` values. Subscribe posts to `POST /api/newsletter` → Magento `subscribeEmailToNewsletter`.
 - **Multi-store.** Magento websites/stores/views; locale routing via `app/[locale]`; `Store` (and currency) resolved per request (`packages/core/lib/config.ts`, `stores.ts` → `magento.ts`).
 - **Product types.** Simple, configurable, grouped, bundle, downloadable, virtual per Magento defaults (coverage end-to-end is unverified — treat as intent, not tested fact).
 - **Reviews (headless write).** `POST /api/reviews` → `createProductReview`; login-only; ratings metadata per store; top-10 highest-rated surface; moderation stays in Magento admin.
@@ -65,7 +70,10 @@ npm run dev:fashion    # dev server for the demo site
 | `api/auth/login|register|logout|forgot` | Headless customer auth |
 | `GET /api/ratings`, `POST /api/reviews` | Ratings metadata + review writes |
 | `POST /api/revalidate` | Cache-tag purge, guarded by `REVALIDATE_SECRET` |
-| `GET /api/handoff` | Native-checkout redirect (`masked_quote` → Magento) |
+| `GET /api/handoff` | Native-checkout redirect (`masked_quote` → Magento). Without the param it hands off the guest cart from the `headora_cart` cookie (mini-cart "Checkout") |
+| `GET/POST/DELETE /api/wishlist` | Product-card hearts. Uses the `headora_customer_token` cookie from headless login; 401 (and cookie cleared) when signed out or the token is invalid/expired. Body `{ locale, sku }`; returns `items: { sku: wishlistItemId }` |
+| `POST /api/newsletter` | Footer newsletter signup `{ email, locale }` → Magento `subscribeEmailToNewsletter`; Magento's messages are returned as-is |
+| `GET /api/cart?locale=`, `POST /api/cart`, `DELETE /api/cart` | Guest cart. Masked cart id kept in httpOnly `headora_cart` cookie; POST `{ locale, sku, quantity, selected_options }` adds simple/virtual/configurable (parent SKU + option uids). Dead carts (ordered/expired) are dropped and recreated. Bundle/grouped/downloadable link to the native Magento PDP |
 
 ## CMS content contract (locked agnostic rules)
 
@@ -83,6 +91,20 @@ Live backend must serve only Magento defaults (`home`, `no-route`, `enable-cooki
 - **Pipeline:** `gate` job (`npm ci` → `doctor` → typecheck) then SSH deploy: pull, `npm ci`, `doctor`, workspace build, PM2 reload, then a 30×5s `/api/health` gate checking `"ok":true` with automatic `git reset --hard $BEFORE` rollback on failure.
 - **Magento observer:** `packages/magento-connector/Observer/Revalidate.php` POSTs purge tags (`pdp:<sku>`, `reviews:<sku>`, `cat:<id>`) to `/api/revalidate` on product save. Best-effort — never blocks the admin save.
 
+## Packaging
+
+**`@headora/core`** ships TypeScript source (no build step). A site consumes it through:
+
+- `next.config.mjs`: `export default withHeadora({ ... })` from `@headora/core/next` (transpiles core, resolves its `.js`→`.ts` imports, redirects `/` to the default locale).
+- Thin route files in `app/` that re-export core, e.g. `export { default } from "@headora/core/app/[locale]/page.tsx";`. Route segment config (`revalidate`, `dynamic`) must be written literally in the site file — Next reads it statically and ignores re-exported values. See `sites/demo-fashion/app/`.
+- Site `tsconfig.json` needs `"allowImportingTsExtensions": true` for the explicit `.tsx`/`.ts` import paths.
+
+**`ocode/headora-connector`** (Magento module `Ocode_Headora`):
+
+- `headoraConfig { preset blocks }` GraphQL query, store-scoped via the `Store` header. Admin: Stores → Configuration → General → Headora Storefront.
+- `GET /headora/handoff?masked_quote=…` binds the headless cart to the Magento session and redirects to `/checkout`. Guest carts: masked id is the secret. Customer carts: only the logged-in owner; anyone else goes to `/checkout/cart`. Your web server must route `/headora/*` to Magento, not to Next.js.
+- Install: `composer require ocode/headora-connector` (or copy to `app/code/Ocode/Headora`), then `bin/magento setup:upgrade`.
+
 ## Repo map
 
 ```text
@@ -90,7 +112,7 @@ packages/core/                  App Router core (app/[locale], app/api, componen
 packages/preset-base/           tokens.json + blocks.json (single source of truth)
 packages/preset-minimal|bold|classic/
 packages/cli/                   doctor.mjs, audit-cms.mjs
-packages/magento-connector/     Magento 2 module (Revalidate observer)
+packages/magento-connector/     Magento 2 module Ocode_Headora (headoraConfig, checkout handoff, Revalidate observer)
 sites/demo-fashion/             Demo site (.env.example, headora.config.ts)
 docker/ + docker-compose.yml    nginx + blue-green storefront containers
 ecosystem.config.cjs            PM2 cluster config
@@ -99,7 +121,6 @@ legacy/                         Frozen v1 Pages-router code (archive — see its
 
 ## Known limitations
 
-- No `packages/core/tsconfig.json`, so the CI typecheck step always prints "skipping strict gate" instead of checking types.
 - `doctor` hard-fails without a reachable Magento backend; with placeholder URLs only the version/theme checks are meaningful.
 - Never commit `node_modules` — including `sites/demo-fashion/node_modules/` from a stray `--prefix` install (root `.gitignore` covers only root-level).
 - Local toolchain is Node 25 / npm 11; CI pins Node 20. Next 15.1.2 carries a known CVE (see npm audit) — upgrade path is open.

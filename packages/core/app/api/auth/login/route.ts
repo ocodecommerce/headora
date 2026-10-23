@@ -15,9 +15,9 @@ export async function POST(req: Request) {
       headers: { "Content-Type": "application/json", Store: store },
       body: JSON.stringify({ query: LOGIN_MUTATION, variables: { email, password } }),
     });
-    if (!res.ok) return Response.json({ ok: false, error: `MAGENTO_${res.status}` }, { status: 502 });
+    // Magento answers bad credentials with HTTP 401 + a GraphQL error; surface its message.
     const json = await res.json().catch(() => null);
-    if (!json) return Response.json({ ok: false, error: "NON_JSON" }, { status: 502 });
+    if (!json) return Response.json({ ok: false, error: "The store did not respond. Please try again." }, { status: 502 });
     if (json.errors?.length) return Response.json({ ok: false, error: json.errors[0].message }, { status: 401 });
     const token = json.data?.generateCustomerToken?.token;
     if (!token) return Response.json({ ok: false, error: "LOGIN_FAILED" }, { status: 401 });

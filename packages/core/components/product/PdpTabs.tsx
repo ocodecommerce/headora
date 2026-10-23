@@ -1,7 +1,6 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReviewsList, type ReviewItem } from "../reviews/ReviewsList.js";
-import { ReviewForm } from "../reviews/ReviewForm.js";
 // Magento HTML is admin-authored. Strip scripts + event handlers before inject.
 function sanitize(html: string): string {
   return html
@@ -9,27 +8,34 @@ function sanitize(html: string): string {
     .replace(/\son\w+="[^"]*"/gi, "")
     .replace(/\son\w+='[^']*'/gi, "");
 }
+type Tab = "desc" | "details" | "reviews";
 export function PdpTabs({ description, details, reviews, reviewCount, ratingSummary, sku, locale, loginUrl }: {
   description: string; details: string; reviews: ReviewItem[]; reviewCount: number; ratingSummary: number; sku: string; locale?: string; loginUrl?: string;
 }) {
-  const [tab, setTab] = useState<"desc" | "details" | "reviews">("desc");
+  const tabs = (["desc", "details", "reviews"] as Tab[]).filter((t) => t === "reviews" || (t === "desc" ? description : details));
+  const [tab, setTab] = useState<Tab>(tabs[0]);
+  // "Be the first to review this product." links to #hd-tab-reviews: open that tab.
+  useEffect(() => {
+    const sync = () => { if (window.location.hash === "#hd-tab-reviews") setTab("reviews"); };
+    sync();
+    window.addEventListener("hashchange", sync);
+    return () => window.removeEventListener("hashchange", sync);
+  }, []);
   return (
-    <section>
-      <nav style={{ display: "flex", gap: 8 }}>
-        {(["desc", "details", "reviews"] as const).map((t) => (
-          <button key={t} onClick={() => setTab(t)} aria-pressed={tab === t} style={{ fontWeight: tab === t ? 700 : 400 }}>
-            {t === "desc" ? "Description" : t === "details" ? "Details" : `Reviews (${reviewCount})`}
+    <section className="hd-tabs">
+      <div className="hd-tabs__list" role="tablist">
+        {tabs.map((t) => (
+          <button key={t} type="button" role="tab" id={`hd-tab-${t}`} aria-controls={`hd-panel-${t}`} aria-selected={tab === t}
+            className="hd-tabs__tab" onClick={() => setTab(t)}>
+            {t === "desc" ? "Description" : t === "details" ? "Details" : "Reviews"}
           </button>
         ))}
-      </nav>
-      {tab === "desc" && <div dangerouslySetInnerHTML={{ __html: sanitize(description) }} />}
-      {tab === "details" && <div dangerouslySetInnerHTML={{ __html: sanitize(details) }} />}
-      {tab === "reviews" && (
-        <div style={{ display: "grid", gap: 24 }}>
-          <ReviewsList items={reviews} count={reviewCount} ratingSummary={ratingSummary} />
-          <ReviewForm sku={sku} locale={locale} loginUrl={loginUrl} />
-        </div>
-      )}
+      </div>
+      <div className="hd-tabs__panel" role="tabpanel" id={`hd-panel-${tab}`} aria-labelledby={`hd-tab-${tab}`}>
+        {tab === "desc" && <div dangerouslySetInnerHTML={{ __html: sanitize(description) }} />}
+        {tab === "details" && <div dangerouslySetInnerHTML={{ __html: sanitize(details) }} />}
+        {tab === "reviews" && <ReviewsList items={reviews} count={reviewCount} ratingSummary={ratingSummary} sku={sku} locale={locale} />}
+      </div>
     </section>
   );
 }

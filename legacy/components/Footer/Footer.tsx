@@ -3,6 +3,14 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from '../../styles/Footer.module.css';
 
+// Sign In / Register open the header's modals (Header listens for these events).
+const openModal = (name: string) => (e: React.MouseEvent) => {
+  e.preventDefault();
+  window.dispatchEvent(new Event(name));
+};
+// Order history is served by Magento (nginx routes /sales to it).
+const ORDER_STATUS = "/sales/order/history/";
+
 function Footer() {
   return (
     <footer className={styles.footer}>
@@ -10,18 +18,18 @@ function Footer() {
         {/* Account Section */}
         <div className={styles.column}>
           <span>Account</span>
-          <Link href="/signin">Sign In</Link>
-          <Link href="/register">Register</Link>
-          <Link href="/order-status">Order Status</Link>
-          <Link href="/returns">Returns</Link>
+          <a href="#" onClick={openModal("openLoginModal")}>Sign In</a>
+          <a href="#" onClick={openModal("openSignUpModal")}>Register</a>
+          <a href={ORDER_STATUS}>Order Status</a>
+          <Link href="/customer-service">Returns</Link>
         </div>
 
         {/* About Us Section */}
         <div className={styles.column}>
           <span>About Us</span>
           <Link href="/our-story">Our Story</Link>
-          <Link href="/email-signup">Email Signup</Link>
-          <Link href="/give-back">Give Back</Link>
+          <a href="#newsletter">Email Signup</a>
+          <Link href="/our-story">Give Back</Link>
         </div>
 
         {/* Help Section */}
@@ -29,8 +37,8 @@ function Footer() {
           <span>Help</span>
           <Link href="/customer-service">Customer Service</Link>
           <Link href="/contact-us">Contact Us</Link>
-          <Link href="/order-status">Order Status</Link>
-          <Link href="/returns">Returns</Link>
+          <a href={ORDER_STATUS}>Order Status</a>
+          <Link href="/customer-service">Returns</Link>
         </div>
 
         {/* Follow Us Section */}
@@ -65,7 +73,7 @@ function Footer() {
         </div>
 
         {/* Subscribe Section */}
-        <div className={`${styles.column} ${styles.expand}`}>
+        <div id="newsletter" className={`${styles.column} ${styles.expand}`}>
           <span>Subscribe to {`${process.env.siteName}`}</span>
           <p className={styles.footerDescription}>Recieve the latest news, update and special offers right to your inbox.</p>
           <div className={styles.subscribeForm}>
@@ -101,8 +109,8 @@ function Footer() {
           Copyright © 2026 oCodecommerce.com, All rights reserved.
         </div>
         <div className={styles.legalLinks}>
-          <Link href="/terms">Terms of Use</Link>
-          <Link href="/privacy">Privacy Policy</Link>
+          <Link href="/terms-of-service">Terms of Use</Link>
+          <Link href="/privacy-policy">Privacy Policy</Link>
         </div>
       </div>
     </footer>

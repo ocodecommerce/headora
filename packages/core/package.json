@@ -1,9 +1,68 @@
 {
   "name": "@headora/core",
   "version": "1.0.0-beta.0",
+  "description": "Headora headless Magento storefront core for Next.js App Router: routes, components, GraphQL, theming.",
   "license": "MIT",
   "type": "module",
-  "main": "./lib/magento.js",
-  "peerDependencies": { "next": "^15.1.2", "react": "^19.0.0", "react-dom": "^19.0.0" },
-  "dependencies": { "zod": "^3.23.8", "graphql-request": "^7.1.0" }
+  "main": "./lib/magento.ts",
+  "types": "./lib/magento.ts",
+  "exports": {
+    ".": "./lib/magento.ts",
+    "./next": "./next.mjs",
+    "./app/*": "./app/*",
+    "./components/*": "./components/*",
+    "./graphql/*": "./graphql/*",
+    "./lib/*": "./lib/*",
+    "./styles/*": "./styles/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "README.md",
+    "app",
+    "components",
+    "graphql",
+    "lib",
+    "next.mjs",
+    "styles",
+    "tsconfig.json"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "peerDependencies": {
+    "next": "^15.5.28",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@headora/preset-base": "1.0.0-beta.0",
+    "@headora/preset-bold": "1.0.0-beta.0",
+    "@headora/preset-classic": "1.0.0-beta.0",
+    "@headora/preset-minimal": "1.0.0-beta.0",
+    "zod": "^3.23.8",
+    "graphql-request": "^7.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ocodecommerce/headora.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/ocodecommerce/headora#readme",
+  "bugs": {
+    "url": "https://github.com/ocodecommerce/headora/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "magento",
+    "adobe-commerce",
+    "headless",
+    "nextjs",
+    "storefront",
+    "pwa"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

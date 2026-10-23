@@ -1,1 +1,43 @@
-{ "name": "create-headora-app", "version": "1.0.0-beta.0", "license": "MIT", "type": "module", "bin": { "create-headora-app": "./init.mjs", "headora": "./cli.mjs" } }
+{
+  "name": "create-headora-app",
+  "version": "1.0.0-beta.0",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "create-headora-app": "./init.mjs",
+    "headora": "./cli.mjs"
+  },
+  "description": "Create a Headora headless Magento storefront: npx create-headora-app my-store",
+  "files": [
+    "README.md",
+    "audit-cms.mjs",
+    "cli.mjs",
+    "doctor.mjs",
+    "init.mjs",
+    "template"
+  ],
+  "scripts": {
+    "prepack": "node -e \"require('fs').cpSync('../../sites/demo-fashion','template',{recursive:true,filter:s=>!/(node_modules|\\.next|\\.env$|tsbuildinfo|next-env\\.d\\.ts)/.test(s)})\"",
+    "postpack": "node -e \"require('fs').rmSync('template',{recursive:true,force:true})\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ocodecommerce/headora.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/ocodecommerce/headora#readme",
+  "bugs": {
+    "url": "https://github.com/ocodecommerce/headora/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "magento",
+    "headless",
+    "nextjs",
+    "create",
+    "scaffold",
+    "storefront"
+  ]
+}

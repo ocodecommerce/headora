@@ -1,130 +1,199 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-// Ported from legacy Header.tsx: listens for openLoginModal / openSignUpModal,
-// plus forgot-password. Renders sign-in + create-account + forgot modals.
-// Closes on outside click / Escape. Session left to header via headora:auth-changed.
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+
+// Legacy v1 auth panels (Header.tsx): "Sign-In To Your Account", "Create an Account",
+// "Recover Password". Opened by the openLoginModal / openSignUpModal window events.
+// Desktop: panel drops under the header's right edge; mobile: centred over a dimmed page.
+// Success dispatches headora:auth-changed so hearts/reviews re-check the session.
+type Panel = "login" | "signup" | "forgot" | null;
+
 function localeFromPath(): string | undefined {
-  try {
-    const seg = window.location.pathname.split("/").filter(Boolean)[0];
-    return seg || undefined;
-  } catch { return undefined; }
+  try { return window.location.pathname.split("/").filter(Boolean)[0] || undefined; } catch { return undefined; }
 }
+
+const EyeIcon = ({ off }: { off: boolean }) => (
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    {off
+      ? <><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" /><line x1="1" y1="1" x2="23" y2="23" /></>
+      : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></>}
+  </svg>
+);
+
+function Field({ id, label, children }: { id: string; label: string; children: ReactNode }) {
+  return (
+    <div className="hd-auth__group">
+      <label htmlFor={id} className="hd-auth__label">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function PasswordInput({ id, value, onChange, autoComplete, minLength }: {
+  id: string; value: string; onChange: (v: string) => void; autoComplete: string; minLength?: number;
+}) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="hd-auth__pw">
+      <input id={id} className="hd-auth__input" type={show ? "text" : "password"} value={value} required
+        autoComplete={autoComplete} minLength={minLength} onChange={(e) => onChange(e.target.value)} />
+      <button type="button" className="hd-auth__eye" onClick={() => setShow(!show)} aria-label={show ? "Hide password" : "Show password"}>
+        <EyeIcon off={show} />
+      </button>
+    </div>
+  );
+}
+
 export function AuthModals({ locale: localeProp }: { locale?: string }) {
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [signupOpen, setSignupOpen] = useState(false);
-  const [forgotOpen, setForgotOpen] = useState(false);
+  const [panel, setPanel] = useState<Panel>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [subscribe, setSubscribe] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const loginRef = useRef<HTMLDivElement>(null);
-  const signupRef = useRef<HTMLDivElement>(null);
-  const forgotRef = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState(80);
+  const boxRef = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLElement | null>(null);
   const locale = localeProp ?? (typeof window !== "undefined" ? localeFromPath() : undefined);
-  function resetForm() {
-    setError(""); setNotice("");
-    setEmail(""); setPassword("");
-    setFirstName(""); setLastName("");
+
+  function open(p: Exclude<Panel, null>, keepEmail = false) {
+    setError(""); setNotice(""); setPassword("");
+    if (!keepEmail) setEmail("");
+    if (p === "signup") { setFirstName(""); setLastName(""); setSubscribe(false); }
+    setPanel(p);
   }
-  function showLogin() { resetForm(); setLoginOpen(true); setSignupOpen(false); setForgotOpen(false); }
-  function showSignup() { resetForm(); setSignupOpen(true); setLoginOpen(false); setForgotOpen(false); }
-  function showForgot() { resetForm(); setForgotOpen(true); setLoginOpen(false); setSignupOpen(false); }
+  function close() {
+    setPanel(null);
+    opener.current?.focus?.();
+  }
+
   useEffect(() => {
-    window.addEventListener("openLoginModal", showLogin);
-    window.addEventListener("openSignUpModal", showSignup);
-    return () => {
-      window.removeEventListener("openLoginModal", showLogin);
-      window.removeEventListener("openSignUpModal", showSignup);
-    };
+    const onLogin = () => { opener.current = document.activeElement as HTMLElement; open("login"); };
+    const onSignup = () => { opener.current = document.activeElement as HTMLElement; open("signup"); };
+    window.addEventListener("openLoginModal", onLogin);
+    window.addEventListener("openSignUpModal", onSignup);
+    return () => { window.removeEventListener("openLoginModal", onLogin); window.removeEventListener("openSignUpModal", onSignup); };
   }, []);
+
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as HTMLElement;
-      if (loginOpen && loginRef.current && !loginRef.current.contains(t)) setLoginOpen(false);
-      if (signupOpen && signupRef.current && !signupRef.current.contains(t)) setSignupOpen(false);
-      if (forgotOpen && forgotRef.current && !forgotRef.current.contains(t)) setForgotOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setLoginOpen(false); setSignupOpen(false); setForgotOpen(false); }
-    };
+    if (!panel) return;
+    // Anchor under the sticky header, like the legacy dropdown.
+    const header = document.querySelector(".hd-header");
+    setTop(Math.max(0, header?.getBoundingClientRect().bottom ?? 80));
+    boxRef.current?.querySelector<HTMLInputElement>("input")?.focus();
+    const onDown = (e: MouseEvent) => { if (boxRef.current && !boxRef.current.contains(e.target as Node)) close(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") close(); };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
     return () => { document.removeEventListener("mousedown", onDown); document.removeEventListener("keydown", onKey); };
-  }, [loginOpen, signupOpen, forgotOpen]);
-  async function doLogin(e: any) {
-    e.preventDefault();
-    setLoading(true); setError("");
-    const r = await fetch("/api/auth/login", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), password, locale }) });
-    const j = await r.json().catch(() => ({}));
-    setLoading(false);
-    if (!r.ok) { setError(j.error ?? "Login failed"); return; }
-    setLoginOpen(false);
-    window.dispatchEvent(new Event("headora:auth-changed"));
-  }
-  async function doSignup(e: any) {
-    e.preventDefault();
-    setLoading(true); setError("");
-    const r = await fetch("/api/auth/register", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password, locale }) });
-    const j = await r.json().catch(() => ({}));
-    setLoading(false);
-    if (!r.ok) { setError(j.error ?? "Signup failed"); return; }
-    setSignupOpen(false);
-    window.dispatchEvent(new Event("headora:auth-changed"));
-  }
-  async function doForgot(e: any) {
-    e.preventDefault();
+  }, [panel]);
+
+  async function post(url: string, body: Record<string, unknown>) {
     setLoading(true); setError(""); setNotice("");
-    const r = await fetch("/api/auth/forgot", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email: email.trim(), locale }) });
-    const j = await r.json().catch(() => ({}));
-    setLoading(false);
-    if (!r.ok) { setError(j.error ?? "Reset failed"); return; }
-    setNotice("Reset email sent if account exists.");
+    try {
+      const r = await fetch(url, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...body, locale }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) setError(j.error ?? "Something went wrong. Please try again.");
+      return r.ok;
+    } catch {
+      setError("Something went wrong. Please try again.");
+      return false;
+    } finally {
+      setLoading(false);
+    }
   }
-  if (!loginOpen && !signupOpen && !forgotOpen) return null;
+
+  async function doLogin(e: FormEvent) {
+    e.preventDefault();
+    if (await post("/api/auth/login", { email: email.trim(), password })) {
+      setPanel(null);
+      window.dispatchEvent(new Event("headora:auth-changed"));
+    }
+  }
+  async function doSignup(e: FormEvent) {
+    e.preventDefault();
+    if (await post("/api/auth/register", { firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password, is_subscribed: subscribe })) {
+      setPanel(null);
+      window.dispatchEvent(new Event("headora:auth-changed"));
+    }
+  }
+  async function doForgot(e: FormEvent) {
+    e.preventDefault();
+    if (await post("/api/auth/forgot", { email: email.trim() })) {
+      setNotice("If an account exists with this email, you will receive a password reset link shortly.");
+    }
+  }
+
+  if (!panel) return null;
+  const title = panel === "login" ? "Sign-In To Your Account" : panel === "signup" ? "Create an Account" : "Recover Password";
+
   return (
-    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.4)", zIndex: 50, display: "grid", placeItems: "center" }}>
-      {loginOpen && (
-        <div ref={loginRef} style={{ background: "#fff", padding: 24, minWidth: 320 }}>
-          <h2>Sign in</h2>
-          <form onSubmit={doLogin} style={{ display: "grid", gap: 8 }}>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" required />
-            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" required />
-            {error && <p>{error}</p>}
-            <button disabled={loading}>{loading ? "..." : "Sign in"}</button>
+    <div className="hd-auth" style={{ ["--hd-auth-top" as any]: `${top}px` }}>
+      <div ref={boxRef} className="hd-auth__box" role="dialog" aria-modal="true" aria-labelledby="hd-auth-title">
+        <h2 id="hd-auth-title" className="hd-auth__title">{title}</h2>
+
+        {panel === "login" && (
+          <form className="hd-auth__form" onSubmit={doLogin}>
+            <Field id="hd-auth-email" label="Email address">
+              <input id="hd-auth-email" className="hd-auth__input" type="email" value={email} required autoComplete="email" onChange={(e) => setEmail(e.target.value)} />
+            </Field>
+            <Field id="hd-auth-password" label="Password">
+              <PasswordInput id="hd-auth-password" value={password} onChange={setPassword} autoComplete="current-password" />
+            </Field>
+            <div className="hd-auth__forgot">
+              <button type="button" className="hd-auth__link" onClick={() => open("forgot", true)}>Forgot Password?</button>
+            </div>
+            {error ? <p className="hd-auth__error" role="alert">{error}</p> : null}
+            <div className="hd-auth__stack">
+              <button type="submit" className="hd-auth__primary" disabled={loading}>{loading ? "SIGNING IN..." : "SIGN IN"}</button>
+              <button type="button" className="hd-auth__secondary" onClick={() => open("signup")}>CREATE AN ACCOUNT</button>
+            </div>
           </form>
-          <p><a href="#signup" onClick={(e) => { e.preventDefault(); showSignup(); }}>Create account</a></p>
-          <p><a href="#forgot" onClick={(e) => { e.preventDefault(); showForgot(); }}>Forgot password?</a></p>
-        </div>
-      )}
-      {signupOpen && (
-        <div ref={signupRef} style={{ background: "#fff", padding: 24, minWidth: 320 }}>
-          <h2>Create account</h2>
-          <form onSubmit={doSignup} style={{ display: "grid", gap: 8 }}>
-            <input value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="First name" required />
-            <input value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Last name" required />
-            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" required />
-            <input value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" type="password" required />
-            {error && <p>{error}</p>}
-            <button disabled={loading}>{loading ? "..." : "Create account"}</button>
+        )}
+
+        {panel === "signup" && (
+          <form className="hd-auth__form" onSubmit={doSignup}>
+            <Field id="hd-auth-first" label="First Name">
+              <input id="hd-auth-first" className="hd-auth__input" value={firstName} required autoComplete="given-name" onChange={(e) => setFirstName(e.target.value)} />
+            </Field>
+            <Field id="hd-auth-last" label="Last Name">
+              <input id="hd-auth-last" className="hd-auth__input" value={lastName} required autoComplete="family-name" onChange={(e) => setLastName(e.target.value)} />
+            </Field>
+            <Field id="hd-auth-cemail" label="Email">
+              <input id="hd-auth-cemail" className="hd-auth__input" type="email" value={email} required autoComplete="email" onChange={(e) => setEmail(e.target.value)} />
+            </Field>
+            <Field id="hd-auth-cpassword" label="Password">
+              <PasswordInput id="hd-auth-cpassword" value={password} onChange={setPassword} autoComplete="new-password" minLength={8} />
+            </Field>
+            <label className="hd-auth__check">
+              <input type="checkbox" checked={subscribe} onChange={(e) => setSubscribe(e.target.checked)} />
+              <span>Subscribe to news and updates</span>
+            </label>
+            {error ? <p className="hd-auth__error" role="alert">{error}</p> : null}
+            <div className="hd-auth__row">
+              <button type="button" className="hd-auth__secondary" onClick={close}>CANCEL</button>
+              <button type="submit" className="hd-auth__primary" disabled={loading}>{loading ? "CREATING..." : "CREATE AN ACCOUNT"}</button>
+            </div>
           </form>
-          <p><a href="#login" onClick={(e) => { e.preventDefault(); showLogin(); }}>Back to sign in</a></p>
-        </div>
-      )}
-      {forgotOpen && (
-        <div ref={forgotRef} style={{ background: "#fff", padding: 24, minWidth: 320 }}>
-          <h2>Reset password</h2>
-          <form onSubmit={doForgot} style={{ display: "grid", gap: 8 }}>
-            <input value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" type="email" required />
-            {error && <p>{error}</p>}
-            {notice && <p>{notice}</p>}
-            <button disabled={loading}>{loading ? "..." : "Send reset email"}</button>
+        )}
+
+        {panel === "forgot" && (
+          <form className="hd-auth__form" onSubmit={doForgot}>
+            <p className="hd-auth__text">Please enter the email address associated with this account.</p>
+            <Field id="hd-auth-femail" label="Email address">
+              <input id="hd-auth-femail" className="hd-auth__input" type="email" value={email} required autoComplete="email" onChange={(e) => setEmail(e.target.value)} />
+            </Field>
+            {error ? <p className="hd-auth__error" role="alert">{error}</p> : null}
+            {notice ? <p className="hd-auth__success" role="status">{notice}</p> : null}
+            <div className="hd-auth__row">
+              <button type="button" className="hd-auth__secondary" onClick={() => open("login", true)}>CANCEL</button>
+              <button type="submit" className="hd-auth__primary" disabled={loading}>{loading ? "SUBMITTING..." : "SUBMIT"}</button>
+            </div>
           </form>
-          <p><a href="#login" onClick={(e) => { e.preventDefault(); showLogin(); }}>Back to sign in</a></p>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

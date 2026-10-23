@@ -1,0 +1,39 @@
+/* Contact page — sizes measured from venia.magento.com/default/contact-us (PWA Studio ContactPage). */
+/* 81px = fixed Header_navbar height (same offset as the homepage hero). */
+.root { max-width: 1440px; margin: 0 auto; padding: 81px 16px 48px; font-family: Muli, sans-serif; font-size: 16px; line-height: 24px; color: rgb(17 24 39); }
+.banner { margin-bottom: 32px; }
+.banner :global(.pagebuilder-column-group) { flex-wrap: wrap; }
+.banner h2, .side h2 { font-size: 60px; line-height: 75px; font-weight: 400; margin: 16px 0 8px; }
+.banner p { margin: 0; }
+.banner p span { line-height: 1.5; }
+.banner hr { margin: 20px 0; border-width: 8px 0 0; border-style: solid none none; }
+.content { display: flex; justify-content: center; }
+.main, .side { width: 50%; }
+.title { margin: 16px 0 8px; font-size: 60px; line-height: 90px; font-weight: 400; text-align: left; }
+.subtitle { margin: 0 0 16px; }
+.form { display: grid; row-gap: 16px; }
+.field { display: grid; align-content: start; }
+.label { display: flex; align-items: center; justify-content: space-between; padding: 10px 2px; font-size: 16px; line-height: 16px; font-weight: 600; }
+.label em { font-style: normal; font-size: 14px; line-height: 14px; font-weight: 400; color: rgb(75 85 99); }
+.input { width: 100%; height: 40px; margin: 0; padding: 5px 10px; border: 2px solid rgb(75 85 99); border-radius: 6px; background: #fff; font: 400 16px/24px Muli, sans-serif; color: rgb(17 24 39); outline: none; appearance: none; }
+.input::placeholder { color: rgb(156 163 175); }
+.input:focus { box-shadow: -6px 6px 0 0 rgb(194 200 255); }
+.textarea { height: 110px; padding: 5px 9px; resize: vertical; }
+.ok, .err { margin: 0; font-size: 14px; line-height: 20px; }
+.ok { color: #1b5e20; }
+.err { color: #b3261e; }
+.buttons { padding: 16px 0; text-align: left; }
+.submit { display: inline-flex; align-items: center; justify-content: center; min-width: 160px; max-width: 100%; height: 40px; padding: 9px 24px 7px; border: 2px solid rgb(41 84 255); border-radius: 9999px; background: rgb(41 84 255); color: #fff; font: 700 14px/17.5px Muli, sans-serif; text-transform: uppercase; cursor: pointer; }
+.submit:disabled { opacity: .5; cursor: default; }
+.side { padding: 16px 0 0 48px; }
+.side p { margin: 0; }
+.side a { display: inline-flex; align-items: center; color: inherit; text-decoration: underline; }
+.side img { margin-top: 16px; margin-bottom: 16px; }
+@media (max-width: 767px) {
+  .content { display: block; }
+  .main, .side { width: auto; }
+  .title { font-size: 30px; line-height: 36px; text-align: center; }
+  .buttons { text-align: center; }
+  .side { margin-top: 24px; padding: 40px 0 0; border-top: 1px solid rgb(209 213 219); }
+  .banner :global(.pagebuilder-column) { width: 100% !important; }
+}

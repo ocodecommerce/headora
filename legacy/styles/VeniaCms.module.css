@@ -1,0 +1,25 @@
+/* Magento PageBuilder CMS pages styled like PWA Studio Venia (sizes measured from
+   venia.magento.com/default/about-us). 81px top = fixed Header_navbar height. */
+.root { max-width: 1440px; margin: 0 auto; padding: 81px 16px 48px; font: 400 16px/1.5 Muli, sans-serif; color: rgb(17 24 39); }
+.root h1, .root h2, .root h3, .root h4, .root h5, .root h6 { font-family: Muli, sans-serif; font-weight: 400; }
+.root h1 { font-size: 96px; line-height: 120px; margin: 12px 0 8px; }
+.root h2 { font-size: 60px; line-height: 75px; margin: 16px 0 8px; }
+.root h3 { font-size: 48px; line-height: 60px; margin: 16px 0 8px; }
+/* Page title from Magento's "content heading" field (Venia cms-heading). */
+.root h1.heading { font-size: 60px; line-height: 90px; margin: 16px 0 40px; text-align: center; }
+.root p { font-family: inherit; margin: 0; }
+.root p:not(:last-child) { margin-bottom: 16px; }
+.root :global([data-content-type="row"][data-appearance="contained"]) { max-width: 1440px; margin: 0 auto; }
+.root :global(.pagebuilder-column-group) { display: flex; }
+.root figure { margin: 0; }
+.root figure img { display: inline-block; max-width: 100%; height: auto; margin: 16px 0; vertical-align: top; }
+.root :global(.pagebuilder-mobile-only) { display: none; }
+.root hr { margin: 20px 0; border-style: solid none none; }
+/* Sample tables use cellpadding="14px"; the global td reset would drop it. */
+.root td, .root th { padding: 14px; }
+@media (max-width: 768px) {
+  .root :global(.pagebuilder-mobile-hidden) { display: none; }
+  .root :global(.pagebuilder-mobile-only) { display: inline-block; }
+  .root :global(.pagebuilder-column-group) { flex-wrap: wrap; }
+  .root :global(.pagebuilder-column) { width: 100% !important; }
+}
