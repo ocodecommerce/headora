@@ -1,4 +1,5 @@
 import { PageLoadingIndicator } from "./PageLoadingIndicator.js";
+import { CardImageFade } from "../catalog/CardImageFade.js";
 import type { ThemeTokens } from "../../lib/theme.js";
 import { CaretIcon } from "./Icons.js";
 import { SignInButton } from "./SignInButton.js";
@@ -112,6 +113,7 @@ export function Header({
           </div>
         </div>
         <PageLoadingIndicator />
+        <CardImageFade />
       </header>
     </>
   );

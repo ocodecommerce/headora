@@ -13,9 +13,9 @@ export function ProductGrid({
 
   return (
     <ul className="hd-grid">
-      {items.map((p) => (
+      {items.map((p, i) => (
         <li key={p.sku}>
-          <ProductCard product={p} locale={locale} actions />
+          <ProductCard product={p} locale={locale} actions eager={i < 6} />
           {/* Venia GalleryItemShimmer: image, name, price, add-to-cart; shown while filters load in place */}
           <div className="hd-shimmer-card" aria-hidden="true">
             <span className="hd-shimmer hd-shimmer--img" />

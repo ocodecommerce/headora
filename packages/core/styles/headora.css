@@ -259,7 +259,7 @@ html.hd-plp-loading :is(.hd-plp__count, .hd-mbar__count, .hd-sort) { position: r
 html.hd-plp-loading .hd-plp__count { width: 80px; }
 html.hd-plp-loading .hd-mbar__count { width: 80px; margin: 0 auto 10px; padding: 0; }
 html.hd-plp-loading .hd-sort select { visibility: hidden; }
-.hd-shimmer::before, html.hd-plp-loading :is(.hd-plp__count, .hd-mbar__count, .hd-sort)::before { content: ""; position: absolute; top: 0; left: 0; width: 1440px; height: 100%; will-change: transform;
+.hd-shimmer::before, html.hd-plp-loading :is(.hd-plp__count, .hd-mbar__count, .hd-sort)::before, .hd-card__media:has(.hd-card__img:not([data-loaded]))::before { content: ""; position: absolute; top: 0; left: 0; width: 1440px; height: 100%; will-change: transform;
   background: linear-gradient(to right, rgb(255 255 255 / 0) 0%, rgb(255 255 255) 40%, rgb(255 255 255 / 0) 80%, rgb(255 255 255 / 0) 100%) no-repeat 0 0 / 1440px 100%;
   animation: hd-shimmer 1s linear infinite forwards; }
 .hd-shimmer--img { flex: none; aspect-ratio: 4 / 5; } /* Venia gallery image 300x375 */
@@ -269,7 +269,11 @@ html.hd-plp-loading .hd-sort select { visibility: hidden; }
 @keyframes hd-shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 .hd-card a { display: block; text-decoration: none; }
 /* Legacy .item img: natural image shape, at most 98% of the card width, slight zoom on hover. */
-.hd-card__img { max-width: 98%; height: auto; object-fit: scale-down; background: #fff; border-radius: var(--headora-radius); transition: transform .2s; }
+.hd-card__media { position: relative; display: block; width: 98%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: var(--headora-radius); background: rgb(244 245 245); }
+.hd-card__media:has(.hd-card__img[data-loaded]) { background: none; }
+.hd-card__img { display: block; width: 100%; height: 100%; object-fit: contain; background: #fff; transition: opacity .512s ease-out, transform .2s; }
+@media (scripting: enabled) { .hd-card__img:not([data-loaded]) { opacity: 0; } }
+@media (scripting: none) { .hd-card__media::before { display: none; } }
 .hd-card__img:hover { transform: scale(1.01); }
 .hd-card__name { display: block; text-transform: capitalize; margin-top: 14px; padding: 0 5px; font-size: 16px; font-weight: 500; line-height: 22px; letter-spacing: .036em; color: rgb(21 21 21 / .9); }
 .hd-card__price { display: block; padding: 0 5px; font-size: 16px; font-weight: 300; line-height: 30px; letter-spacing: .036em; color: rgb(21 21 21 / .9); }

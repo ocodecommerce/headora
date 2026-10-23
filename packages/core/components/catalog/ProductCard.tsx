@@ -52,18 +52,20 @@ export function Price({ range, locale, trim = false }: { range?: CardProduct["pr
   return <>{money(final, locale, trim) ?? money(regular, locale, trim)}</>;
 }
 
-export function ProductCard({ product: p, locale, actions = false }: { product: CardProduct; locale: string; actions?: boolean }) {
+export function ProductCard({ product: p, locale, actions = false, eager = false }: { product: CardProduct; locale: string; actions?: boolean; eager?: boolean }) {
   const href = `/${locale}/${p.url_key}.html`;
   const img = cardImage(p);
   return (
     <div className="hd-card">
       <a href={href}>
-        {img ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="hd-card__img" src={img} alt={p.name} loading="lazy" />
-        ) : (
-          <div className="hd-card__img" />
-        )}
+        {/* Venia gallery image: fixed 4:5 frame with a shimmer until the photo loads, then a fade-in
+            (CardImageFade marks loaded images), so the name/price/button never jump. */}
+        <span className="hd-card__media">
+          {img ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="hd-card__img" src={img} alt={p.name} loading={eager ? "eager" : "lazy"} />
+          ) : null}
+        </span>
         <span className="hd-card__name">{p.name}</span>
         <span className="hd-card__price"><Price range={p.price_range} locale={locale} trim={actions} /></span>
       </a>
