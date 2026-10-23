@@ -1,3 +1,4 @@
+import { PageLoadingIndicator } from "./PageLoadingIndicator.js";
 import type { ThemeTokens } from "../../lib/theme.js";
 import { CaretIcon } from "./Icons.js";
 import { SignInButton } from "./SignInButton.js";
@@ -110,6 +111,7 @@ export function Header({
             {tokens.header.miniCart ? <MiniCart locale={locale} /> : null}
           </div>
         </div>
+        <PageLoadingIndicator />
       </header>
     </>
   );

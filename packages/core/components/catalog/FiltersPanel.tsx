@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 // Server renders the panel open (desktop + no-JS); on small screens it starts collapsed
 // unless a filter is already applied, so products stay above the fold.
 // With JS, filter links load in place like legacy: the box ticks at once, the product grid
-// shows a skeleton (html.hd-plp-loading) and the scroll position is kept.
+// shows a skeleton (html.hd-plp-loading) and, like Venia, the page jumps to the top of the list.
 export function FiltersPanel({ hasActive, stateKey, children }: { hasActive: boolean; stateKey: string; children: ReactNode }) {
   const ref = useRef<HTMLDetailsElement>(null);
   const router = useRouter();
@@ -26,6 +26,9 @@ export function FiltersPanel({ hasActive, stateKey, children }: { hasActive: boo
       clearTimeout(timer);
       // ponytail: safety net if the navigation never lands (error, same URL)
       timer = setTimeout(() => document.documentElement.classList.remove("hd-plp-loading"), 15000);
+      // Venia (FilterSidebar): jump to 150px above the filter column so the new results start in view.
+      const top = panel.closest(".hd-plp")?.getBoundingClientRect().top;
+      if (top != null) window.scrollTo(0, window.scrollY + top - 150);
       router.push(href, { scroll: false });
     };
     const onClick = (e: MouseEvent) => {

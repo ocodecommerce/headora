@@ -162,6 +162,12 @@ body { margin: 0; }
 .hd-storebar a[aria-current="true"] { background: #fff; }
 
 .hd-header { position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 1px solid rgb(209 213 219); }
+/* Venia PageLoadingIndicator: 2px brand-dark bar on a gray-100 track along the header's bottom edge. */
+.hd-pageload { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; overflow: hidden; pointer-events: none; }
+.hd-pageload--on { background: rgb(244 245 245); }
+.hd-pageload__bar { position: absolute; inset: 0; background: rgb(41 84 255); opacity: 0; transform: translateX(-100%); transform-origin: left; transition: transform .25s linear; }
+.hd-pageload__bar--loading { opacity: 1; transform: translateX(-25%); }
+.hd-pageload__bar--done { opacity: 1; transform: translateX(0); }
 .hd-header__row { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 80px; max-width: 1440px; margin: 0 auto; padding: 0 32px; }
 /* Legacy asked for Muli 200, whose face never loaded, so it rendered in the generic sans-serif. */
 .hd .hd-logo { font-family: sans-serif; font-size: 24px; font-weight: 200; letter-spacing: 2px; color: #000; text-decoration: none; white-space: nowrap; margin-top: 5px; }
@@ -245,13 +251,18 @@ body { margin: 0; }
 .hd-shimmer-card { display: none; }
 html.hd-plp-loading .hd-grid > li { position: relative; }
 html.hd-plp-loading .hd-grid > li > .hd-card { visibility: hidden; }
-html.hd-plp-loading .hd-shimmer-card { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 8px; background: #fff; }
+html.hd-plp-loading .hd-shimmer-card { position: absolute; inset: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; background: #fff; }
 html.hd-plp-loading .hd-pager, html.hd-plp-loading .hd-empty { visibility: hidden; }
 .hd-shimmer { position: relative; display: block; overflow: hidden; pointer-events: none; background: rgb(244 245 245); }
-.hd-shimmer::before { content: ""; position: absolute; top: 0; left: 0; width: 1440px; height: 100%; will-change: transform;
+/* Venia also shimmers the "N Results" count (5rem bar) and the sort control while loading. */
+html.hd-plp-loading :is(.hd-plp__count, .hd-mbar__count, .hd-sort) { position: relative; overflow: hidden; pointer-events: none; background: rgb(244 245 245); color: transparent; }
+html.hd-plp-loading .hd-plp__count { width: 80px; }
+html.hd-plp-loading .hd-mbar__count { width: 80px; margin: 0 auto 10px; padding: 0; }
+html.hd-plp-loading .hd-sort select { visibility: hidden; }
+.hd-shimmer::before, html.hd-plp-loading :is(.hd-plp__count, .hd-mbar__count, .hd-sort)::before { content: ""; position: absolute; top: 0; left: 0; width: 1440px; height: 100%; will-change: transform;
   background: linear-gradient(to right, rgb(255 255 255 / 0) 0%, rgb(255 255 255) 40%, rgb(255 255 255 / 0) 80%, rgb(255 255 255 / 0) 100%) no-repeat 0 0 / 1440px 100%;
   animation: hd-shimmer 1s linear infinite forwards; }
-.hd-shimmer--img { flex: 1; min-height: 0; }
+.hd-shimmer--img { flex: none; aspect-ratio: 4 / 5; } /* Venia gallery image 300x375 */
 .hd-shimmer--name { width: 100%; height: 16px; }
 .hd-shimmer--price { width: 48px; height: 16px; }
 .hd-shimmer--btn { width: 160px; max-width: 100%; height: 40px; border-radius: 9999px; }
