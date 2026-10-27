@@ -168,6 +168,8 @@ body { margin: 0; }
 .hd-pageload__bar { position: absolute; inset: 0; background: rgb(41 84 255); opacity: 0; transform: translateX(-100%); transform-origin: left; transition: transform .25s linear; }
 .hd-pageload__bar--loading { opacity: 1; transform: translateX(-25%); }
 .hd-pageload__bar--done { opacity: 1; transform: translateX(0); }
+.hd-pageload__bar--resume, html.hd-pageload-resume .hd-pageload__bar { opacity: 1; transform: translateX(-25%); transition: none; }
+html.hd-pageload-resume .hd-pageload { background: rgb(244 245 245); }
 .hd-header__row { display: flex; align-items: center; justify-content: space-between; gap: 20px; height: 80px; max-width: 1440px; margin: 0 auto; padding: 0 32px; }
 /* Legacy asked for Muli 200, whose face never loaded, so it rendered in the generic sans-serif. */
 .hd .hd-logo { font-family: sans-serif; font-size: 24px; font-weight: 200; letter-spacing: 2px; color: #000; text-decoration: none; white-space: nowrap; margin-top: 5px; }

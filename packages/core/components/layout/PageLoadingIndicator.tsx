@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 // it to 75%, "done" fills it, and 750ms later it hides. Our pages mostly use plain links (full page
 // loads), so a same-site link click or form submit starts it, a sessionStorage flag lets the next
 // page play "done", and in-place filter loads (html.hd-plp-loading) drive it directly.
-type State = "off" | "loading" | "done";
+type State = "off" | "resume" | "loading" | "done";
 const FLAG = "hd-page-loading";
 const DONE_MS = 750;
 
@@ -25,12 +25,17 @@ export function PageLoadingIndicator() {
       timer.current = setTimeout(() => setState("off"), DONE_MS);
     };
 
-    // Arrived from a link click on the previous page: complete the bar.
+    // Arrived from a link click on the previous page: pick the bar up where that page left it (75%,
+    // no animation) and finish it, so it reads as one load like Venia's single-page app, not two.
     try {
       const t = Number(sessionStorage.getItem(FLAG));
       sessionStorage.removeItem(FLAG);
-      if (t && Date.now() - t < 15000) requestAnimationFrame(finish);
+      if (t && Date.now() - t < 15000) {
+        setState("resume");
+        requestAnimationFrame(() => requestAnimationFrame(finish));
+      }
     } catch {}
+    document.documentElement.classList.remove("hd-pageload-resume");
 
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
@@ -68,6 +73,8 @@ export function PageLoadingIndicator() {
   return (
     <div className={`hd-pageload${state === "off" ? "" : " hd-pageload--on"}`} aria-hidden="true">
       <div className={`hd-pageload__bar hd-pageload__bar--${state}`} />
+      {/* Runs while the HTML parses, before first paint: shows the bar at 75% until hydration takes over. */}
+      <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("${FLAG}"))document.documentElement.classList.add("hd-pageload-resume")}catch(e){}` }} />
     </div>
   );
 }
