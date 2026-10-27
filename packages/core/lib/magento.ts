@@ -26,7 +26,12 @@ async function fetchGraphql<T>(query: string, variables: object, opts: FetchOpts
       next: { tags: opts.tags ?? ["magento"], revalidate: opts.revalidate ?? 120 },
     });
   } catch (e: any) {
-    throw new Error(`Magento unreachable: ${e.message}`);
+    // fetch hides the reason in e.cause; a local mkcert/self-signed Magento (https://*.test) fails TLS here.
+    const code = e.cause?.code ?? e.cause?.message ?? "";
+    const tls = /CERT|SIGNATURE|SELF_SIGNED|UNABLE_TO_VERIFY/i.test(code)
+      ? " - Node does not trust Magento's HTTPS certificate; start with NODE_USE_SYSTEM_CA=1 (or NODE_EXTRA_CA_CERTS=<rootCA.pem>)"
+      : "";
+    throw new Error(`Magento unreachable: ${e.message}${code ? ` (${code})` : ""}${tls}`);
   }
   if (!res.ok) throw new Error(`Magento GraphQL ${res.status}`);
   const text = originalImages(await res.text());
