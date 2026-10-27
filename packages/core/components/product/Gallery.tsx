@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, type PointerEvent } from "react";
+import { useEffect, useRef, useState, type PointerEvent } from "react";
 
 export type GalleryImage = { url: string; label?: string | null; position?: number | null; disabled?: boolean | null };
 
@@ -10,8 +10,23 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
   const [active, setActive] = useState(0);
   const [slide, setSlide] = useState(0);
   const track = useRef<HTMLDivElement>(null);
-  if (!list.length) return <div className="hd-gallery__main" />;
   const main = list[Math.min(active, list.length - 1)];
+  const first = list[0]?.url;
+  // Colour switch = new image list: start again from its first photo (the gallery is no longer remounted).
+  useEffect(() => { setActive(0); setSlide(0); track.current?.scrollTo({ left: 0 }); }, [first]);
+  // Keep the current photo up until the next one is downloaded and decoded, then swap: no white flash
+  // between colours (legacy/Venia never show an empty frame).
+  const [shown, setShown] = useState(main?.url);
+  useEffect(() => {
+    if (!main?.url || main.url === shown) return;
+    let live = true;
+    const next = new Image();
+    next.src = main.url;
+    (next.decode ? next.decode() : Promise.resolve()).catch(() => {}).then(() => { if (live) setShown(main.url); });
+    return () => { live = false; };
+  }, [main?.url]); // eslint-disable-line react-hooks/exhaustive-deps
+  if (!list.length || !main) return <div className="hd-gallery__main" />;
+  const current = list.find((i) => i.url === shown) ?? main;
 
   const onScroll = () => {
     const el = track.current;
@@ -33,7 +48,7 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
           ))}
         </ul>
       ) : null}
-      <Zoomable key={main.url} className="hd-gallery__zoom" imgClass="hd-gallery__main" src={main.url} alt={main.label || name} />
+      <Zoomable key={current.url} className="hd-gallery__zoom" imgClass="hd-gallery__main" src={current.url} alt={current.label || name} />
 
       <div className="hd-gallery__slider" aria-roledescription="carousel" aria-label={`${name} images`}>
         <div className="hd-gallery__track" ref={track} onScroll={onScroll}>

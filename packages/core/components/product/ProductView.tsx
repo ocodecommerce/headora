@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Gallery, type GalleryImage } from "./Gallery.js";
 import { CompareButton } from "./CompareButton.js";
 import { BundleOptions, type BundleItem, type BundleState } from "./BundleOptions.js";
@@ -67,6 +67,18 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
     return [...own, ...parent.filter((i) => !seen.has(i.url))];
   }, [preview, item]);
 
+  // Warm the browser cache with each colour's main photo once the page is idle, so switching colour
+  // rarely waits on a download (deduped: size variants share their colour's photos).
+  useEffect(() => {
+    const urls = new Set(variants.map((v) => (v.product.media_gallery ?? []).filter((i) => i.url && !i.disabled)
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))[0]?.url).filter((u): u is string => !!u));
+    if (!urls.size) return;
+    const warm = () => urls.forEach((u) => { new Image().src = u; });
+    const idle = (window as any).requestIdleCallback as ((cb: () => void) => number) | undefined;
+    const id = idle ? idle(warm) : window.setTimeout(warm, 1500);
+    return () => { if (idle) (window as any).cancelIdleCallback?.(id); else clearTimeout(id); };
+  }, [variants]);
+
   const available = (code: string, valueIndex: number) =>
     variants.some((v) => v.product.stock_status !== "OUT_OF_STOCK" && matches(v, { ...picked, [code]: valueIndex }));
 
@@ -104,7 +116,7 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
   const wished = wishlist.wished(item.sku);
   return (
     <div className="hd-pdp">
-      <Gallery key={images[0]?.url ?? "none"} images={images} name={item.name} />
+      <Gallery images={images} name={item.name} />
       <div className="hd-pdp__info">
         <h1>{item.name}</h1>
         <a className="hd-pdp__rating" href="#hd-tab-reviews">
