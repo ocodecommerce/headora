@@ -39,7 +39,7 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
       {list.length > 1 ? (
         <ul className="hd-gallery__thumbs">
           {list.map((img, i) => (
-            <li key={img.url}>
+            <li key={i}>
               <button type="button" className="hd-gallery__thumb" aria-pressed={i === active} aria-label={`Image ${i + 1}`} onClick={() => setActive(i)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={img.url} alt="" loading="lazy" />
@@ -48,12 +48,15 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
           ))}
         </ul>
       ) : null}
-      <Zoomable key={current.url} className="hd-gallery__zoom" imgClass="hd-gallery__main" src={current.url} alt={current.label || name} />
+      {/* Same <img> element across photos: only src changes, and only after the photo is decoded,
+          so the browser never paints an empty frame in between. */}
+      <Zoomable className="hd-gallery__zoom" imgClass="hd-gallery__main" src={current.url} alt={current.label || name} />
 
       <div className="hd-gallery__slider" aria-roledescription="carousel" aria-label={`${name} images`}>
         <div className="hd-gallery__track" ref={track} onScroll={onScroll}>
+          {/* Keyed by position, not URL: a colour switch swaps srcs in place instead of rebuilding slides. */}
           {list.map((img, i) => (
-            <Zoomable key={img.url} src={img.url} alt={img.label || name} lazy={i > 0} />
+            <Zoomable key={i} src={img.url} alt={img.label || name} lazy={i > 0} />
           ))}
         </div>
         {list.length > 1 ? (
@@ -74,6 +77,8 @@ const ZOOM = 3;
 function Zoomable({ src, alt, className = "", imgClass, lazy }: { src: string; alt: string; className?: string; imgClass?: string; lazy?: boolean }) {
   const [z, setZ] = useState({ on: false, x: 0, y: 0 });
   const drag = useRef<{ px: number; py: number; x: number; y: number; moved: boolean } | null>(null);
+  // A new photo starts unzoomed (the element is reused now, so reset instead of remounting).
+  useEffect(() => { setZ({ on: false, x: 0, y: 0 }); }, [src]);
   const clamp = (v: number, size: number) => Math.max(-(ZOOM - 1) * size / 2, Math.min((ZOOM - 1) * size / 2, v));
 
   const down = (e: PointerEvent<HTMLDivElement>) => {
