@@ -42,7 +42,7 @@ export function Gallery({ images, name }: { images: GalleryImage[]; name: string
             <li key={i}>
               <button type="button" className="hd-gallery__thumb" aria-pressed={i === active} aria-label={`Image ${i + 1}`} onClick={() => setActive(i)}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.url} alt="" loading="lazy" />
+                <img src={img.url} alt="" loading="lazy" decoding="sync" />
               </button>
             </li>
           ))}
@@ -105,7 +105,9 @@ function Zoomable({ src, alt, className = "", imgClass, lazy }: { src: string; a
     <div className={`hd-zoom ${className}`} data-zoomed={z.on} onPointerDown={down} onPointerMove={move} onPointerUp={up}
       onPointerCancel={() => { drag.current = null; }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img className={imgClass} src={src} alt={alt} loading={lazy ? "lazy" : undefined} draggable={false}
+      {/* decoding="sync": Chrome otherwise decodes a large photo off-thread after a src change and paints
+          an empty (white) box for ~80ms; sync makes it finish the new photo before painting the frame. */}
+      <img className={imgClass} src={src} alt={alt} loading={lazy ? "lazy" : undefined} decoding="sync" draggable={false}
         style={{ transform: z.on ? `translate(${z.x}px, ${z.y}px) scale(${ZOOM})` : undefined, transition: drag.current?.moved ? "none" : undefined }} />
     </div>
   );
