@@ -20,7 +20,7 @@ export function preparePageBuilder(html: string): string {
     .replace(/(<div data-content-type="html"[^>]*>)([\s\S]*?)(<\/div>)/g, (_, open: string, body: string, close: string) => open + decode(body) + close);
 }
 
-export type PbProducts = { urlKeys: string[]; carousel: boolean };
+export type PbProducts = { urlKeys: string[]; carousel: boolean; dots: boolean };
 // html = balanced markup; el = an ancestor <div> of a products widget (rendered as a React element).
 export type PbNode = { html: string } | { el: Record<string, string>; children: PbNode[] } | PbProducts;
 
@@ -56,7 +56,8 @@ export function pageBuilderTree(html: string): PbNode[] {
   const end = divEnd(html, at), widget = html.slice(at, end);
   const urlKeys = [...new Set([...widget.matchAll(/class="product-item-link"[^>]*?href="([^"]+)"|href="([^"]+)"[^>]*?class="product-item-link"/g)]
     .map((m) => (m[1] ?? m[2]).split(/[?#]/)[0].split("/").pop()!.replace(/\.html$/, "")).filter(Boolean))];
-  return [...pageBuilderTree(html.slice(0, at)), { urlKeys, carousel: /data-appearance="carousel"/.test(widget.slice(0, widget.indexOf(">"))) }, ...pageBuilderTree(html.slice(end))];
+  const open = widget.slice(0, widget.indexOf(">"));
+  return [...pageBuilderTree(html.slice(0, at)), { urlKeys, carousel: /data-appearance="carousel"/.test(open), dots: !/data-show-dots="false"/.test(open) }, ...pageBuilderTree(html.slice(end))];
 }
 
 // `<div a="b" c>` -> { a: "b", c: "" } with entities decoded (React re-escapes on output).

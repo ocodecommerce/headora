@@ -709,8 +709,17 @@ html.hd-plp-loading .hd-sort select { visibility: hidden; }
 .hd-cms [data-appearance="collage-centered"] .pagebuilder-overlay { margin: 0 auto; }
 /* Products content type, re-rendered as headless cards (PageBuilder.tsx). */
 .hd-pb-products { margin: 24px 0; text-align: left; min-width: 0; width: 100%; } /* min-width: a flex child would grow to fit every carousel card */
-.hd-pb-products--carousel .hd-grid { position: relative; /* clips the cards' absolute parts too */ display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; padding-bottom: 8px; }
-.hd-pb-products--carousel .hd-grid > li { flex: 0 0 calc((100% - 45px) / 4); scroll-snap-align: start; }
+/* Venia's Products carousel: 5 per view (4 below 1280px, 3 below 960px, 2 below 640px), paged by
+   the bar dots from PageBuilderSliders; swipe/scroll-snap instead of slick, no scrollbar. */
+.hd-pb-products--carousel .hd-grid { --pb-n: 5; --pb-gap: 15px; position: relative; /* clips the cards' absolute parts too */ display: flex; gap: var(--pb-gap); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.hd-pb-products--carousel .hd-grid::-webkit-scrollbar { display: none; }
+.hd-pb-products--carousel .hd-grid > li { flex: 0 0 calc((100% - (var(--pb-n) - 1) * var(--pb-gap)) / var(--pb-n)); scroll-snap-align: start; }
+@media (max-width: 1279px) { .hd-pb-products--carousel .hd-grid { --pb-n: 4; } }
+@media (max-width: 959px) { .hd-pb-products--carousel .hd-grid { --pb-n: 3; } }
+@media (max-width: 639px) { .hd-pb-products--carousel .hd-grid { --pb-n: 2; --pb-gap: 10px; } }
+.hd-pb-dots--bars { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0; margin: 8px 0 0; }
+.hd-pb-dots--bars button { width: 100%; height: 2.5rem; border-style: solid; border-color: transparent; border-width: 1rem 0; border-radius: 0; background-clip: content-box; background-color: rgb(209 213 219); }
+.hd-pb-dots--bars button[aria-current="true"] { background-color: hsl(205 4% 48%); background-clip: content-box; border-color: transparent; } /* undo the round-dot "background"/border */
 @media (max-width: 768px) {
   .hd-cms .pagebuilder-mobile-hidden { display: none; }
   .hd-cms .pagebuilder-mobile-only { display: inline-block; }
@@ -724,7 +733,6 @@ html.hd-plp-loading .hd-sort select { visibility: hidden; }
   .hd-cms h3 { font-size: 28px; line-height: 36px; }
   .hd-cms :is(h1, h2, h3) { overflow-wrap: break-word; }
   .hd-cms [data-appearance^="collage"] .pagebuilder-overlay { max-width: none; }
-  .hd-pb-products--carousel .hd-grid > li { flex-basis: calc((100% - 10px) / 2); }
 }
 
 @media (max-width: 1000px) { .hd-plp__bar { margin-left: 0; } .hd-sort select { width: auto; } }

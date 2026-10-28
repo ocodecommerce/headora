@@ -28,7 +28,7 @@ async function render(nodes: PbNode[], locale: string, variant?: PresetName): Pr
     const byKey = new Map<string, any>((data?.products?.items ?? []).map((p: any) => [p.url_key, p]));
     const items = n.urlKeys.map((k) => byKey.get(k)).filter(Boolean);
     return items.length ? (
-      <div key={i} className={`hd-pb-products${n.carousel ? " hd-pb-products--carousel" : ""}`}>
+      <div key={i} className={`hd-pb-products${n.carousel ? " hd-pb-products--carousel" : ""}`} data-show-dots={String(n.dots)}>
         <ProductGrid items={items} locale={locale} variant={variant} />
       </div>
     ) : null;
