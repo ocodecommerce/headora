@@ -14,7 +14,7 @@ import { getPresetName } from "../../../lib/theme.js";
 import { PdpTabs } from "../../../components/product/PdpTabs.js";
 import { ProductGrid } from "../../../components/catalog/ProductGrid.js";
 import { Breadcrumbs, type Crumb } from "../../../components/layout/Breadcrumbs.js";
-import { preparePageBuilder } from "../../../lib/pagebuilder.js";
+import { PageBuilder } from "../../../components/blocks/PageBuilder.js";
 import { alternates, breadcrumbLd, describe, JsonLd, siteName, siteUrl } from "../../../lib/seo.js";
 export const revalidate = 120;
 
@@ -211,7 +211,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
       // Venia CmsPage: PageBuilder content only; a heading only when content_heading is set.
       <article id="html-body" className="hd-cms">
         {cmsPage.content_heading ? <h1 className="hd-cms__heading">{cmsPage.content_heading}</h1> : null}
-        <div dangerouslySetInnerHTML={{ __html: preparePageBuilder(cmsPage.content ?? "") }} />
+        <PageBuilder html={cmsPage.content ?? ""} locale={locale} variant={preset} />
       </article>
     );
   }

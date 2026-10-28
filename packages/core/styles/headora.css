@@ -1,6 +1,7 @@
 /* Headora storefront styles. Every colour, font, radius and width comes from the
    preset tokens (--headora-*), set per request by app/[locale]/layout.tsx.
    Import once from the site root layout: import "@headora/core/styles/headora.css"; */
+@import "./venia-home.css";
 
 /* Legacy declares Muli 200/300 with files that never load, so browsers draw that text in the
    generic sans-serif (verified with DevTools platform fonts). An empty source fails the same
@@ -693,11 +694,37 @@ html.hd-plp-loading .hd-sort select { visibility: hidden; }
 .hd-cms hr { margin: 20px 0; border-style: solid none none; }
 /* Sample tables use cellpadding="14px"; the global td reset would drop it. */
 .hd-cms td, .hd-cms th { padding: 14px; }
+/* PageBuilder slider (Venia home): one slide per view, swipe/scroll-snap, dots from PageBuilderSliders. */
+.hd-cms [data-content-type="slider"] { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.hd-cms [data-content-type="slider"]::-webkit-scrollbar { display: none; }
+.hd-cms [data-content-type="slide"] { flex: 0 0 100%; scroll-snap-align: start; }
+.hd-pb-dots { display: flex; justify-content: center; gap: 10px; margin: 12px 0 4px; }
+.hd-pb-dots button { width: 10px; height: 10px; padding: 0; border: 1px solid rgb(107 114 128); border-radius: 50%; background: #fff; cursor: pointer; }
+.hd-pb-dots button[aria-current="true"] { background: rgb(17 24 39); border-color: rgb(17 24 39); }
+/* Banner/slide "collage" appearances: the text box sits on one side of the background image. */
+.hd-cms [data-appearance^="collage"] :is(.pagebuilder-slide-wrapper, .pagebuilder-banner-wrapper) { display: flex; align-items: center; }
+.hd-cms [data-appearance^="collage"] .pagebuilder-overlay { max-width: 540px; text-align: left; }
+.hd-cms [data-appearance="collage-left"] .pagebuilder-overlay { margin-right: auto; }
+.hd-cms [data-appearance="collage-right"] .pagebuilder-overlay { margin-left: auto; }
+.hd-cms [data-appearance="collage-centered"] .pagebuilder-overlay { margin: 0 auto; }
+/* Products content type, re-rendered as headless cards (PageBuilder.tsx). */
+.hd-pb-products { margin: 24px 0; text-align: left; min-width: 0; width: 100%; } /* min-width: a flex child would grow to fit every carousel card */
+.hd-pb-products--carousel .hd-grid { position: relative; /* clips the cards' absolute parts too */ display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; padding-bottom: 8px; }
+.hd-pb-products--carousel .hd-grid > li { flex: 0 0 calc((100% - 45px) / 4); scroll-snap-align: start; }
 @media (max-width: 768px) {
   .hd-cms .pagebuilder-mobile-hidden { display: none; }
   .hd-cms .pagebuilder-mobile-only { display: inline-block; }
   .hd-cms .pagebuilder-column-group { flex-wrap: wrap; }
   .hd-cms .pagebuilder-column { width: 100% !important; }
+  .hd-cms [style*="--hd-pb-mobile"] { background-image: var(--hd-pb-mobile) !important; }
+  .hd-cms table { display: block; max-width: 100%; overflow-x: auto; } /* wide sample tables scroll, not the page */
+  /* Desktop heading sizes don't fit a phone ("Replacements" at 60px is wider than the screen). */
+  .hd-cms h1 { font-size: 48px; line-height: 56px; }
+  .hd-cms h2 { font-size: 36px; line-height: 44px; }
+  .hd-cms h3 { font-size: 28px; line-height: 36px; }
+  .hd-cms :is(h1, h2, h3) { overflow-wrap: break-word; }
+  .hd-cms [data-appearance^="collage"] .pagebuilder-overlay { max-width: none; }
+  .hd-pb-products--carousel .hd-grid > li { flex-basis: calc((100% - 10px) / 2); }
 }
 
 @media (max-width: 1000px) { .hd-plp__bar { margin-left: 0; } .hd-sort select { width: auto; } }

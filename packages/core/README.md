@@ -59,7 +59,7 @@ See the [demo site](https://github.com/ocodecommerce/headora/tree/main/sites/dem
 | `HEADORA_PRESET` | `minimal` (default), `bold` or `classic` |
 | `REVALIDATE_SECRET` | At least 8 characters; guards `/api/revalidate` |
 | `HEADORA_SITE_NAME`, `HEADORA_COPYRIGHT`, `HEADORA_SOCIAL_LINKS` | Header/footer text and social links |
-| `HEADORA_HOME_PAGE` | Magento CMS page used as the homepage (default `home`) |
+| `HEADORA_HOME_PAGE` | Magento CMS page used as the homepage (default: the store's *CMS Home Page* setting, e.g. `venia-new-home` on Venia sample data) |
 | `HEADORA_PUBLIC_URL` | Public storefront URL; keeps Magento-only links relative when on the same host |
 
 ## Magento side

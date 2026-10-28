@@ -1,24 +1,29 @@
 import { getConfig, magentoFetch } from "../../lib/magento.js";
-import { HOME_QUERY, CMS_QUERY } from "../../graphql/catalog.js";
+import { HOME_QUERY, CMS_QUERY, HOME_ID_QUERY } from "../../graphql/catalog.js";
 import { getHomeBlocks, getPresetName } from "../../lib/theme.js";
 import { rewriteCmsLinks } from "../../lib/cms.js";
 import { BlockRenderer } from "../../components/blocks/BlockRenderer.js";
 import { CmsHome } from "../../components/blocks/CmsHome.js";
+import { PageBuilder } from "../../components/blocks/PageBuilder.js";
 import type { Metadata } from "next";
 import { alternates, describe, JsonLd, siteName, siteUrl } from "../../lib/seo.js";
 
 export const revalidate = 300;
 
-// Magento CMS page used as the homepage (same as the legacy storefront). When it is
-// missing or empty, the preset block layout renders instead.
-const HOME_PAGE = process.env.HEADORA_HOME_PAGE ?? "home";
+// Magento CMS page used as the homepage (same as the legacy storefront). Unset/empty = the
+// store's own Stores > Configuration > Web > Default Pages > CMS Home Page (Venia sample data
+// sets "venia-new-home"). When the page is missing or empty, the preset block layout renders.
+const HOME_PAGE = process.env.HEADORA_HOME_PAGE;
+const homePageId = async (locale: string): Promise<string> =>
+  HOME_PAGE || (await magentoFetch<any>(HOME_ID_QUERY, {}, { tags: ["home", "cms", `locale:${locale}`], revalidate: 300, locale }).catch(() => null))?.storeConfig?.cms_home_page || "home";
 // CMS block backing the preset hero. Falls back to the preset hero when absent.
 const HERO_BLOCK = process.env.HEADORA_HERO_BLOCK ?? "venia-personalized-content";
 const CAROUSEL_SIZE = 8;
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  const page = HOME_PAGE ? await magentoFetch<any>(CMS_QUERY, { id: HOME_PAGE }, { tags: ["home", "cms", `locale:${locale}`, `cms:${HOME_PAGE}`], revalidate: 300, locale }).catch(() => null) : null;
+  const id = await homePageId(locale);
+  const page = await magentoFetch<any>(CMS_QUERY, { id }, { tags: ["home", "cms", `locale:${locale}`, `cms:${id}`], revalidate: 300, locale }).catch(() => null);
   const description = describe(page?.cmsPage?.meta_description, page?.cmsPage?.content);
   // The layout template would give "Home page | Headora"; the homepage is just the store name.
   const title = page?.cmsPage?.meta_title || siteName();
@@ -40,10 +45,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const preset = getPresetName();
   const tags = ["home", "cms", `locale:${locale}`];
 
-  const page = HOME_PAGE
-    ? await magentoFetch<any>(CMS_QUERY, { id: HOME_PAGE }, { tags: [...tags, `cms:${HOME_PAGE}`], revalidate: 300, locale }).catch(() => null)
-    : null;
+  const id = await homePageId(locale);
+  const page = await magentoFetch<any>(CMS_QUERY, { id }, { tags: [...tags, `cms:${id}`], revalidate: 300, locale }).catch(() => null);
   const cmsHtml: string = page?.cmsPage?.content?.trim() ?? "";
+  // PageBuilder homepages (Venia sample data) render like CMS pages; legacy hero_section markup keeps CmsHome.
+  if (cmsHtml.includes("data-content-type=")) return <><JsonLd data={siteLd} /><article id="html-body" className="hd-cms hd-cms--home"><PageBuilder html={cmsHtml} locale={locale} variant={preset} /></article></>;
   if (cmsHtml) return <><JsonLd data={siteLd} /><CmsHome html={rewriteCmsLinks(cmsHtml, locale, getConfig().MAGENTO_BASE_URL)} /></>;
 
   const data = await magentoFetch<any>(

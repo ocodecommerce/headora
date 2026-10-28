@@ -7,7 +7,7 @@ import { SocialIcon } from "./Icons.js";
 // Columns/legal links come from @headora/preset-base blocks.json (footer); copyright and
 // social URLs from HEADORA_COPYRIGHT / HEADORA_SOCIAL_LINKS ("instagram=https://…,facebook=…").
 export function Footer({
-  locale, storeName, copyright, magentoBaseUrl, config, social,
+  locale, storeName, copyright, magentoBaseUrl, config, social, missing,
 }: {
   locale: string;
   tokens: ThemeTokens;
@@ -17,6 +17,8 @@ export function Footer({
   magentoBaseUrl: string;
   config: FooterConfig;
   social: { name: string; url: string }[];
+  // Legal hrefs whose Magento CMS page does not exist: shown as text, not a link to a 404.
+  missing?: Set<string>;
 }) {
   const base = magentoBaseUrl.replace(/\/$/, "");
   const fill = (s: string) => s.replaceAll("{locale}", locale).replaceAll("{magento}", base).replaceAll("{site}", storeName);
@@ -57,7 +59,7 @@ export function Footer({
       <div className="hd-footer__bottom">
         <a className="hd-footer__brand" href={`/${locale}`}>{storeName}</a>
         <div className="hd-footer__copy">{copyright ?? ""}</div>
-        <ul className="hd-footer__legal">{config.legal.map((l, i) => <li key={i}><a href={fill(l.href)}>{l.label}</a></li>)}</ul>
+        <ul className="hd-footer__legal">{config.legal.map((l, i) => <li key={i}>{missing?.has(l.href) ? l.label : <a href={fill(l.href)}>{l.label}</a>}</li>)}</ul>
       </div>
     </footer>
   );

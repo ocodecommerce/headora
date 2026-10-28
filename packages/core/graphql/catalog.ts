@@ -63,6 +63,11 @@ export const SHELL_QUERY = `query Shell {
   availableStores { store_code store_name }
 }`;
 export const CMS_QUERY =`query Cms($id: String!) { cmsPage(identifier: $id) { title content_heading content meta_title meta_description } }`;
+export const HOME_ID_QUERY = `query HomeId { storeConfig { cms_home_page } }`;
+export const PB_PRODUCTS_QUERY = `${PRODUCT_CARD_FRAGMENT}
+query PbProducts($keys: [String!], $size: Int!) { products(filter: { url_key: { in: $keys } }, pageSize: $size) { items { ...Card } } }`;
+// urlResolver answers null (not an error) for a missing page; one alias per path.
+export const pagesExistQuery = (paths: string[]) => `query Exists { ${paths.map((p, i) => `p${i}: urlResolver(url: ${JSON.stringify(p)}) { type }`).join(" ")} }`;
 export const STORES_QUERY = `query Stores { storeConfig { store_name base_currency_code locale } availableStores { store_code store_name } currency { base_currency_code available_currency_codes } }`;
 export const REVIEWS_QUERY = `query Rev($sku: String!) { products(filter: { sku: { eq: $sku } }) { items { reviews(pageSize: 10, currentPage: 1) { items { nickname summary text created_at average_rating ratings_breakdown { name value } } } review_count rating_summary } } }`;
 export const CREATE_REVIEW_MUTATION = `mutation Write($sku: String!, $nick: String!, $sum: String!, $text: String!, $ratings: [ProductReviewRatingInput!]!) {

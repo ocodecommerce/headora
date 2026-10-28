@@ -7,7 +7,7 @@ import { Footer } from "../../components/layout/Footer.js";
 import { getFooterConfig, getPresetName, getTokens, tokensToCssVars } from "../../lib/theme.js";
 import { getConfig, magentoFetch, storeForLocale } from "../../lib/magento.js";
 import { magentoLinkBase, storeLocalePairs } from "../../lib/config.js";
-import { SHELL_QUERY } from "../../graphql/catalog.js";
+import { SHELL_QUERY, pagesExistQuery } from "../../graphql/catalog.js";
 import { locales, siteName, siteUrl } from "../../lib/seo.js";
 
 // Site-wide defaults: absolute URLs resolve against metadataBase; pages fill in title/description/canonical.
@@ -50,6 +50,14 @@ export default async function LocaleLayout({ children, params }: { children: Rea
   const stores: ShellStore[] = storeLocalePairs()
     .filter((p) => available.has(p.store))
     .map((p) => ({ code: p.store, name: available.get(p.store)!, locale: p.locale }));
+  // Legal links point at Magento CMS pages a store may not have (Venia sample data has no
+  // terms-of-service); missing ones render as plain text, as in Venia's footer. Unknown = keep link.
+  const footer = getFooterConfig();
+  const legal = footer.legal.map((l) => l.href).filter((h) => h.startsWith("/{locale}/")).map((h) => h.slice(10));
+  const found = legal.length
+    ? await magentoFetch<Record<string, unknown>>(pagesExistQuery(legal), {}, { tags: ["shell", `locale:${locale}`], revalidate: 600, locale }).catch(() => null)
+    : null;
+  const missing = new Set(found ? legal.filter((_, i) => !found[`p${i}`]).map((p) => `/{locale}/${p}`) : []);
 
   return (
     <div className="hd" data-headora-preset={preset}>
@@ -74,7 +82,8 @@ export default async function LocaleLayout({ children, params }: { children: Rea
         storeName={storeName}
         copyright={config.HEADORA_COPYRIGHT || sc?.copyright}
         magentoBaseUrl={magentoLinkBase()}
-        config={getFooterConfig()}
+        config={footer}
+        missing={missing}
         social={config.HEADORA_SOCIAL_LINKS.split(",").map((p) => p.split("=")).filter(([n, u]) => n && /^https?:\/\//.test(u ?? "")).map(([n, u]) => ({ name: n.trim(), url: u.trim() }))}
       />
       <AuthModals locale={locale} />
