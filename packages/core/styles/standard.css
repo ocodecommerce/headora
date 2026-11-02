@@ -106,8 +106,8 @@
 .hd.hd--std .std-arrows { display: flex; gap: 8px; }
 .hd.hd--std .std-cats { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; margin: 0; padding: 0; }
 .hd.hd--std .std-cat { position: relative; display: block; overflow: hidden; border-radius: 22px; aspect-ratio: 3 / 4; background: var(--std-soft); }
-.hd.hd--std .std-cat img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; transition: transform .5s ease; }
-.hd.hd--std .std-cat:hover img { transform: scale(1.04); }
+.hd.hd--std .std-cat img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+.hd.hd--std .std-cat:hover .std-cat__label { background: #fff; box-shadow: 0 8px 24px rgb(18 18 18 / .12); }
 .hd.hd--std .std-cat__label { position: absolute; left: 14px; right: 14px; bottom: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border-radius: 16px; background: rgb(255 255 255 / .94); color: var(--std-ink); }
 .hd.hd--std .std-cat__label strong { display: block; font-family: var(--headora-font-display); font-size: 20px; }
 .hd.hd--std .std-cat__label small { display: block; font-size: 13px; color: var(--std-muted); }
@@ -133,14 +133,19 @@
 /* ---------- Product card ---------- */
 .hd.hd--std .hd-card { position: relative; }
 .hd.hd--std .hd-card__media { width: 100%; border-radius: 18px; background: var(--std-soft); }
-.hd.hd--std .hd-card__img { object-fit: cover; background: var(--std-soft); }
-.hd.hd--std .hd-card__img:hover { transform: scale(1.03); }
+/* No GPU layers inside the rounded, clipped media box (hover zoom, fade transition, will-change shimmer):
+   Chrome has to mask them against the rounded clip, and on some GPUs that leaves stale/duplicated tiles
+   while scrolling. Loading state is the flat surface colour; the photo simply appears. */
+.hd.hd--std .hd-card__img { object-fit: cover; background: var(--std-soft); transition: none; }
+.hd.hd--std .hd-card__img:hover { transform: none; }
+.hd.hd--std .hd-card__media::before { content: none; }
+.hd.hd--std .hd-card__media:has(.hd-card__img:not([data-loaded]))::before { content: none; animation: none; }
 .hd.hd--std .hd-card__name { margin-top: 14px; padding: 0; font-size: 15px; font-weight: 500; line-height: 1.35; letter-spacing: 0; color: var(--std-ink); text-transform: none; }
 .hd.hd--std .hd-card__price { padding: 0; margin-top: 2px; font-size: 15px; font-weight: 600; line-height: 1.5; letter-spacing: 0; color: var(--std-ink); }
 .hd.hd--std .hd-card__actions { position: absolute; top: 12px; left: 12px; right: 12px; justify-content: space-between; margin: 0; pointer-events: none; }
 .hd.hd--std .hd-card__actions > * { pointer-events: auto; }
-.hd.hd--std .hd-card__atc { width: auto; height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: #fff; color: var(--std-ink); font: 600 13px var(--headora-font); text-transform: none; box-shadow: 0 4px 14px rgb(18 18 18 / .1); opacity: 0; transform: translateY(-4px); transition: opacity .2s, transform .2s, background .2s; }
-.hd.hd--std .hd-card:is(:hover, :focus-within) .hd-card__atc { opacity: 1; transform: none; }
+.hd.hd--std .hd-card__atc { width: auto; height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: #fff; color: var(--std-ink); font: 600 13px var(--headora-font); text-transform: none; box-shadow: 0 4px 14px rgb(18 18 18 / .1); visibility: hidden; }
+.hd.hd--std .hd-card:is(:hover, :focus-within) .hd-card__atc { visibility: visible; }
 .hd.hd--std .hd-card__atc:hover:not(:disabled) { background: var(--std-ink); color: #fff; }
 .hd.hd--std .hd-card__wish { width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 999px; background: #fff; box-shadow: 0 4px 14px rgb(18 18 18 / .1); }
 .hd.hd--std .hd-card__wish svg { width: 18px; height: 18px; }
