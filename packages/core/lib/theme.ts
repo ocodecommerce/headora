@@ -4,6 +4,7 @@ import baseBlocks from "@headora/preset-base/blocks.json";
 import minimal from "@headora/preset-minimal/preset.json";
 import bold from "@headora/preset-bold/preset.json";
 import classic from "@headora/preset-classic/preset.json";
+import standard from "@headora/preset-standard/preset.json";
 
 export const TokensSchema = z.object({
   font: z.string(),
@@ -32,11 +33,11 @@ export const TokensSchema = z.object({
 });
 export type ThemeTokens = z.infer<typeof TokensSchema>;
 
-export const PresetNameSchema = z.enum(["minimal", "bold", "classic"]);
+export const PresetNameSchema = z.enum(["minimal", "bold", "classic", "standard"]);
 export type PresetName = z.infer<typeof PresetNameSchema>;
 
 // Tokens come from the @headora/preset-* packages: base tokens.json + the variant's preset.json overrides.
-const VARIANTS: Record<PresetName, { tokens?: Partial<ThemeTokens> }> = { minimal, bold, classic } as any;
+const VARIANTS: Record<PresetName, { tokens?: Partial<ThemeTokens> }> = { minimal, bold, classic, standard } as any;
 
 export function getPresetName(): PresetName {
   const raw = (process.env.HEADORA_PRESET ?? "minimal").trim().toLowerCase();
@@ -57,6 +58,18 @@ export function getTokens(preset?: PresetName): ThemeTokens {
 
 export function getHomeBlocks(): string[] {
   return [...baseBlocks.home];
+}
+
+// Standard preset homepage content (hero slides, shop-the-look banner, USP row).
+export type StdSlide = { image: string; imageSmall?: string; alt: string; eyebrow: string; title: string; text: string; cta: string; href: string };
+export type StdHomeConfig = {
+  freeShippingOver: number;
+  slides: StdSlide[];
+  look: { image: string; alt: string; eyebrow: string; title: string; text: string };
+  usps: string[];
+};
+export function getStdHome(): StdHomeConfig {
+  return (standard as any).home as StdHomeConfig;
 }
 
 export type FooterLink = { label: string; href: string };

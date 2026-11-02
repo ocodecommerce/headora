@@ -129,7 +129,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
         <JsonLd data={productLd} />
         <JsonLd data={breadcrumbLd(origin, crumbs)} />
         <Breadcrumbs items={crumbs} />
-        <ProductView item={{ ...item, short_description: null }} reviewCount={reviewCount} locale={locale} magentoBaseUrl={getConfig().MAGENTO_BASE_URL} />
+        <ProductView item={{ ...item, short_description: null }} reviewCount={reviewCount} locale={locale} magentoBaseUrl={getConfig().MAGENTO_BASE_URL} optimize={preset === "standard"} />
         <PdpTabs
           description={item.description?.html ?? ""}
           details={(pdp?.products?.aggregations ?? [])

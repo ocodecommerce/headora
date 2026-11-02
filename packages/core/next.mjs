@@ -6,10 +6,37 @@
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_LOCALE || "en";
 
+// Hosts whose product images may be resized by /_next/image: the Magento base URL plus any
+// media/CDN hosts in HEADORA_IMAGE_HOSTS (comma list of hosts, e.g. "cdn.example.com").
+function imageHosts() {
+  const hosts = new Set((process.env.HEADORA_IMAGE_HOSTS || "").split(",").map((h) => h.trim()).filter(Boolean));
+  try { if (process.env.MAGENTO_BASE_URL) hosts.add(new URL(process.env.MAGENTO_BASE_URL).host); } catch {}
+  return [...hosts];
+}
+
 /** @param {import('next').NextConfig} config */
 export function withHeadora(config = {}) {
+  const hosts = imageHosts();
   return {
     ...config,
+    env: { ...config.env, NEXT_PUBLIC_HEADORA_IMAGE_HOSTS: hosts.join(",") },
+    images: {
+      ...config.images,
+      formats: config.images?.formats ?? ["image/avif", "image/webp"],
+      // Magento keeps a product image's URL when nothing changes; replaced images get a new name.
+      minimumCacheTTL: config.images?.minimumCacheTTL ?? 60 * 60 * 24 * 7,
+      remotePatterns: [
+        ...(config.images?.remotePatterns ?? []),
+        ...hosts.map((h) => {
+          const [hostname, port] = h.split(":");
+          return { protocol: "https", hostname, ...(port ? { port } : {}) };
+        }),
+        ...hosts.map((h) => {
+          const [hostname, port] = h.split(":");
+          return { protocol: "http", hostname, ...(port ? { port } : {}) };
+        }),
+      ],
+    },
     transpilePackages: [...new Set([...(config.transpilePackages ?? []), "@headora/core"])],
     // Next 15.2+ streams page metadata into <body> for most user agents and lets JS hoist it.
     // Pages here render fully before sending, so nothing is gained; keep title/description/

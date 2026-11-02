@@ -1,4 +1,5 @@
 import { CardActions } from "./CardActions.js";
+import { optimized, srcSet } from "../../lib/img.js";
 
 type Money = { value: number | null; currency: string | null };
 export type CardProduct = {
@@ -52,7 +53,8 @@ export function Price({ range, locale, trim = false }: { range?: CardProduct["pr
   return <>{money(final, locale, trim) ?? money(regular, locale, trim)}</>;
 }
 
-export function ProductCard({ product: p, locale, actions = false, eager = false }: { product: CardProduct; locale: string; actions?: boolean; eager?: boolean }) {
+// `optimize`: serve a resized srcset (standard preset); legacy presets keep the original file.
+export function ProductCard({ product: p, locale, actions = false, eager = false, optimize = false }: { product: CardProduct; locale: string; actions?: boolean; eager?: boolean; optimize?: boolean }) {
   const href = `/${locale}/${p.url_key}.html`;
   const img = cardImage(p);
   return (
@@ -63,7 +65,8 @@ export function ProductCard({ product: p, locale, actions = false, eager = false
         <span className="hd-card__media">
           {img ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="hd-card__img" src={img} alt={p.name} loading={eager ? "eager" : "lazy"} />
+            <img className="hd-card__img" src={optimize ? optimized(img, 640) : img} srcSet={optimize ? srcSet(img) : undefined}
+              sizes={optimize ? "(max-width: 900px) 50vw, 25vw" : undefined} alt={p.name} loading={eager ? "eager" : "lazy"} />
           ) : null}
         </span>
         <span className="hd-card__name">{p.name}</span>

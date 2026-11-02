@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BagIcon } from "./Icons.js";
 import { money } from "../catalog/ProductCard.js";
 import type { CartSummary } from "../../lib/cart.js";
@@ -7,7 +7,7 @@ import type { CartSummary } from "../../lib/cart.js";
 // Header cart: count badge + slide-in drawer from the right (legacy v1 "cart bag").
 // Loads GET /api/cart on mount; the "headora:cart" event (product page / card add-to-cart) refreshes and opens it.
 // Checkout goes through /api/handoff to native Magento checkout.
-export function MiniCart({ locale }: { locale: string }) {
+export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: string; icon?: ReactNode; cartHref?: string }) {
   const [cart, setCart] = useState<CartSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
@@ -24,8 +24,11 @@ export function MiniCart({ locale }: { locale: string }) {
       .catch(() => {})
       .finally(() => setLoading(false));
     const onCart = (e: Event) => { setCart((e as CustomEvent<CartSummary>).detail); setLoading(false); setOpen(true); };
+    // Basket page edits: refresh the count without opening the drawer.
+    const onSync = (e: Event) => setCart((e as CustomEvent<CartSummary>).detail);
     window.addEventListener("headora:cart", onCart);
-    return () => window.removeEventListener("headora:cart", onCart);
+    window.addEventListener("headora:cart-sync", onSync);
+    return () => { window.removeEventListener("headora:cart", onCart); window.removeEventListener("headora:cart-sync", onSync); };
   }, [locale]);
 
   // Modal behaviour: focus close button, Escape closes, page behind does not scroll.
@@ -77,7 +80,7 @@ export function MiniCart({ locale }: { locale: string }) {
     <>
       <button ref={triggerRef} type="button" className="hd-action hd-minicart" aria-haspopup="dialog" aria-expanded={open}
         aria-label={`Cart, ${count} item${count === 1 ? "" : "s"}`} onClick={() => setOpen(true)}>
-        <BagIcon />
+        {icon}
         {count ? <span className="hd-badge">{count > 99 ? "99+" : count}</span> : null}
       </button>
 
@@ -90,7 +93,7 @@ export function MiniCart({ locale }: { locale: string }) {
               </button>
               <h2 id="hd-drawer-title">Cart</h2>
               <span className="hd-drawer__bag" aria-hidden="true">
-                <BagIcon />
+                {icon}
                 {count ? <span className="hd-badge">{count > 99 ? "99+" : count}</span> : null}
               </span>
             </div>
@@ -144,7 +147,8 @@ export function MiniCart({ locale }: { locale: string }) {
                 </div>
                 <div className="hd-drawer__foot">
                   <div className="hd-drawer__line"><span>Subtotal</span><span>{subtotal}</span></div>
-                  <a className="hd-drawer__checkout" href="/api/handoff">Proceed to Checkout</a>
+                  {cartHref ? <a className="hd-drawer__view" href={cartHref}>View basket</a> : null}
+                  <a className="hd-drawer__checkout" href={cartHref ? cartHref.replace(/\/cart$/, "/checkout") : "/api/handoff"}>Proceed to Checkout</a>
                 </div>
               </>
             ) : (

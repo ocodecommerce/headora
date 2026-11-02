@@ -6,6 +6,7 @@ import { BundleOptions, type BundleItem, type BundleState } from "./BundleOption
 import { Price, money, type CardProduct } from "../catalog/ProductCard.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { useWishlist } from "../catalog/wishlistStore.js";
+import { optimized } from "../../lib/img.js";
 
 type OptionValue = { uid: string; label: string; value_index: number; swatch_data?: { value?: string | null } | null };
 type Option = { attribute_code: string; label: string; values: OptionValue[] };
@@ -38,8 +39,10 @@ const isHex = (v?: string | null) => /^#[0-9a-f]{3,8}$/i.test(v ?? "");
 
 // Legacy v1 product page: gallery + buy box. Picking options switches the gallery,
 // SKU and price to the matching variant, as the legacy storefront did.
-export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
+export function ProductView({ item, reviewCount, locale, magentoBaseUrl, optimize = false }: {
   item: PdpItem; reviewCount: number; locale: string; magentoBaseUrl: string;
+  // Standard preset: gallery photos resized to 1080px (sharp on 2-3x phones and the desktop column).
+  optimize?: boolean;
 }) {
   const options = item.configurable_options ?? [];
   const variants = item.variants ?? [];
@@ -64,20 +67,22 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl }: {
     const own = (preview?.product.media_gallery ?? []).filter((i) => i.url && !i.disabled)
       .map((i, n) => ({ ...i, position: -100 + n }));
     const seen = new Set(own.map((i) => i.url));
-    return [...own, ...parent.filter((i) => !seen.has(i.url))];
-  }, [preview, item]);
+    const list = [...own, ...parent.filter((i) => !seen.has(i.url))];
+    return optimize ? list.map((i) => ({ ...i, url: optimized(i.url, 1080) })) : list;
+  }, [preview, item, optimize]);
 
   // Warm the browser cache with each colour's main photo once the page is idle, so switching colour
   // rarely waits on a download (deduped: size variants share their colour's photos).
   useEffect(() => {
     const urls = new Set(variants.map((v) => (v.product.media_gallery ?? []).filter((i) => i.url && !i.disabled)
-      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))[0]?.url).filter((u): u is string => !!u));
+      .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))[0]?.url).filter((u): u is string => !!u)
+      .map((u) => (optimize ? optimized(u, 1080) : u)));
     if (!urls.size) return;
     const warm = () => urls.forEach((u) => { new Image().src = u; });
     const idle = (window as any).requestIdleCallback as ((cb: () => void) => number) | undefined;
     const id = idle ? idle(warm) : window.setTimeout(warm, 1500);
     return () => { if (idle) (window as any).cancelIdleCallback?.(id); else clearTimeout(id); };
-  }, [variants]);
+  }, [variants, optimize]);
 
   const available = (code: string, valueIndex: number) =>
     variants.some((v) => v.product.stock_status !== "OUT_OF_STOCK" && matches(v, { ...picked, [code]: valueIndex }));

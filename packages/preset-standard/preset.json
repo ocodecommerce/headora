@@ -1,0 +1,34 @@
+{
+  "preset": "standard",
+  "extends": "@headora/preset-base",
+  "style": "standard",
+  "tokens": {
+    "font": "Inter, system-ui, -apple-system, \"Segoe UI\", sans-serif",
+    "fontDisplay": "\"Bricolage Grotesque\", Inter, system-ui, sans-serif",
+    "fontsHref": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Inter:wght@400;500;600&display=swap",
+    "primary": "#121212",
+    "accent": "#2E44E6",
+    "accentDark": "#1F2FA8",
+    "muted": "#5C5C5C",
+    "border": "#ECEAE5",
+    "surface": "#F3F2EE",
+    "ribbonBg": "#121212",
+    "ribbonText": "#ffffff",
+    "storeBarBg": "#F3F2EE",
+    "highlight": "#2E44E6",
+    "radius": 16,
+    "buttonRadius": 999,
+    "container": 1360,
+    "header": { "ribbon": "Free shipping over $75 · 30-day free returns" }
+  },
+  "home": {
+    "freeShippingOver": 75,
+    "slides": [
+      { "image": "/std/hero-coat.webp", "imageSmall": "/std/hero-coat-768.webp", "alt": "Woman in a camel coat and cream turtleneck", "eyebrow": "New season", "title": "Sharp layers for softer days", "text": "Tailored coats, clean lines and knits that finish the look.", "cta": "Shop new arrivals", "href": "{category:1}" },
+      { "image": "/std/hero-floral.webp", "imageSmall": "/std/hero-floral-768.webp", "alt": "Woman in a floral silk blouse and ivory wide trousers", "eyebrow": "The print edit", "title": "Bold prints, easy fits", "text": "Florals and statement blouses made to mix with everything you own.", "cta": "Shop tops", "href": "{category:0}" },
+      { "image": "/std/hero-dunes.webp", "imageSmall": "/std/hero-dunes-768.webp", "alt": "Woman in a white linen maxi dress on a coastal dune path", "eyebrow": "Summer dresses", "title": "Light layers, long days", "text": "Breezy maxis and linen dresses in airy, washable fabrics.", "cta": "Shop dresses", "href": "{category:2}" }
+    ],
+    "look": { "image": "/std/hero-terrace.webp", "alt": "Woman in a terracotta midi dress on a Mediterranean terrace", "eyebrow": "Shop the look", "title": "Terrace hours", "text": "A breezy midi, a straw bag and gold accents. Easy from lunch to late." },
+    "usps": ["Free shipping over $75", "30-day free returns", "Secure checkout", "Support 7 days a week"]
+  }
+}

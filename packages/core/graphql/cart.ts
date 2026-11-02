@@ -16,3 +16,6 @@ export const ADD_TO_CART_MUTATION = `mutation Add($id: String!, $items: [CartIte
 export const REMOVE_FROM_CART_MUTATION = `mutation Remove($id: String!, $uid: ID!) {
   removeItemFromCart(input: { cart_id: $id, cart_item_uid: $uid }) { cart { ${CART_FIELDS} } }
 }`;
+export const UPDATE_CART_ITEM_MUTATION = `mutation Qty($id: String!, $uid: ID!, $qty: Float!) {
+  updateCartItems(input: { cart_id: $id, cart_items: [{ cart_item_uid: $uid, quantity: $qty }] }) { cart { ${CART_FIELDS} } }
+}`;

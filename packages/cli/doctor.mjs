@@ -27,8 +27,8 @@ loadEnvFile();
 
 // 1. Theme preset must be a known variant (theme switch is config-only, never code).
 const preset = (process.env.HEADORA_PRESET ?? "minimal").trim().toLowerCase();
-if (!["minimal", "bold", "classic"].includes(preset)) {
-  console.error(`HEADORA_PRESET invalid: "${preset}" (expected minimal|bold|classic)`);
+if (!["minimal", "bold", "classic", "standard"].includes(preset)) {
+  console.error(`HEADORA_PRESET invalid: "${preset}" (expected minimal|bold|classic|standard)`);
   process.exit(1);
 }
 

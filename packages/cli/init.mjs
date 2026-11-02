@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // create-headora-app: scaffolds a Headora storefront in a new folder (like `npx @magento/pwa` for Venia).
 //   npx create-headora-app my-store [--url=https://shop.example/graphql] [--store=default]
-//     [--currency=USD] [--preset=minimal|bold|classic] [--site-name="My Shop"] [--yes] [--no-install]
+//     [--currency=USD] [--preset=standard|minimal|bold|classic] [--site-name="My Shop"] [--yes] [--no-install]
 // Run from a Headora checkout (or with --local=/path/to/repo) to install the repo's packages
 // as npm-pack tarballs instead of from the npm registry.
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -13,8 +13,8 @@ import { createInterface } from "node:readline/promises";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const version = JSON.parse(readFileSync(join(here, "package.json"), "utf8")).version;
-const PRESETS = ["minimal", "bold", "classic"];
-const PACKAGES = ["core", "preset-base", "preset-bold", "preset-classic", "preset-minimal"];
+const PRESETS = ["standard", "minimal", "bold", "classic"];
+const PACKAGES = ["core", "preset-base", "preset-bold", "preset-classic", "preset-minimal", "preset-standard"];
 // Files the template must never carry into a new project.
 const SKIP = new Set(["node_modules", ".next", ".env", "tsconfig.tsbuildinfo", "next-env.d.ts"]);
 
@@ -65,7 +65,7 @@ const graphqlUrl = toGraphqlUrl(await askValid("url", "Magento GraphQL URL", "ht
 const store = await askValid("store", "Magento store view code", "default", (v) =>
   /^[a-z0-9_]+$/i.test(v) ? "" : `"${v}" is not a store view code. Use the code from Magento Stores > All Stores, e.g. default`);
 const currency = (str(flags.currency) ?? (await ask("Currency", "USD"))).toUpperCase();
-const preset = (str(flags.preset) ?? (await ask(`Preset (${PRESETS.join("/")})`, "minimal"))).toLowerCase();
+const preset = (str(flags.preset) ?? (await ask(`Preset (${PRESETS.join("/")})`, "standard"))).toLowerCase();
 if (!PRESETS.includes(preset)) fail(`preset must be one of: ${PRESETS.join(", ")}`);
 const siteName = str(flags["site-name"]) ?? (await ask("Store name", "Headora"));
 rl?.close();

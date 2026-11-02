@@ -38,11 +38,12 @@ export function cartCookie(req: Request, id: string | null): string {
 }
 
 // Uncached GraphQL call (cart reads/writes must never hit the Next data cache).
-export async function cartGql(query: string, variables: Record<string, unknown>, store: string): Promise<{ data?: any; errors?: { message: string }[] }> {
+// Signed-in callers pass the customer token: the cookie then holds the customer's own cart id.
+export async function cartGql(query: string, variables: Record<string, unknown>, store: string, token?: string | null): Promise<{ data?: any; errors?: { message: string }[] }> {
   const res = await fetch(getConfig().MAGENTO_GRAPHQL_URL, {
     method: "POST",
     cache: "no-store",
-    headers: { "Content-Type": "application/json", Store: store },
+    headers: { "Content-Type": "application/json", Store: store, ...(token ? { Authorization: `Bearer ${token}` } : {}) },
     body: JSON.stringify({ query, variables }),
   });
   if (!res.ok) throw new Error(`MAGENTO_${res.status}`);
@@ -51,7 +52,7 @@ export async function cartGql(query: string, variables: Record<string, unknown>,
 
 // Cart gone (ordered, expired, other store): caller should drop the cookie / start a new cart.
 export function isDeadCart(errors?: { message: string }[]): boolean {
-  return !!errors?.some((e) => /could not find a cart|isn't active|is not active|not allowed to access/i.test(e.message));
+  return !!errors?.some((e) => /could not find a cart|isn't active|is not active|not allowed to access|cannot perform operations on cart/i.test(e.message));
 }
 
 export function toSummary(cart: any): CartSummary {

@@ -5,6 +5,7 @@ import { rewriteCmsLinks } from "../../lib/cms.js";
 import { BlockRenderer } from "../../components/blocks/BlockRenderer.js";
 import { CmsHome } from "../../components/blocks/CmsHome.js";
 import { PageBuilder } from "../../components/blocks/PageBuilder.js";
+import { StdHome } from "../../components/standard/StdHome.js";
 import type { Metadata } from "next";
 import { alternates, describe, JsonLd, siteName, siteUrl } from "../../lib/seo.js";
 
@@ -44,6 +45,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   };
   const preset = getPresetName();
   const tags = ["home", "cms", `locale:${locale}`];
+  // Standard preset owns its homepage (hero slider, categories, top sellers) instead of the CMS page.
+  if (preset === "standard") return <><JsonLd data={siteLd} /><StdHome locale={locale} /></>;
 
   const id = await homePageId(locale);
   const page = await magentoFetch<any>(CMS_QUERY, { id }, { tags: [...tags, `cms:${id}`], revalidate: 300, locale }).catch(() => null);

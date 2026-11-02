@@ -1,6 +1,7 @@
 import { storeForLocale } from "../../../lib/magento.js";
-import { ADD_TO_CART_MUTATION, CART_QUERY, CREATE_CART_MUTATION, REMOVE_FROM_CART_MUTATION } from "../../../graphql/cart.js";
+import { ADD_TO_CART_MUTATION, CART_QUERY, CREATE_CART_MUTATION, REMOVE_FROM_CART_MUTATION, UPDATE_CART_ITEM_MUTATION } from "../../../graphql/cart.js";
 import { CART_COOKIE, EMPTY_CART, cartCookie, cartGql, isDeadCart, readCookie, toSummary } from "../../../lib/cart.js";
+import { TOKEN_COOKIE } from "../../../lib/customer.js";
 
 export const revalidate = 0;
 
@@ -12,9 +13,10 @@ function localeOf(v: unknown): string | undefined {
 export async function GET(req: Request) {
   const { store } = storeForLocale(localeOf(new URL(req.url).searchParams.get("locale")));
   const id = readCookie(req, CART_COOKIE);
+  const token = readCookie(req, TOKEN_COOKIE);
   if (!id) return Response.json({ ok: true, cart: EMPTY_CART });
   try {
-    const json = await cartGql(CART_QUERY, { id }, store);
+    const json = await cartGql(CART_QUERY, { id }, store, token);
     if (isDeadCart(json.errors)) {
       const out = Response.json({ ok: true, cart: EMPTY_CART });
       out.headers.append("Set-Cookie", cartCookie(req, null));
@@ -42,9 +44,10 @@ export async function POST(req: Request) {
 
   try {
     let id = readCookie(req, CART_COOKIE);
+  const token = readCookie(req, TOKEN_COOKIE);
     let fresh = false;
     const newCart = async () => {
-      const json = await cartGql(CREATE_CART_MUTATION, {}, store);
+      const json = await cartGql(CREATE_CART_MUTATION, {}, store, token);
       const created = json.data?.createEmptyCart;
       if (!created) throw new Error(json.errors?.[0]?.message ?? "CART_CREATE_FAILED");
       fresh = true;
@@ -52,11 +55,11 @@ export async function POST(req: Request) {
     };
     if (!id) id = await newCart();
 
-    let json = await cartGql(ADD_TO_CART_MUTATION, { id, items: [item] }, store);
+    let json = await cartGql(ADD_TO_CART_MUTATION, { id, items: [item] }, store, token);
     if (isDeadCart(json.errors)) {
       // Stale cookie (cart ordered/expired): start over once.
       id = await newCart();
-      json = await cartGql(ADD_TO_CART_MUTATION, { id, items: [item] }, store);
+      json = await cartGql(ADD_TO_CART_MUTATION, { id, items: [item] }, store, token);
     }
 
     const result = json.data?.addProductsToCart;
@@ -77,11 +80,12 @@ export async function DELETE(req: Request) {
   const body = await req.json().catch(() => ({}));
   const uid = typeof body.uid === "string" ? body.uid : "";
   const id = readCookie(req, CART_COOKIE);
+  const token = readCookie(req, TOKEN_COOKIE);
   if (!uid || uid.length > 128) return Response.json({ ok: false, error: "INVALID_INPUT" }, { status: 400 });
   if (!id) return Response.json({ ok: true, cart: EMPTY_CART });
   const { store } = storeForLocale(localeOf(body.locale));
   try {
-    const json = await cartGql(REMOVE_FROM_CART_MUTATION, { id, uid }, store);
+    const json = await cartGql(REMOVE_FROM_CART_MUTATION, { id, uid }, store, token);
     if (isDeadCart(json.errors)) {
       const out = Response.json({ ok: true, cart: EMPTY_CART });
       out.headers.append("Set-Cookie", cartCookie(req, null));
@@ -89,6 +93,33 @@ export async function DELETE(req: Request) {
     }
     if (json.errors?.length) return Response.json({ ok: false, error: json.errors[0].message }, { status: 422 });
     return Response.json({ ok: true, cart: toSummary(json.data?.removeItemFromCart?.cart) });
+  } catch (e: any) {
+    return Response.json({ ok: false, error: e.message ?? "FAILED" }, { status: 502 });
+  }
+}
+
+// PATCH /api/cart { locale, uid, quantity } -> change one line's quantity (basket page).
+export async function PATCH(req: Request) {
+  const body = await req.json().catch(() => ({}));
+  const uid = typeof body.uid === "string" ? body.uid : "";
+  const quantity = Number(body.quantity);
+  const id = readCookie(req, CART_COOKIE);
+  const token = readCookie(req, TOKEN_COOKIE);
+  if (!uid || uid.length > 128 || !Number.isInteger(quantity) || quantity < 1 || quantity > 999) {
+    return Response.json({ ok: false, error: "INVALID_INPUT" }, { status: 400 });
+  }
+  if (!id) return Response.json({ ok: true, cart: EMPTY_CART });
+  const { store } = storeForLocale(localeOf(body.locale));
+  try {
+    const json = await cartGql(UPDATE_CART_ITEM_MUTATION, { id, uid, qty: quantity }, store, token);
+    if (isDeadCart(json.errors)) {
+      const out = Response.json({ ok: true, cart: EMPTY_CART });
+      out.headers.append("Set-Cookie", cartCookie(req, null));
+      return out;
+    }
+    const cart = toSummary(json.data?.updateCartItems?.cart);
+    if (json.errors?.length) return Response.json({ ok: false, error: json.errors[0].message, cart: json.data?.updateCartItems ? cart : undefined }, { status: 422 });
+    return Response.json({ ok: true, cart });
   } catch (e: any) {
     return Response.json({ ok: false, error: e.message ?? "FAILED" }, { status: 502 });
   }

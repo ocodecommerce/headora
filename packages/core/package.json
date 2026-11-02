@@ -39,6 +39,7 @@
     "@headora/preset-bold": "1.0.0-beta.0",
     "@headora/preset-classic": "1.0.0-beta.0",
     "@headora/preset-minimal": "1.0.0-beta.0",
+    "@headora/preset-standard": "1.0.0-beta.0",
     "zod": "^3.23.8",
     "graphql-request": "^7.1.0"
   },

@@ -1,5 +1,7 @@
 import { getConfig, storeForLocale } from "../../../../lib/magento.js";
 import { LOGIN_MUTATION } from "../../../../graphql/auth.js";
+import { NAME_QUERY } from "../../../../graphql/account.js";
+import { customerCartCookie, customerGql, sessionCookies } from "../../../../lib/customer.js";
 export const revalidate = 0;
 export async function POST(req: Request) {
   try {
@@ -21,8 +23,12 @@ export async function POST(req: Request) {
     if (json.errors?.length) return Response.json({ ok: false, error: json.errors[0].message }, { status: 401 });
     const token = json.data?.generateCustomerToken?.token;
     if (!token) return Response.json({ ok: false, error: "LOGIN_FAILED" }, { status: 401 });
+    // First name for the header greeting; a failure here must not block the login.
+    const me = await customerGql(token, store, NAME_QUERY).catch(() => null);
     const out = Response.json({ ok: true });
-    out.headers.append("Set-Cookie", `headora_customer_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`);
+    for (const ck of sessionCookies(req, token, me?.data?.customer?.firstname ?? "")) out.headers.append("Set-Cookie", ck);
+    const cart = await customerCartCookie(req, token, store);
+    if (cart) out.headers.append("Set-Cookie", cart);
     return out;
   } catch (e: any) {
     return Response.json({ ok: false, error: e.message ?? "FAILED" }, { status: 500 });

@@ -1,5 +1,6 @@
 import { getConfig, storeForLocale } from "../../../../lib/magento.js";
 import { REGISTER_MUTATION, LOGIN_MUTATION } from "../../../../graphql/auth.js";
+import { customerCartCookie, sessionCookies } from "../../../../lib/customer.js";
 export const revalidate = 0;
 export async function POST(req: Request) {
   try {
@@ -35,7 +36,11 @@ export async function POST(req: Request) {
     const lj = await login.json().catch(() => null);
     const out = Response.json({ ok: true, loggedIn: Boolean(lj?.data?.generateCustomerToken?.token) });
     const token = lj?.data?.generateCustomerToken?.token;
-    if (token) out.headers.append("Set-Cookie", `headora_customer_token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=3600`);
+    if (token) {
+      for (const ck of sessionCookies(req, token, String(input.firstname ?? ""))) out.headers.append("Set-Cookie", ck);
+      const cart = await customerCartCookie(req, token, store);
+      if (cart) out.headers.append("Set-Cookie", cart);
+    }
     return out;
   } catch (e: any) {
     return Response.json({ ok: false, error: e.message ?? "FAILED" }, { status: 500 });

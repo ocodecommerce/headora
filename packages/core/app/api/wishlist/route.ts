@@ -1,19 +1,19 @@
 import { getConfig, storeForLocale } from "../../../lib/magento.js";
 import { readCookie } from "../../../lib/cart.js";
+import { TOKEN_COOKIE, clearSessionCookies } from "../../../lib/customer.js";
 import { ADD_TO_WISHLIST_MUTATION, REMOVE_FROM_WISHLIST_MUTATION, WISHLIST_QUERY } from "../../../graphql/wishlist.js";
 
 export const revalidate = 0;
 
-const TOKEN_COOKIE = "headora_customer_token";
 type Wishlist = { id: string; items_v2?: { items: { id: string; product: { sku: string } | null }[] } } | null;
 
 // sku -> wishlist item id, for the heart toggles on product cards.
 const toItems = (w: Wishlist) =>
   Object.fromEntries((w?.items_v2?.items ?? []).filter((i) => i.product?.sku).map((i) => [i.product!.sku, i.id]));
 
-const unauthorized = () => {
+const unauthorized = (req: Request) => {
   const out = Response.json({ ok: false, error: "LOGIN_REQUIRED" }, { status: 401 });
-  out.headers.append("Set-Cookie", `${TOKEN_COOKIE}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+  for (const ck of clearSessionCookies(req)) out.headers.append("Set-Cookie", ck);
   return out;
 };
 
@@ -39,14 +39,16 @@ async function current(token: string, store: string) {
   return { authFail, wishlist: (json.data?.customer?.wishlists?.[0] ?? null) as Wishlist, error: json.errors?.[0]?.message };
 }
 
-// GET /api/wishlist?locale=en -> { ok, items: { [sku]: itemId } } (401 when signed out)
+// GET /api/wishlist?locale=en -> { ok, items: { [sku]: itemId } }. Signed out (no cookie) is the
+// normal case on every page view: 200 { loggedIn: false } so browsers log no console error.
+// An invalid/expired token still answers 401.
 export async function GET(req: Request) {
   const token = readCookie(req, TOKEN_COOKIE);
-  if (!token) return Response.json({ ok: false, error: "LOGIN_REQUIRED" }, { status: 401 });
+  if (!token) return Response.json({ ok: true, loggedIn: false, items: {} });
   const { store } = storeForLocale(localeOf(new URL(req.url).searchParams.get("locale")));
   try {
     const { authFail, wishlist, error } = await current(token, store);
-    if (authFail) return unauthorized();
+    if (authFail) return unauthorized(req);
     if (error) return Response.json({ ok: false, error }, { status: 502 });
     return Response.json({ ok: true, items: toItems(wishlist) });
   } catch (e: any) {
@@ -64,14 +66,14 @@ async function change(req: Request, remove: boolean) {
   const { store } = storeForLocale(localeOf(body.locale));
   try {
     const now = await current(token, store);
-    if (now.authFail) return unauthorized();
+    if (now.authFail) return unauthorized(req);
     if (!now.wishlist?.id) return Response.json({ ok: false, error: now.error ?? "Wishlist unavailable." }, { status: 502 });
     const items = toItems(now.wishlist);
     if (remove ? !items[sku] : items[sku]) return Response.json({ ok: true, items });
     const { json, authFail } = remove
       ? await gql(token, store, REMOVE_FROM_WISHLIST_MUTATION, { id: now.wishlist.id, itemId: items[sku] })
       : await gql(token, store, ADD_TO_WISHLIST_MUTATION, { id: now.wishlist.id, sku });
-    if (authFail) return unauthorized();
+    if (authFail) return unauthorized(req);
     const result = json.data?.[remove ? "removeProductsFromWishlist" : "addProductsToWishlist"];
     const error = result?.user_errors?.[0]?.message ?? json.errors?.[0]?.message;
     if (error) return Response.json({ ok: false, error, items }, { status: 422 });

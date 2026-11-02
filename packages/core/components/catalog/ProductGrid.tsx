@@ -4,6 +4,7 @@ import { ProductCard, type CardProduct } from "./ProductCard.js";
 export function ProductGrid({
   items,
   locale,
+  variant,
 }: {
   items: CardProduct[];
   locale: string;
@@ -15,7 +16,7 @@ export function ProductGrid({
     <ul className="hd-grid">
       {items.map((p, i) => (
         <li key={p.sku}>
-          <ProductCard product={p} locale={locale} actions eager={i < 6} />
+          <ProductCard product={p} locale={locale} actions eager={i < 6} optimize={variant === "standard"} />
           {/* Venia GalleryItemShimmer: image, name, price, add-to-cart; shown while filters load in place */}
           <div className="hd-shimmer-card" aria-hidden="true">
             <span className="hd-shimmer hd-shimmer--img" />

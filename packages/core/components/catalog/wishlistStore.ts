@@ -9,7 +9,11 @@ const listeners = new Set<(s: WishState) => void>();
 function load(locale: string, force = false): Promise<WishState> {
   if (!wishPromise || force) {
     wishPromise = fetch(`/api/wishlist?locale=${encodeURIComponent(locale)}`)
-      .then(async (r) => (r.status === 401 ? { loggedIn: false, items: {} } : { loggedIn: true, items: (await r.json()).items ?? {} }))
+      .then(async (r) => {
+        if (r.status === 401) return { loggedIn: false, items: {} };
+        const j = await r.json();
+        return { loggedIn: j.loggedIn !== false, items: j.items ?? {} };
+      })
       .catch(() => ({ loggedIn: false, items: {} }));
   }
   return wishPromise;

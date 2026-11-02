@@ -47,7 +47,7 @@ export function QuickSearch({ locale }: { locale: string }) {
 
   return (
     <>
-      <button type="button" className="hd-action" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
+      <button type="button" className="hd-action" aria-label="Search" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
         <SearchIcon /><span className="hd-action__label">Search</span>
       </button>
       {open ? (

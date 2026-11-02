@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { AuthModals } from "../../components/auth/AuthModals.js";
 import { Header, type MenuNode, type ShellStore } from "../../components/layout/Header.js";
 import { Footer } from "../../components/layout/Footer.js";
+import { StdHeader } from "../../components/standard/StdHeader.js";
+import { StdFooter } from "../../components/standard/StdFooter.js";
 import { getFooterConfig, getPresetName, getTokens, tokensToCssVars } from "../../lib/theme.js";
 import { getConfig, magentoFetch, storeForLocale } from "../../lib/magento.js";
 import { magentoLinkBase, storeLocalePairs } from "../../lib/config.js";
@@ -59,33 +61,48 @@ export default async function LocaleLayout({ children, params }: { children: Rea
     : null;
   const missing = new Set(found ? legal.filter((_, i) => !found[`p${i}`]).map((p) => `/{locale}/${p}`) : []);
 
+  const social = config.HEADORA_SOCIAL_LINKS.split(",").map((p) => p.split("=")).filter(([n, u]) => n && /^https?:\/\//.test(u ?? "")).map(([n, u]) => ({ name: n.trim(), url: u.trim() }));
+  const std = preset === "standard";
+
   return (
-    <div className="hd" data-headora-preset={preset}>
+    <div className={std ? "hd hd--std" : "hd"} data-headora-preset={preset}>
       <style>{`:root{${tokensToCssVars(tokens)}}`}</style>
-      {tokens.fontsHref ? <link rel="stylesheet" href={tokens.fontsHref} precedence="default" /> : null}
-      <Header
-        locale={locale}
-        tokens={tokens}
-        menu={menu}
-        storeName={storeName}
-        logoSrc={logoSrc}
-        logoAlt={sc?.logo_alt}
-        stores={stores}
-        activeStore={storeForLocale(locale).store}
-        magentoBaseUrl={magentoLinkBase()}
-      />
+      {tokens.fontsHref ? <>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="stylesheet" href={tokens.fontsHref} precedence="default" />
+      </> : null}
+      {std ? (
+        <StdHeader locale={locale} tokens={tokens} menu={menu} storeName={storeName} logoSrc={logoSrc} logoAlt={sc?.logo_alt} magentoBaseUrl={magentoLinkBase()} />
+      ) : (
+        <Header
+          locale={locale}
+          tokens={tokens}
+          menu={menu}
+          storeName={storeName}
+          logoSrc={logoSrc}
+          logoAlt={sc?.logo_alt}
+          stores={stores}
+          activeStore={storeForLocale(locale).store}
+          magentoBaseUrl={magentoLinkBase()}
+        />
+      )}
       <main>{children}</main>
-      <Footer
-        locale={locale}
-        tokens={tokens}
-        menu={menu}
-        storeName={storeName}
-        copyright={config.HEADORA_COPYRIGHT || sc?.copyright}
-        magentoBaseUrl={magentoLinkBase()}
-        config={footer}
-        missing={missing}
-        social={config.HEADORA_SOCIAL_LINKS.split(",").map((p) => p.split("=")).filter(([n, u]) => n && /^https?:\/\//.test(u ?? "")).map(([n, u]) => ({ name: n.trim(), url: u.trim() }))}
-      />
+      {std ? (
+        <StdFooter locale={locale} menu={menu} storeName={storeName} copyright={config.HEADORA_COPYRIGHT || sc?.copyright}
+          magentoBaseUrl={magentoLinkBase()} config={footer} missing={missing} social={social} />
+      ) : (
+        <Footer
+          locale={locale}
+          tokens={tokens}
+          menu={menu}
+          storeName={storeName}
+          copyright={config.HEADORA_COPYRIGHT || sc?.copyright}
+          magentoBaseUrl={magentoLinkBase()}
+          config={footer}
+          missing={missing}
+          social={social}
+        />
+      )}
       <AuthModals locale={locale} />
     </div>
   );

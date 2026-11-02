@@ -9,7 +9,7 @@ const schema = z.object({
   NEXT_PUBLIC_CURRENCIES: z.string().default(""),
   CHECKOUT_STRATEGY: z.enum(["native-magento"]).default("native-magento"),
   MAGENTO_BASE_URL: z.string().url(),
-  HEADORA_PRESET: z.enum(["minimal", "bold", "classic"]).default("minimal"),
+  HEADORA_PRESET: z.enum(["minimal", "bold", "classic", "standard"]).default("minimal"),
   REVALIDATE_SECRET: z.string().min(8),
   COMMERCE_FEATURES: z.enum(["os", "adobe"]).default("os"),
   HEADORA_SITE_NAME: z.string().default(""),
