@@ -1,3 +1,4 @@
+import { BASE } from "./base.js";
 // Magento CMS HTML is written for the Magento storefront: root-relative or absolute
 // same-store links ("/venia-dresses", "http://shop/luna-scarf.html"). Point them at the
 // headless routes (/<locale>/...) except paths Magento itself must serve.
@@ -22,6 +23,6 @@ export function rewriteCmsLinks(html: string, locale: string, magentoBaseUrl: st
       path = href.slice(1);
     }
     if (path === null || path === "" || NATIVE.test(path) || path.startsWith(`${locale}/`)) return whole;
-    return `href="/${locale}/${path}"`;
+    return `href="${BASE}/${locale}/${path}"`;
   });
 }

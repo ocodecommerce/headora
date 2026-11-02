@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
 import { money } from "../catalog/ProductCard.js";
+import { BASE } from "../../lib/base.js";
 
 type Money = { value: number | null; currency: string | null };
 type Region = { id: number; code: string; name: string };
@@ -38,7 +39,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
   const [pay, setPay] = useState("");
 
   useEffect(() => {
-    fetch(`/api/checkout?locale=${encodeURIComponent(locale)}`).then((r) => r.json()).then((j) => {
+    fetch(`${BASE}/api/checkout?locale=${encodeURIComponent(locale)}`).then((r) => r.json()).then((j) => {
       setCountries(j.countries ?? []);
       setOffline(j.offline ?? []);
       setSignedIn(!!j.signedIn);
@@ -62,7 +63,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
     setBusy(true);
     setError("");
     try {
-      const res = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale, ...payload }) });
+      const res = await fetch(BASE + "/api/checkout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale, ...payload }) });
       const j = await res.json();
       if (!j.ok) { setError(j.error ?? "Something went wrong."); return null; }
       if (j.cart) setCart(j.cart);
@@ -111,7 +112,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
         <p className="std-eyebrow">Order confirmed</p>
         <h1 className="std-h1">Thank you!</h1>
         <p className="std-lead">Your order number is <strong>#{order}</strong>. We’ve emailed a confirmation to {form.email}.</p>
-        <a className="std-btn" href={`/${locale}`}>Continue shopping</a>
+        <a className="std-btn" href={`${BASE}/${locale}`}>Continue shopping</a>
       </div>
     );
   }
@@ -132,7 +133,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
       <div className="std-wrap std-page std-checkout std-empty">
         <h1 className="std-h1">Checkout</h1>
         <p>Your basket is empty.</p>
-        <a className="std-btn" href={`/${locale}`}>Continue shopping</a>
+        <a className="std-btn" href={`${BASE}/${locale}`}>Continue shopping</a>
       </div>
     );
   }
@@ -221,7 +222,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
                   </label>
                 ))}
                 {others.length ? (
-                  <p className="std-muted std-field--full">Paying by {others.map((o) => o.title).join(", ")}? <a href="/api/handoff">Continue on secure checkout</a>.</p>
+                  <p className="std-muted std-field--full">Paying by {others.map((o) => o.title).join(", ")}? <a href={BASE + "/api/handoff"}>Continue on secure checkout</a>.</p>
                 ) : null}
                 <button type="submit" className="std-btn std-btn--block" disabled={busy || !pay}>{busy ? "Placing order…" : `Place order · ${money(cart.prices.grand_total, locale)}`}</button>
               </form>

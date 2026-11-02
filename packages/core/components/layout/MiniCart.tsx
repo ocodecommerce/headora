@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BagIcon } from "./Icons.js";
 import { money } from "../catalog/ProductCard.js";
 import type { CartSummary } from "../../lib/cart.js";
+import { BASE } from "../../lib/base.js";
 
 // Header cart: count badge + slide-in drawer from the right (legacy v1 "cart bag").
 // Loads GET /api/cart on mount; the "headora:cart" event (product page / card add-to-cart) refreshes and opens it.
@@ -18,7 +19,7 @@ export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: str
   const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    fetch(`/api/cart?locale=${encodeURIComponent(locale)}`)
+    fetch(`${BASE}/api/cart?locale=${encodeURIComponent(locale)}`)
       .then((r) => r.json())
       .then((j) => j.ok && setCart(j.cart))
       .catch(() => {})
@@ -51,7 +52,7 @@ export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: str
     setRemoving(uid);
     setError("");
     try {
-      const res = await fetch("/api/cart", {
+      const res = await fetch(BASE + "/api/cart", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale, uid }),
@@ -110,12 +111,12 @@ export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: str
                     {items.map((i) => (
                       <li key={i.uid} className={`hd-drawer__item${removing === i.uid ? " is-removing" : ""}`}>
                         <div className="hd-drawer__row">
-                          <a className="hd-drawer__thumb" href={`/${locale}/${i.url_key}.html`} tabIndex={-1}>
+                          <a className="hd-drawer__thumb" href={`${BASE}/${locale}/${i.url_key}.html`} tabIndex={-1}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             {i.image ? <img src={i.image} alt="" /> : null}
                           </a>
                           <div className="hd-drawer__detail">
-                            <a className="hd-drawer__name" href={`/${locale}/${i.url_key}.html`}>{i.name}</a>
+                            <a className="hd-drawer__name" href={`${BASE}/${locale}/${i.url_key}.html`}>{i.name}</a>
                             <p className="hd-drawer__sku"><strong>SKU:</strong> {i.sku}</p>
                             {i.options.map((o) => <p key={o} className="hd-drawer__sku">{o}</p>)}
                           </div>
@@ -148,7 +149,7 @@ export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: str
                 <div className="hd-drawer__foot">
                   <div className="hd-drawer__line"><span>Subtotal</span><span>{subtotal}</span></div>
                   {cartHref ? <a className="hd-drawer__view" href={cartHref}>View basket</a> : null}
-                  <a className="hd-drawer__checkout" href={cartHref ? cartHref.replace(/\/cart$/, "/checkout") : "/api/handoff"}>Proceed to Checkout</a>
+                  <a className="hd-drawer__checkout" href={cartHref ? cartHref.replace(/\/cart$/, "/checkout") : BASE + "/api/handoff"}>Proceed to Checkout</a>
                 </div>
               </>
             ) : (

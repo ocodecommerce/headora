@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
+import { BASE } from "../../lib/base.js";
 type RatingValue = { value_id: string; value: string };
 type RatingMeta = { id: string; name: string; values: RatingValue[] };
 
@@ -16,7 +17,7 @@ export function ReviewForm({ sku, locale, onClose, onDone }: { sku: string; loca
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`/api/ratings${locale ? `?locale=${encodeURIComponent(locale)}` : ""}`, { credentials: "include" })
+    fetch(`${BASE}/api/ratings${locale ? `?locale=${encodeURIComponent(locale)}` : ""}`, { credentials: "include" })
       .then((r) => r.json())
       .then((j) => { if (j.ok && j.items?.length) setRatings(j.items.slice(0, 10)); else setError("Rating options could not be loaded."); })
       .catch(() => setError("Rating options could not be loaded."));
@@ -29,7 +30,7 @@ export function ReviewForm({ sku, locale, onClose, onDone }: { sku: string; loca
     if (ratings.some((r) => !stars[r.id])) { setError("Please rate every category."); return; }
     setBusy(true);
     try {
-      const res = await fetch("/api/reviews", {
+      const res = await fetch(BASE + "/api/reviews", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

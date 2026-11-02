@@ -1,5 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { BASE } from "../../lib/base.js";
 
 // Footer "Sign In" / "Register" open the headless auth modals (AuthModals listens).
 export function AuthLink({ kind, children }: { kind: "login" | "register"; children: string }) {
@@ -22,7 +23,7 @@ export function NewsletterForm({ locale }: { locale: string }) {
     setBusy(true);
     setMsg(null);
     try {
-      const res = await fetch("/api/newsletter", {
+      const res = await fetch(BASE + "/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, locale }),

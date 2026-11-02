@@ -2,6 +2,7 @@
 import { Component, type ReactNode } from "react";
 import type { PresetName } from "../../lib/theme.js";
 import { ProductCard } from "../catalog/ProductCard.js";
+import { BASE } from "../../lib/base.js";
 
 type BlockProps = { variant?: PresetName; [k: string]: any };
 
@@ -18,7 +19,7 @@ const BLOCKS: Record<string, (p: BlockProps) => any> = {
             <p>Discover the latest pieces from our collection.</p>
             {categories[0] ? (
               <p style={{ marginTop: 24 }}>
-                <a className="hd-btn" href={`/${locale}/${categories[0].url_path}.html`}>Shop now</a>
+                <a className="hd-btn" href={`${BASE}/${locale}/${categories[0].url_path}.html`}>Shop now</a>
               </p>
             ) : null}
           </div>
@@ -34,7 +35,7 @@ const BLOCKS: Record<string, (p: BlockProps) => any> = {
         <ul className="hd-tiles">
           {categories.map((c: any) => (
             <li key={c.uid} className="hd-tile">
-              <a href={`/${locale}/${c.url_path}.html`}>
+              <a href={`${BASE}/${locale}/${c.url_path}.html`}>
                 {c.image ? (
                   <img className="hd-tile__img" src={c.image} alt={c.name} loading="lazy" />
                 ) : (

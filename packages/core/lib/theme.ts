@@ -5,6 +5,7 @@ import minimal from "@headora/preset-minimal/preset.json";
 import bold from "@headora/preset-bold/preset.json";
 import classic from "@headora/preset-classic/preset.json";
 import standard from "@headora/preset-standard/preset.json";
+import { BASE } from "./base.js";
 
 export const TokensSchema = z.object({
   font: z.string(),
@@ -68,8 +69,15 @@ export type StdHomeConfig = {
   look: { image: string; alt: string; eyebrow: string; title: string; text: string };
   usps: string[];
 };
+// Preset images are site-relative ("/std/hero.webp"): prefix the BASE_URL sub-path.
+const local = (src?: string) => (src?.startsWith("/") ? BASE + src : src);
 export function getStdHome(): StdHomeConfig {
-  return (standard as any).home as StdHomeConfig;
+  const home = (standard as any).home as StdHomeConfig;
+  return {
+    ...home,
+    slides: home.slides.map((s) => ({ ...s, image: local(s.image)!, imageSmall: local(s.imageSmall) })),
+    look: home.look && { ...home.look, image: local(home.look.image)! },
+  };
 }
 
 export type FooterLink = { label: string; href: string };

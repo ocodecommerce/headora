@@ -16,6 +16,7 @@ import { ProductGrid } from "../../../components/catalog/ProductGrid.js";
 import { Breadcrumbs, type Crumb } from "../../../components/layout/Breadcrumbs.js";
 import { PageBuilder } from "../../../components/blocks/PageBuilder.js";
 import { alternates, breadcrumbLd, describe, JsonLd, siteName, siteUrl } from "../../../lib/seo.js";
+import { BASE } from "../../../lib/base.js";
 export const revalidate = 120;
 
 type Params = { params: Promise<{ locale: string; url: string[] }> };
@@ -93,7 +94,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
   const { locale, url } = await params;
   const path = `/${url?.join("/") ?? ""}`;
   const preset = getPresetName();
-  const home: Crumb = { label: "Home", href: `/${locale}` };
+  const home: Crumb = { label: "Home", href: `${BASE}/${locale}` };
   const resolved = await resolveUrl(locale, path);
   if (!resolved) notFound();
   const kind = resolved.type;
@@ -105,7 +106,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
     const node = rev?.products?.items?.[0] ?? { reviews: { items: [] }, review_count: 0, rating_summary: 0 };
     // Deepest assigned category gives the breadcrumb trail.
     const cat = item.categories?.[0]; // legacy breadcrumb: the product's first category
-    const crumbs: Crumb[] = [home, ...(cat ? [{ label: cat.name, href: `/${locale}/${cat.url_path}.html` }] : []), { label: item.name }];
+    const crumbs: Crumb[] = [home, ...(cat ? [{ label: cat.name, href: `${BASE}/${locale}/${cat.url_path}.html` }] : []), { label: item.name }];
     const reviewCount = node.review_count ?? 0;
     const price = item.price_range?.minimum_price?.final_price;
     const pageUrl = `${origin}/${locale}${canonicalPath(resolved, path)}`;
@@ -151,7 +152,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
     const cat = await loadCategory(locale, path);
     const crumbs: Crumb[] = [
       home,
-      ...(cat?.breadcrumbs ?? []).map((b: any) => ({ label: b.category_name, href: `/${locale}/${b.category_url_path}.html` })),
+      ...(cat?.breadcrumbs ?? []).map((b: any) => ({ label: b.category_name, href: `${BASE}/${locale}/${b.category_url_path}.html` })),
       { label: cat?.name ?? "" },
     ];
     if (!cat?.uid) notFound();
@@ -173,7 +174,7 @@ export default async function CatchAll({ params, searchParams }: Params & { sear
     const items = plp?.products?.items ?? [];
     const total = plp?.products?.total_count ?? 0;
     const pages = plp?.products?.page_info?.total_pages ?? 1;
-    const here = `/${locale}${path}`;
+    const here = `${BASE}/${locale}${path}`;
     const currency = items[0]?.price_range?.minimum_price?.final_price?.currency ?? "USD";
     // Magento price buckets are "0_100" / "100_200" (open-ended ends are "*").
     const priceLabel = (value: string) => value.split("_").map((n) => (n === "*" || n === "" ? "" : money({ value: Number(n), currency }, locale))).filter(Boolean).join(" – ") || value;

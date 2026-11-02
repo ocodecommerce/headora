@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { BASE } from "../../lib/base.js";
 
 // Legacy v1 auth panels (Header.tsx): "Sign-In To Your Account", "Create an Account",
 // "Recover Password". Opened by the openLoginModal / openSignUpModal window events.
@@ -107,21 +108,21 @@ export function AuthModals({ locale: localeProp }: { locale?: string }) {
 
   async function doLogin(e: FormEvent) {
     e.preventDefault();
-    if (await post("/api/auth/login", { email: email.trim(), password })) {
+    if (await post(BASE + "/api/auth/login", { email: email.trim(), password })) {
       setPanel(null);
       window.dispatchEvent(new Event("headora:auth-changed"));
     }
   }
   async function doSignup(e: FormEvent) {
     e.preventDefault();
-    if (await post("/api/auth/register", { firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password, is_subscribed: subscribe })) {
+    if (await post(BASE + "/api/auth/register", { firstname: firstName.trim(), lastname: lastName.trim(), email: email.trim(), password, is_subscribed: subscribe })) {
       setPanel(null);
       window.dispatchEvent(new Event("headora:auth-changed"));
     }
   }
   async function doForgot(e: FormEvent) {
     e.preventDefault();
-    if (await post("/api/auth/forgot", { email: email.trim() })) {
+    if (await post(BASE + "/api/auth/forgot", { email: email.trim() })) {
       setNotice("If an account exists with this email, you will receive a password reset link shortly.");
     }
   }

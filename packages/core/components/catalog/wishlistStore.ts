@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { BASE } from "../../lib/base.js";
 
 // One wishlist fetch per page, shared by every heart (product cards, PDP "Add To Favorites").
 export type WishState = { loggedIn: boolean; items: Record<string, string> };
@@ -8,7 +9,7 @@ const listeners = new Set<(s: WishState) => void>();
 
 function load(locale: string, force = false): Promise<WishState> {
   if (!wishPromise || force) {
-    wishPromise = fetch(`/api/wishlist?locale=${encodeURIComponent(locale)}`)
+    wishPromise = fetch(`${BASE}/api/wishlist?locale=${encodeURIComponent(locale)}`)
       .then(async (r) => {
         if (r.status === 401) return { loggedIn: false, items: {} };
         const j = await r.json();
@@ -44,7 +45,7 @@ export function useWishlist(locale: string) {
     const on = !!wish.items[sku];
     setBusy(true);
     try {
-      const res = await fetch("/api/wishlist", {
+      const res = await fetch(BASE + "/api/wishlist", {
         method: on ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale, sku }),

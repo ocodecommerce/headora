@@ -7,6 +7,7 @@ import { Price, money, type CardProduct } from "../catalog/ProductCard.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { useWishlist } from "../catalog/wishlistStore.js";
 import { optimized } from "../../lib/img.js";
+import { BASE } from "../../lib/base.js";
 
 type OptionValue = { uid: string; label: string; value_index: number; swatch_data?: { value?: string | null } | null };
 type Option = { attribute_code: string; label: string; values: OptionValue[] };
@@ -103,7 +104,7 @@ export function ProductView({ item, reviewCount, locale, magentoBaseUrl, optimiz
     setMsg(null);
     const selected = isBundle ? bundle.uids : options.map((o) => o.values.find((v) => v.value_index === picked[o.attribute_code])!.uid);
     try {
-      const res = await fetch("/api/cart", {
+      const res = await fetch(BASE + "/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale, sku: item.sku, quantity: qty, selected_options: selected }),

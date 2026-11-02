@@ -7,6 +7,7 @@ import { PageLoadingIndicator } from "../layout/PageLoadingIndicator.js";
 import { CardImageFade } from "../catalog/CardImageFade.js";
 import { AccountButton } from "./StdClient.js";
 import { BasketIcon, HeartLineIcon } from "./StdIcons.js";
+import { BASE } from "../../lib/base.js";
 
 const inMenu = (nodes: MenuNode[] = []) =>
   nodes.filter((n) => n.include_in_menu !== 0).sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
@@ -17,7 +18,7 @@ export function StdHeader({ locale, tokens, menu, storeName, logoSrc, logoAlt, m
   locale: string; tokens: ThemeTokens; menu: MenuNode[]; storeName: string;
   logoSrc?: string | null; logoAlt?: string | null; magentoBaseUrl: string;
 }) {
-  const href = (n: MenuNode) => `/${locale}/${n.url_path}.html`;
+  const href = (n: MenuNode) => `${BASE}/${locale}/${n.url_path}.html`;
   const items = inMenu(menu);
   return (
     <>
@@ -28,7 +29,7 @@ export function StdHeader({ locale, tokens, menu, storeName, logoSrc, logoAlt, m
             items={items.map((n) => ({ ...n, kids: inMenu(n.children) }))}
             href={Object.fromEntries(items.flatMap((n) => [n, ...inMenu(n.children)]).map((n) => [n.uid, href(n)]))}
           />
-          <a className="std-logo" href={`/${locale}`}>
+          <a className="std-logo" href={`${BASE}/${locale}`}>
             {logoSrc ? <img src={logoSrc} alt={logoAlt || storeName} /> : <>{storeName.toLowerCase()}<span className="std-logo__dot" aria-hidden="true" /></>}
           </a>
           <nav className="std-nav" aria-label="Main">
@@ -52,8 +53,8 @@ export function StdHeader({ locale, tokens, menu, storeName, logoSrc, logoAlt, m
           <div className="std-actions">
             {tokens.header.search ? <QuickSearch locale={locale} /> : null}
             <AccountButton locale={locale} />
-            <a className="std-icon std-icon--wish" href={`/${locale}/account/wishlist`} aria-label="Favorites"><HeartLineIcon /></a>
-            {tokens.header.miniCart ? <MiniCart locale={locale} icon={<BasketIcon />} cartHref={`/${locale}/cart`} /> : null}
+            <a className="std-icon std-icon--wish" href={`${BASE}/${locale}/account/wishlist`} aria-label="Favorites"><HeartLineIcon /></a>
+            {tokens.header.miniCart ? <MiniCart locale={locale} icon={<BasketIcon />} cartHref={`${BASE}/${locale}/cart`} /> : null}
           </div>
         </div>
         <PageLoadingIndicator />

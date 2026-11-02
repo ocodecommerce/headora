@@ -8,6 +8,7 @@ import { PageBuilder } from "../../components/blocks/PageBuilder.js";
 import { StdHome } from "../../components/standard/StdHome.js";
 import type { Metadata } from "next";
 import { alternates, describe, JsonLd, siteName, siteUrl } from "../../lib/seo.js";
+import { BASE } from "../../lib/base.js";
 
 export const revalidate = 300;
 

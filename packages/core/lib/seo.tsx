@@ -1,15 +1,18 @@
 import { headers } from "next/headers";
 import { getConfig } from "./config.js";
+import { BASE } from "./base.js";
 
-// Absolute origin for canonical/hreflang/OG/sitemap URLs: HEADORA_PUBLIC_URL when set, otherwise the
-// host the request came in on (works behind nginx with X-Forwarded-*).
+// Absolute storefront root for canonical/hreflang/OG/sitemap URLs (including any BASE_URL sub-path):
+// HEADORA_PUBLIC_URL or BASE_URL when set, otherwise the host the request came in on (works behind
+// nginx with X-Forwarded-*).
 export async function siteUrl(): Promise<string> {
-  const pub = getConfig().HEADORA_PUBLIC_URL.replace(/\/$/, "");
-  if (pub) return pub;
+  const c = getConfig();
+  const pub = (c.HEADORA_PUBLIC_URL || c.BASE_URL).replace(/\/$/, "");
+  if (pub) return new URL(pub).pathname === "/" ? `${pub}${BASE}` : pub;
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
-  return `${proto}://${host}`;
+  return `${proto}://${host}${BASE}`;
 }
 
 export function siteName(): string {
@@ -53,6 +56,6 @@ export function breadcrumbLd(base: string, crumbs: { label: string; href?: strin
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.label, ...(c.href ? { item: `${base}${c.href}` } : {}) })),
+    itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.label, ...(c.href ? { item: `${base}${c.href.slice(BASE.length)}` } : {}) })),
   };
 }

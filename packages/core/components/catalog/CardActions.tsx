@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useWishlist } from "./wishlistStore.js";
+import { BASE } from "../../lib/base.js";
 
 // Legacy v1 product-card actions: "Add to cart" + wishlist heart.
 // - Simple/virtual: add qty 1 to the guest cart; the cart drawer opens (headora:cart).
@@ -29,7 +30,7 @@ export function CardActions({ sku, typename, href, inStock, locale }: {
     setAdding(true);
     setError("");
     try {
-      const res = await fetch("/api/cart", {
+      const res = await fetch(BASE + "/api/cart", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ locale, sku, quantity: 1 }),

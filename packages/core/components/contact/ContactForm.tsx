@@ -1,5 +1,6 @@
 "use client";
 import { useState, type FormEvent } from "react";
+import { BASE } from "../../lib/base.js";
 
 // Venia ContactPage form: Name, Email, Phone Number (optional), Message -> /api/contact.
 export function ContactForm({ locale }: { locale?: string }) {
@@ -13,7 +14,7 @@ export function ContactForm({ locale }: { locale?: string }) {
     setBusy(true);
     setMsg(null);
     try {
-      const res = await fetch("/api/contact", {
+      const res = await fetch(BASE + "/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, locale }),

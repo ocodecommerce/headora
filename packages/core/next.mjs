@@ -6,6 +6,13 @@
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_LOCALE || "en";
 
+// BASE_URL = public storefront URL. Its path becomes Next's basePath, so
+// BASE_URL=https://shop.example.com/dev serves every page under /dev ("/dev" -> "/dev/en").
+// Build-time: change it and rebuild. Empty or a bare domain = served at the root.
+function basePath() {
+  try { return new URL(process.env.BASE_URL || "http://x").pathname.replace(/\/+$/, ""); } catch { return ""; }
+}
+
 // Hosts whose product images may be resized by /_next/image: the Magento base URL plus any
 // media/CDN hosts in HEADORA_IMAGE_HOSTS (comma list of hosts, e.g. "cdn.example.com").
 function imageHosts() {
@@ -17,9 +24,11 @@ function imageHosts() {
 /** @param {import('next').NextConfig} config */
 export function withHeadora(config = {}) {
   const hosts = imageHosts();
+  const base = config.basePath ?? basePath();
   return {
     ...config,
-    env: { ...config.env, NEXT_PUBLIC_HEADORA_IMAGE_HOSTS: hosts.join(",") },
+    ...(base ? { basePath: base } : {}),
+    env: { ...config.env, NEXT_PUBLIC_HEADORA_IMAGE_HOSTS: hosts.join(","), NEXT_PUBLIC_BASE_PATH: base },
     images: {
       ...config.images,
       formats: config.images?.formats ?? ["image/avif", "image/webp"],

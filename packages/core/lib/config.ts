@@ -16,6 +16,7 @@ const schema = z.object({
   HEADORA_COPYRIGHT: z.string().default(""),
   HEADORA_SOCIAL_LINKS: z.string().default(""),
   HEADORA_PUBLIC_URL: z.string().default(""),
+  BASE_URL: z.string().default(""),
 });
 export type HeadoraConfig = z.infer<typeof schema>;
 export function getConfig(): HeadoraConfig {
@@ -36,6 +37,7 @@ export function getConfig(): HeadoraConfig {
     HEADORA_COPYRIGHT: process.env.HEADORA_COPYRIGHT,
     HEADORA_SOCIAL_LINKS: process.env.HEADORA_SOCIAL_LINKS,
     HEADORA_PUBLIC_URL: process.env.HEADORA_PUBLIC_URL,
+    BASE_URL: process.env.BASE_URL,
   });
 }
 // Prefix for links to pages only Magento serves (order history, contact form, native search).

@@ -2,6 +2,7 @@ import type { ThemeTokens, FooterConfig, FooterLink } from "../../lib/theme.js";
 import type { MenuNode } from "./Header.js";
 import { AuthLink, NewsletterForm } from "./FooterClient.js";
 import { SocialIcon } from "./Icons.js";
+import { BASE } from "../../lib/base.js";
 
 // Legacy v1 footer: Account / About Us / Help / Follow Us! / Subscribe columns + bottom bar.
 // Columns/legal links come from @headora/preset-base blocks.json (footer); copyright and
@@ -21,7 +22,7 @@ export function Footer({
   missing?: Set<string>;
 }) {
   const base = magentoBaseUrl.replace(/\/$/, "");
-  const fill = (s: string) => s.replaceAll("{locale}", locale).replaceAll("{magento}", base).replaceAll("{site}", storeName);
+  const fill = (s: string) => s.replaceAll("/{locale}", `${BASE}/${locale}`).replaceAll("{locale}", locale).replaceAll("{magento}", base).replaceAll("{site}", storeName);
   const link = (l: FooterLink) => {
     if (l.href === "auth:login") return <AuthLink kind="login">{l.label}</AuthLink>;
     if (l.href === "auth:register") return <AuthLink kind="register">{l.label}</AuthLink>;
@@ -57,7 +58,7 @@ export function Footer({
         </section>
       </div>
       <div className="hd-footer__bottom">
-        <a className="hd-footer__brand" href={`/${locale}`}>{storeName}</a>
+        <a className="hd-footer__brand" href={`${BASE}/${locale}`}>{storeName}</a>
         <div className="hd-footer__copy">{copyright ?? ""}</div>
         <ul className="hd-footer__legal">{config.legal.map((l, i) => <li key={i}>{missing?.has(l.href) ? l.label : <a href={fill(l.href)}>{l.label}</a>}</li>)}</ul>
       </div>

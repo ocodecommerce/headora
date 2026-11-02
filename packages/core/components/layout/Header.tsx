@@ -8,6 +8,7 @@ import { QuickSearch } from "../search/QuickSearch.js";
 import { MobileMenu } from "./MobileMenu.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { Ribbon } from "./Ribbon.js";
+import { BASE } from "../../lib/base.js";
 
 export type MenuNode = { uid: string; name: string; url_path: string; image?: string | null; include_in_menu?: number; position?: number; children?: MenuNode[] };
 export type ShellStore = { code: string; name: string; locale: string };
@@ -17,7 +18,7 @@ const inMenu = (nodes: MenuNode[] = []) =>
 // Dropdown entries are alphabetical, like the legacy storefront.
 const byName = (nodes: MenuNode[]) => [...nodes].sort((a, b) => a.name.localeCompare(b.name));
 // Banner beside the mega menu when the category has no image (site public/ asset).
-const MENU_BANNER = "/Images/menu-banner.jpg";
+const MENU_BANNER = BASE + "/Images/menu-banner.jpg";
 
 export function Header({
   locale, tokens, menu, storeName, logoSrc, logoAlt, stores, activeStore, magentoBaseUrl,
@@ -32,7 +33,7 @@ export function Header({
   activeStore: string;
   magentoBaseUrl: string;
 }) {
-  const href = (n: MenuNode) => `/${locale}/${n.url_path}.html`;
+  const href = (n: MenuNode) => `${BASE}/${locale}/${n.url_path}.html`;
   const items = inMenu(menu);
   // Checkout and search stay native Magento (CHECKOUT_STRATEGY=native-magento).
   const base = magentoBaseUrl.replace(/\/$/, "");
@@ -45,7 +46,7 @@ export function Header({
           <ul className="hd-storebar__row">
             {stores.map((s) => (
               <li key={s.code}>
-                <a href={`/${s.locale}`} aria-current={s.code === activeStore ? "true" : undefined}>{s.name}</a>
+                <a href={`${BASE}/${s.locale}`} aria-current={s.code === activeStore ? "true" : undefined}>{s.name}</a>
               </li>
             ))}
           </ul>
@@ -58,7 +59,7 @@ export function Header({
             href={Object.fromEntries(items.flatMap((n) => [n, ...inMenu(n.children)]).map((n) => [n.uid, href(n)]))}
           />
 
-          <a className="hd-logo" href={`/${locale}`}>
+          <a className="hd-logo" href={`${BASE}/${locale}`}>
             {logoSrc ? <img src={logoSrc} alt={logoAlt || storeName} /> : storeName}
           </a>
 

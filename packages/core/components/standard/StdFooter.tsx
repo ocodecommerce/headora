@@ -2,6 +2,7 @@ import type { MenuNode } from "../layout/Header.js";
 import type { FooterConfig, FooterLink } from "../../lib/theme.js";
 import { AuthLink } from "../layout/FooterClient.js";
 import { SocialIcon } from "../layout/Icons.js";
+import { BASE } from "../../lib/base.js";
 
 // Standard preset footer: brand + blurb + social, Shop (menu categories) and the preset-base
 // footer columns, then a copyright bar.
@@ -10,7 +11,7 @@ export function StdFooter({ locale, menu, storeName, copyright, magentoBaseUrl, 
   config: FooterConfig; social: { name: string; url: string }[]; missing?: Set<string>;
 }) {
   const base = magentoBaseUrl.replace(/\/$/, "");
-  const fill = (s: string) => s.replaceAll("{locale}", locale).replaceAll("{magento}", base).replaceAll("{site}", storeName);
+  const fill = (s: string) => s.replaceAll("/{locale}", `${BASE}/${locale}`).replaceAll("{locale}", locale).replaceAll("{magento}", base).replaceAll("{site}", storeName);
   const link = (l: FooterLink) => {
     if (l.href === "auth:login") return <AuthLink kind="login">{l.label}</AuthLink>;
     if (l.href === "auth:register") return <AuthLink kind="register">{l.label}</AuthLink>;
@@ -22,7 +23,7 @@ export function StdFooter({ locale, menu, storeName, copyright, magentoBaseUrl, 
       <div className="std-footer__in">
         <div className="std-footer__grid">
           <div className="std-footer__brand">
-            <a className="std-logo" href={`/${locale}`}>{storeName.toLowerCase()}<span className="std-logo__dot" aria-hidden="true" /></a>
+            <a className="std-logo" href={`${BASE}/${locale}`}>{storeName.toLowerCase()}<span className="std-logo__dot" aria-hidden="true" /></a>
             <p>Easy pieces for everyday dressing, from breezy dresses to finishing touches.</p>
             {social.length ? (
               <ul className="std-footer__social">
@@ -34,7 +35,7 @@ export function StdFooter({ locale, menu, storeName, copyright, magentoBaseUrl, 
           </div>
           <nav aria-label="Shop">
             <h2>Shop</h2>
-            <ul>{shop.map((n) => <li key={n.uid}><a href={`/${locale}/${n.url_path}.html`}>{n.name}</a></li>)}</ul>
+            <ul>{shop.map((n) => <li key={n.uid}><a href={`${BASE}/${locale}/${n.url_path}.html`}>{n.name}</a></li>)}</ul>
           </nav>
           {config.columns.map((col) => (
             <nav key={col.title} aria-label={col.title}>

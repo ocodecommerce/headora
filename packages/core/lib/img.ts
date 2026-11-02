@@ -1,3 +1,4 @@
+import { BASE } from "./base.js";
 // Resized product images through Next's built-in optimizer (/_next/image: AVIF/WebP, cached).
 // Only hosts withHeadora() allowed in images.remotePatterns are rewritten (it also inlines them as
 // NEXT_PUBLIC_HEADORA_IMAGE_HOSTS); any other URL is returned unchanged, so a media host that isn't
@@ -10,7 +11,7 @@ function allowed(url: string): boolean {
 }
 
 export function optimized(url: string, width: number, quality = 75): string {
-  return allowed(url) ? `/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}` : url;
+  return allowed(url) ? `${BASE}/_next/image?url=${encodeURIComponent(url)}&w=${width}&q=${quality}` : url;
 }
 
 export function srcSet(url: string, widths: number[] = [256, 384, 640, 828]): string | undefined {

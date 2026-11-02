@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { BASE } from "../../lib/base.js";
 
 // Server renders the panel open (desktop + no-JS); on small screens it starts collapsed
 // unless a filter is already applied, so products stay above the fold.
@@ -29,7 +30,8 @@ export function FiltersPanel({ hasActive, stateKey, children }: { hasActive: boo
       // Venia (FilterSidebar): jump to 150px above the filter column so the new results start in view.
       const top = panel.closest(".hd-plp")?.getBoundingClientRect().top;
       if (top != null) window.scrollTo(0, window.scrollY + top - 150);
-      router.push(href, { scroll: false });
+      // router.push adds basePath itself; hrefs here already carry it.
+      router.push(BASE && href.startsWith(BASE) ? href.slice(BASE.length) : href, { scroll: false });
     };
     const onClick = (e: MouseEvent) => {
       // Legacy accordion: opening one filter group closes the others.
