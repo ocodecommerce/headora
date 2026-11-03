@@ -64,7 +64,7 @@ export function BundleOptions({ items, dynamic, locale, onChange }: {
           <fieldset key={item.uid} className="hd-opt hd-bundle__item">
             <legend className="hd-opt__label">{item.title}{item.required ? <span className="hd-bundle__req" aria-label="required"> *</span> : null}</legend>
             {item.type === "select" || item.type === "drop-down" ? (
-              <select id={id} className="hd-bundle__select" value={current?.uid ?? ""} onChange={(e) => pickOne(item, e.target.value)}>
+              <select id={id} className="hd-bundle__select" aria-label={item.title} value={current?.uid ?? ""} onChange={(e) => pickOne(item, e.target.value)}>
                 <option value="">{item.required ? "Choose a selection…" : "None"}</option>
                 {opts.map((o) => <option key={o.uid} value={o.uid} disabled={out(o)}>{label(o)}</option>)}
               </select>
