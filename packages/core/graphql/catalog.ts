@@ -1,5 +1,5 @@
 // All product types per magento/magento2 defaults. Vertical + sample-data agnostic.
-export const PRODUCT_CARD_FRAGMENT = `fragment Card on ProductInterface { sku name url_key __typename stock_status price_range { minimum_price { regular_price { value currency } final_price { value currency } } } small_image { url label } image { url label } ... on ConfigurableProduct { configurable_options { values { value_index } } variants { attributes { value_index } product { image { url } media_gallery { url } } } } }`;
+export const PRODUCT_CARD_FRAGMENT = `fragment Card on ProductInterface { sku name url_key __typename stock_status price_range { minimum_price { regular_price { value currency } final_price { value currency } } } small_image { url label } image { url label } ... on ConfigurableProduct { configurable_options { attribute_code label values { uid label value_index swatch_data { value } } } variants { attributes { code value_index } product { stock_status image { url } media_gallery { url } } } } }`;
 export const PDP_QUERY = `${PRODUCT_CARD_FRAGMENT}
 query Pdp($urlKey: String!) {
   products(filter: { url_key: { eq: $urlKey } }) {

@@ -1,4 +1,4 @@
-import { CardActions } from "./CardActions.js";
+import { CardActions, type CardOption } from "./CardActions.js";
 import { optimized, srcSet } from "../../lib/img.js";
 import { BASE } from "../../lib/base.js";
 
@@ -12,8 +12,8 @@ export type CardProduct = {
   price_range?: { minimum_price?: { regular_price?: Money; final_price?: Money } };
   small_image?: { url: string; label?: string | null };
   image?: { url: string; label?: string | null } | null;
-  configurable_options?: { values?: { value_index: number }[] }[];
-  variants?: { attributes?: { value_index: number }[]; product?: { image?: { url: string } | null; media_gallery?: { url: string }[] } }[];
+  configurable_options?: CardOption[];
+  variants?: { attributes?: { code?: string; value_index: number }[]; product?: { stock_status?: string | null; image?: { url: string } | null; media_gallery?: { url: string }[] } }[];
 };
 
 // Same picture as the legacy cards: the variant of the first option value (e.g. the first
@@ -74,7 +74,8 @@ export function ProductCard({ product: p, locale, actions = false, eager = false
         <span className="hd-card__price"><Price range={p.price_range} locale={locale} trim={actions} /></span>
       </a>
       {actions ? (
-        <CardActions sku={p.sku} typename={p.__typename} href={href} inStock={p.stock_status !== "OUT_OF_STOCK"} locale={locale} />
+        <CardActions sku={p.sku} typename={p.__typename} href={href} inStock={p.stock_status !== "OUT_OF_STOCK"} locale={locale}
+          options={p.configurable_options} variants={p.variants} />
       ) : null}
     </div>
   );

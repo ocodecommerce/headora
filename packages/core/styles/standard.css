@@ -150,6 +150,11 @@
 .hd.hd--std .hd-card__wish { width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 999px; background: #fff; box-shadow: 0 4px 14px rgb(18 18 18 / .1); }
 .hd.hd--std .hd-card__wish svg { width: 18px; height: 18px; }
 .hd.hd--std .hd-card__sale { color: #C2410C; }
+/* Quick-add picker floats over the photo, below the top buttons. */
+.hd.hd--std .hd-card__opts { position: absolute; top: 12px; left: 12px; right: 12px; z-index: 2; margin: 0; max-height: calc(100% - 24px); overflow: auto; border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgb(18 18 18 / .16); font-family: var(--headora-font); }
+.hd.hd--std .hd-card__chip { border-color: #DAD8D2; border-radius: 999px; font-family: var(--headora-font); }
+.hd.hd--std .hd-card__chip[aria-pressed="true"], .hd.hd--std .hd-card__add { background: var(--std-ink); border-color: var(--std-ink); font-family: var(--headora-font); }
+.hd.hd--std .hd-card__add:disabled { background: #C9C6BF; }
 
 /* ---------- Category page ---------- */
 .hd.hd--std .hd-crumbs { padding-top: 24px; font-size: 13px; color: var(--std-muted); }

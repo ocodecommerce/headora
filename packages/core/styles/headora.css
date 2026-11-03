@@ -289,6 +289,22 @@ html.hd-plp-loading .hd-sort select { visibility: hidden; }
 .hd-card__atc:hover:not(:disabled) { background: #000; border-color: #000; }
 .hd-card__atc:disabled { opacity: .55; cursor: not-allowed; }
 .hd-card__atc-icon { display: none; }
+/* Configurable quick add: option picker on the card. */
+.hd-card { position: relative; }
+.hd-card__opts { position: relative; margin-top: 8px; padding: 14px 14px 12px; border: 1px solid #e5e5e5; border-radius: 12px; background: #fff; }
+.hd-card__opts-close { position: absolute; top: 6px; right: 8px; width: 28px; height: 28px; border: 0; background: none; font-size: 20px; line-height: 1; color: #555; cursor: pointer; }
+.hd-card__opt { margin: 0 0 10px; padding: 0; border: 0; }
+.hd-card__opt legend { padding: 0; margin-bottom: 6px; font-size: 13px; font-weight: 600; }
+.hd-card__opt legend span { font-weight: 400; color: #666; }
+.hd-card__vals { display: flex; flex-wrap: wrap; gap: 6px; }
+.hd-card__chip { min-width: 36px; height: 32px; padding: 0 10px; border: 1px solid #d6d6d6; border-radius: 8px; background: #fff; font: 500 13px inherit; cursor: pointer; }
+.hd-card__swatch { width: 28px; height: 28px; border: 1px solid rgb(0 0 0 / .15); border-radius: 50%; cursor: pointer; }
+.hd-card__chip[aria-pressed="true"] { border-color: #111; background: #111; color: #fff; }
+.hd-card__swatch[aria-pressed="true"] { box-shadow: 0 0 0 2px #fff, 0 0 0 4px #111; }
+.hd-card__chip:disabled, .hd-card__swatch:disabled { opacity: .3; cursor: not-allowed; text-decoration: line-through; }
+.hd-card__add { width: 100%; height: 40px; margin-top: 4px; border: 0; border-radius: 999px; background: #111; color: #fff; font: 600 14px inherit; cursor: pointer; }
+.hd-card__add:disabled { background: #bdbdbd; cursor: not-allowed; }
+.hd-card__opts .hd-msg { margin: 8px 0 0; font-size: 13px; }
 .hd-card__wish { display: inline-flex; padding: 0; background: none; border: 0; color: #000; cursor: pointer; }
 .hd-card__wish[aria-pressed="true"] { color: #e0245e; }
 .hd-card__wish:disabled { opacity: .5; cursor: wait; }
