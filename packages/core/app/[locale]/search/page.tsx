@@ -9,7 +9,7 @@ import { money } from "../../../components/catalog/ProductCard.js";
 import { SearchIcon } from "../../../components/layout/Icons.js";
 import { SORTS, pageNumber, plpHref, selectedFilters, sortKey, toGraphqlFilter, visibleFacets, type Facet, type Search, type SortKey } from "../../../lib/plp.js";
 import { getPresetName } from "../../../lib/theme.js";
-import { BASE } from "../../../lib/base.js";
+import { lp } from "../../../lib/base.js";
 
 export const revalidate = 0;
 
@@ -23,7 +23,7 @@ export default async function SearchPage({ params, searchParams }: {
   const { locale } = await params;
   const search = await searchParams;
   const q = (Array.isArray(search.query) ? search.query[0] : search.query ?? "").trim().slice(0, 100);
-  const here = `${BASE}/${locale}/search?query=${encodeURIComponent(q)}`;
+  const here = `${lp(locale)}/search?query=${encodeURIComponent(q)}`;
   const { currency } = storeForLocale(locale);
   const preset = getPresetName();
 
@@ -48,7 +48,7 @@ export default async function SearchPage({ params, searchParams }: {
     <div className="hd-container hd-search">
       <div className="hd-search__head">
         <p className="hd-search__count">{q ? <>Showing result for &quot;{q}&quot;: {total} items</> : null}</p>
-        <form className="hd-search__form" action={`${BASE}/${locale}/search`} role="search">
+        <form className="hd-search__form" action={`${lp(locale)}/search`} role="search">
           <SearchIcon />
           <input name="query" defaultValue={q} placeholder="Search products..." aria-label="Search products" />
           <button type="submit">Search</button>

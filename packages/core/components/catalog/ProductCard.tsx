@@ -1,6 +1,6 @@
 import { CardActions, type CardOption } from "./CardActions.js";
 import { optimized, srcSet } from "../../lib/img.js";
-import { BASE } from "../../lib/base.js";
+import { lp } from "../../lib/base.js";
 
 type Money = { value: number | null; currency: string | null };
 export type CardProduct = {
@@ -56,7 +56,7 @@ export function Price({ range, locale, trim = false }: { range?: CardProduct["pr
 
 // `optimize`: serve a resized srcset (standard preset); legacy presets keep the original file.
 export function ProductCard({ product: p, locale, actions = false, eager = false, optimize = false }: { product: CardProduct; locale: string; actions?: boolean; eager?: boolean; optimize?: boolean }) {
-  const href = `${BASE}/${locale}/${p.url_key}.html`;
+  const href = `${lp(locale)}/${p.url_key}.html`;
   const img = cardImage(p);
   return (
     <div className="hd-card">

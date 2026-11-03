@@ -8,7 +8,7 @@ import { PageBuilder } from "../../components/blocks/PageBuilder.js";
 import { StdHome } from "../../components/standard/StdHome.js";
 import type { Metadata } from "next";
 import { alternates, describe, JsonLd, siteName, siteUrl } from "../../lib/seo.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, seg } from "../../lib/base.js";
 
 export const revalidate = 300;
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const description = describe(page?.cmsPage?.meta_description, page?.cmsPage?.content);
   // The layout template would give "Home page | Headora"; the homepage is just the store name.
   const title = page?.cmsPage?.meta_title || siteName();
-  return { title: { absolute: title }, description, alternates: alternates(locale, ""), openGraph: { title, description, url: `/${locale}` } };
+  return { title: { absolute: title }, description, alternates: alternates(locale, ""), openGraph: { title, description, url: seg(locale) || "/" } };
 }
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
@@ -39,9 +39,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const siteLd = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Organization", "@id": `${base}/#org`, name: siteName(), url: `${base}/${locale}` },
-      { "@type": "WebSite", "@id": `${base}/#site`, name: siteName(), url: `${base}/${locale}`, publisher: { "@id": `${base}/#org` },
-        potentialAction: { "@type": "SearchAction", target: `${base}/${locale}/search?query={search_term_string}`, "query-input": "required name=search_term_string" } },
+      { "@type": "Organization", "@id": `${base}/#org`, name: siteName(), url: `${base}${seg(locale)}` },
+      { "@type": "WebSite", "@id": `${base}/#site`, name: siteName(), url: `${base}${seg(locale)}`, publisher: { "@id": `${base}/#org` },
+        potentialAction: { "@type": "SearchAction", target: `${base}${seg(locale)}/search?query={search_term_string}`, "query-input": "required name=search_term_string" } },
     ],
   };
   const preset = getPresetName();

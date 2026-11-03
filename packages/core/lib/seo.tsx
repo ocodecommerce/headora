@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { getConfig } from "./config.js";
-import { BASE } from "./base.js";
+import { BASE, seg } from "./base.js";
 
 // Absolute storefront root for canonical/hreflang/OG/sitemap URLs (including any BASE_URL sub-path):
 // HEADORA_PUBLIC_URL or BASE_URL when set, otherwise the host the request came in on (works behind
@@ -29,10 +29,11 @@ export function locales(): string[] {
 // Every store view serves the same url keys here, so each locale gets the same path.
 export function alternates(locale: string, path: string) {
   const all = locales();
+  const url = (l: string) => `${seg(l)}${path}` || "/";
   return {
-    canonical: `/${locale}${path}`,
+    canonical: url(locale),
     languages: all.length > 1
-      ? { ...Object.fromEntries(all.map((l) => [l, `/${l}${path}`])), "x-default": `/${all[0]}${path}` }
+      ? { ...Object.fromEntries(all.map((l) => [l, url(l)])), "x-default": url(all[0]) }
       : undefined,
   };
 }

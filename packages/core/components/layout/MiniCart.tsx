@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BagIcon } from "./Icons.js";
 import { money } from "../catalog/ProductCard.js";
 import type { CartSummary } from "../../lib/cart.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, lp } from "../../lib/base.js";
 
 // Header cart: count badge + slide-in drawer from the right (legacy v1 "cart bag").
 // Loads GET /api/cart on mount; the "headora:cart" event (product page / card add-to-cart) refreshes and opens it.
@@ -111,12 +111,12 @@ export function MiniCart({ locale, icon = <BagIcon />, cartHref }: { locale: str
                     {items.map((i) => (
                       <li key={i.uid} className={`hd-drawer__item${removing === i.uid ? " is-removing" : ""}`}>
                         <div className="hd-drawer__row">
-                          <a className="hd-drawer__thumb" href={`${BASE}/${locale}/${i.url_key}.html`} tabIndex={-1}>
+                          <a className="hd-drawer__thumb" href={`${lp(locale)}/${i.url_key}.html`} tabIndex={-1}>
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             {i.image ? <img src={i.image} alt="" /> : null}
                           </a>
                           <div className="hd-drawer__detail">
-                            <a className="hd-drawer__name" href={`${BASE}/${locale}/${i.url_key}.html`}>{i.name}</a>
+                            <a className="hd-drawer__name" href={`${lp(locale)}/${i.url_key}.html`}>{i.name}</a>
                             <p className="hd-drawer__sku"><strong>SKU:</strong> {i.sku}</p>
                             {i.options.map((o) => <p key={o} className="hd-drawer__sku">{o}</p>)}
                           </div>

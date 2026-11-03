@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { SearchIcon } from "../layout/Icons.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, lp } from "../../lib/base.js";
 
 type Hit = { uid: string; name: string; url_key: string; image: string | null };
 type Cat = { uid: string; name: string; url_path: string };
@@ -41,7 +41,7 @@ export function QuickSearch({ locale }: { locale: string }) {
     return () => { clearTimeout(t); ctrl.abort(); };
   }, [q, locale]);
 
-  const resultsHref = `${BASE}/${locale}/search?query=${encodeURIComponent(q.trim())}`;
+  const resultsHref = `${lp(locale)}/search?query=${encodeURIComponent(q.trim())}`;
   const onKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && q.trim()) window.location.assign(resultsHref);
   };
@@ -72,13 +72,13 @@ export function QuickSearch({ locale }: { locale: string }) {
                 <ul className="hd-qs__results">
                   {cats.map((c) => (
                     <li key={c.uid} className="hd-qs__item">
-                      <a href={`${BASE}/${locale}/${c.url_path}.html`}><span><strong>{q.trim()}</strong> in {c.name}</span></a>
+                      <a href={`${lp(locale)}/${c.url_path}.html`}><span><strong>{q.trim()}</strong> in {c.name}</span></a>
                     </li>
                   ))}
                   {hits.length ? <li className="hd-qs__head"><h3>PRODUCT SUGGESTIONS</h3></li> : null}
                   {hits.map((h) => (
                     <li key={h.uid} className="hd-qs__item">
-                      <a href={`${BASE}/${locale}/${h.url_key}.html`}>
+                      <a href={`${lp(locale)}/${h.url_key}.html`}>
                         {h.image ? <img src={h.image} alt="" width={50} height={50} loading="lazy" /> : null}
                         <span>{h.name}</span>
                       </a>

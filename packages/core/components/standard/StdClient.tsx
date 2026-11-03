@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AccountIcon } from "./StdIcons.js";
 import { ACCOUNT_SECTIONS } from "./accountSections.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, home, lp } from "../../lib/base.js";
 
 
 // Readable cookie set next to the httpOnly token at login: present = signed in.
@@ -14,7 +14,7 @@ function readName(): string | null {
 export async function signOut(locale: string) {
   await fetch(BASE + "/api/auth/logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ locale }) }).catch(() => null);
   window.dispatchEvent(new Event("headora:auth-changed"));
-  window.location.assign(`${BASE}/${locale}`);
+  window.location.assign(home(locale));
 }
 
 // Signed out: opens the login modal. Signed in: "Hi, Name" + account menu, like Venia.
@@ -54,7 +54,7 @@ export function AccountButton({ locale }: { locale: string }) {
       {open ? (
         <ul className="std-acct__menu" role="menu">
           {ACCOUNT_SECTIONS.map((s) => (
-            <li key={s.slug} role="none"><a role="menuitem" href={`${BASE}/${locale}/account/${s.slug}`}>{s.label}</a></li>
+            <li key={s.slug} role="none"><a role="menuitem" href={`${lp(locale)}/account/${s.slug}`}>{s.label}</a></li>
           ))}
           <li role="none"><button type="button" role="menuitem" onClick={() => signOut(locale)}>Sign Out</button></li>
         </ul>

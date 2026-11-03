@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { money } from "../catalog/ProductCard.js";
 import type { CartSummary } from "../../lib/cart.js";
 import { ArrowIcon } from "./StdIcons.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, home, lp } from "../../lib/base.js";
 
 // Basket page: lines with quantity steppers, free-shipping progress, summary, checkout.
 // Uses the same guest-cart API as the drawer and keeps the header badge in sync.
@@ -60,9 +60,9 @@ export function CartPage({ locale, freeOver }: { locale: string; freeOver: numbe
             <ul>
               {items.map((i) => (
                 <li key={i.uid} className={`std-line${busy === i.uid ? " is-busy" : ""}`}>
-                  <a href={`${BASE}/${locale}/${i.url_key}.html`} tabIndex={-1}>{i.image ? <img src={i.image} alt="" loading="lazy" /> : <span className="std-line__ph" />}</a>
+                  <a href={`${lp(locale)}/${i.url_key}.html`} tabIndex={-1}>{i.image ? <img src={i.image} alt="" loading="lazy" /> : <span className="std-line__ph" />}</a>
                   <div className="std-line__info">
-                    <a className="std-line__name" href={`${BASE}/${locale}/${i.url_key}.html`}>{i.name}</a>
+                    <a className="std-line__name" href={`${lp(locale)}/${i.url_key}.html`}>{i.name}</a>
                     {i.options.map((o) => <span key={o} className="std-muted">{o}</span>)}
                     <span className="std-muted">SKU {i.sku}</span>
                     <div className="std-line__actions">
@@ -78,20 +78,20 @@ export function CartPage({ locale, freeOver }: { locale: string; freeOver: numbe
                 </li>
               ))}
             </ul>
-            <a className="std-back" href={`${BASE}/${locale}`}>← Continue shopping</a>
+            <a className="std-back" href={home(locale)}>← Continue shopping</a>
           </section>
           <aside className="std-sum" aria-label="Order summary">
             <h2 className="std-h3">Order summary</h2>
             <div className="std-sum__row"><span>Subtotal</span><span>{fmt(sub)}</span></div>
             <div className="std-sum__row"><span>Shipping</span><span className="std-muted">Calculated at checkout</span></div>
             <div className="std-sum__row std-sum__total"><span>Total</span><span>{fmt(sub)}</span></div>
-            <a className="std-btn std-btn--block" href={`${BASE}/${locale}/checkout`}>Checkout securely<ArrowIcon /></a>
+            <a className="std-btn std-btn--block" href={`${lp(locale)}/checkout`}>Checkout securely<ArrowIcon /></a>
           </aside>
         </div>
       ) : (
         <div className="std-empty">
           <p>Your basket is empty.</p>
-          <a className="std-btn" href={`${BASE}/${locale}`}>Continue shopping<ArrowIcon /></a>
+          <a className="std-btn" href={home(locale)}>Continue shopping<ArrowIcon /></a>
         </div>
       )}
     </div>

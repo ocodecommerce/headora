@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { readCompare, writeCompare, type CompareItem } from "./compareStore.js";
-import { BASE } from "../../lib/base.js";
+import { home, lp } from "../../lib/base.js";
 
 // Legacy /compare page: a table of the products saved with "Add To Compare".
 export function ComparePage({ locale }: { locale: string }) {
@@ -30,7 +30,7 @@ export function ComparePage({ locale }: { locale: string }) {
       <div className="hd-compare__empty">
         <h1>No products to compare</h1>
         <p>You haven&apos;t added any products to compare yet.</p>
-        <a href={`${BASE}/${locale}`} className="hd-compare__btn">Browse Products</a>
+        <a href={home(locale)} className="hd-compare__btn">Browse Products</a>
       </div>
     );
   }
@@ -51,9 +51,9 @@ export function ComparePage({ locale }: { locale: string }) {
                   <div className="hd-compare__card">
                     <button type="button" className="hd-compare__remove" aria-label={`Remove ${p.name}`} onClick={() => remove(p.id)}>✕</button>
                     {p.image ? <img src={p.image} alt={p.name} width={220} height={220} /> : null}
-                    <a href={`${BASE}/${locale}/${p.url_key}.html`} className="hd-compare__name">{p.name}</a>
+                    <a href={`${lp(locale)}/${p.url_key}.html`} className="hd-compare__name">{p.name}</a>
                     <div className="hd-compare__price">{price(p)}</div>
-                    <a href={`${BASE}/${locale}/${p.url_key}.html`} className="hd-compare__atc">Add to Cart</a>
+                    <a href={`${lp(locale)}/${p.url_key}.html`} className="hd-compare__atc">Add to Cart</a>
                   </div>
                 </th>
               ))}
@@ -72,7 +72,7 @@ export function ComparePage({ locale }: { locale: string }) {
           </tbody>
         </table>
       </div>
-      <div className="hd-compare__foot"><a href={`${BASE}/${locale}`} className="hd-compare__btn">Continue Shopping</a></div>
+      <div className="hd-compare__foot"><a href={home(locale)} className="hd-compare__btn">Continue Shopping</a></div>
     </div>
   );
 }

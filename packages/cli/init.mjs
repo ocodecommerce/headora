@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // create-headora-app: scaffolds a Headora storefront in a new folder (like `npx @magento/pwa` for Venia).
 //   npx create-headora-app my-store [--url=https://shop.example/graphql] [--store=default]
-//     [--currency=USD] [--preset=standard|minimal|bold|classic] [--site-name="My Shop"] [--yes] [--no-install]
+//     [--currency=USD] [--preset=standard|minimal|bold|classic] [--site-name="My Shop"] [--hide-default-locale] [--yes] [--no-install]
 // Run from a Headora checkout (or with --local=/path/to/repo) to install the repo's packages
 // as npm-pack tarballs instead of from the npm registry.
 import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
@@ -99,6 +99,7 @@ const values = {
   NEXT_PUBLIC_STORES: store,
   NEXT_PUBLIC_LOCALES: "en",
   NEXT_PUBLIC_CURRENCIES: currency,
+  HIDE_DEFAULT_LOCALE: String(!!flags["hide-default-locale"]),
   REVALIDATE_SECRET: randomBytes(16).toString("hex"),
   HEADORA_PRESET: preset,
   HEADORA_SITE_NAME: siteName,

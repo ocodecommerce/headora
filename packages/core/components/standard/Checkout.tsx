@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, type FormEvent } from "react";
 import { money } from "../catalog/ProductCard.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, home } from "../../lib/base.js";
 
 type Money = { value: number | null; currency: string | null };
 type Region = { id: number; code: string; name: string };
@@ -112,7 +112,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
         <p className="std-eyebrow">Order confirmed</p>
         <h1 className="std-h1">Thank you!</h1>
         <p className="std-lead">Your order number is <strong>#{order}</strong>. We’ve emailed a confirmation to {form.email}.</p>
-        <a className="std-btn" href={`${BASE}/${locale}`}>Continue shopping</a>
+        <a className="std-btn" href={home(locale)}>Continue shopping</a>
       </div>
     );
   }
@@ -133,7 +133,7 @@ export function Checkout({ locale, defaultCountry }: { locale: string; defaultCo
       <div className="std-wrap std-page std-checkout std-empty">
         <h1 className="std-h1">Checkout</h1>
         <p>Your basket is empty.</p>
-        <a className="std-btn" href={`${BASE}/${locale}`}>Continue shopping</a>
+        <a className="std-btn" href={home(locale)}>Continue shopping</a>
       </div>
     );
   }

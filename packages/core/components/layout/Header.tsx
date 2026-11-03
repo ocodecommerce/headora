@@ -8,7 +8,7 @@ import { QuickSearch } from "../search/QuickSearch.js";
 import { MobileMenu } from "./MobileMenu.js";
 import { HeartIcon } from "../catalog/CardActions.js";
 import { Ribbon } from "./Ribbon.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, home, lp } from "../../lib/base.js";
 
 export type MenuNode = { uid: string; name: string; url_path: string; image?: string | null; include_in_menu?: number; position?: number; children?: MenuNode[] };
 export type ShellStore = { code: string; name: string; locale: string };
@@ -33,7 +33,7 @@ export function Header({
   activeStore: string;
   magentoBaseUrl: string;
 }) {
-  const href = (n: MenuNode) => `${BASE}/${locale}/${n.url_path}.html`;
+  const href = (n: MenuNode) => `${lp(locale)}/${n.url_path}.html`;
   const items = inMenu(menu);
   // Checkout and search stay native Magento (CHECKOUT_STRATEGY=native-magento).
   const base = magentoBaseUrl.replace(/\/$/, "");
@@ -46,7 +46,7 @@ export function Header({
           <ul className="hd-storebar__row">
             {stores.map((s) => (
               <li key={s.code}>
-                <a href={`${BASE}/${s.locale}`} aria-current={s.code === activeStore ? "true" : undefined}>{s.name}</a>
+                <a href={home(s.locale)} aria-current={s.code === activeStore ? "true" : undefined}>{s.name}</a>
               </li>
             ))}
           </ul>
@@ -59,7 +59,7 @@ export function Header({
             href={Object.fromEntries(items.flatMap((n) => [n, ...inMenu(n.children)]).map((n) => [n.uid, href(n)]))}
           />
 
-          <a className="hd-logo" href={`${BASE}/${locale}`}>
+          <a className="hd-logo" href={home(locale)}>
             {logoSrc ? <img src={logoSrc} alt={logoAlt || storeName} /> : storeName}
           </a>
 

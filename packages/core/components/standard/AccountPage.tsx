@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { money, ProductCard, type CardProduct } from "../catalog/ProductCard.js";
 import { ACCOUNT_SECTIONS } from "./accountSections.js";
 import { signOut } from "./StdClient.js";
-import { BASE } from "../../lib/base.js";
+import { BASE, home, lp } from "../../lib/base.js";
 
 type Money = { value: number | null; currency: string | null };
 type Region = { id: number; code: string; name: string };
@@ -89,7 +89,7 @@ export function AccountPage({ locale, section }: { locale: string; section: stri
         <nav className="std-account__nav" aria-label="My account">
           <ul>
             {ACCOUNT_SECTIONS.map((s) => (
-              <li key={s.slug}><a href={`${BASE}/${locale}/account/${s.slug}`} aria-current={s.slug === section ? "page" : undefined}>{s.label}</a></li>
+              <li key={s.slug}><a href={`${lp(locale)}/account/${s.slug}`} aria-current={s.slug === section ? "page" : undefined}>{s.label}</a></li>
             ))}
             <li><button type="button" onClick={() => signOut(locale)}>Sign Out</button></li>
           </ul>
@@ -315,7 +315,7 @@ function EmptyState({ text, locale }: { text: string; locale: string }) {
   return (
     <div className="std-card std-stack">
       <p>{text}</p>
-      <div><a className="std-btn" href={`${BASE}/${locale}`}>Start shopping</a></div>
+      <div><a className="std-btn" href={home(locale)}>Start shopping</a></div>
     </div>
   );
 }

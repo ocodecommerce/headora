@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { seg } from "../lib/base.js";
 import { magentoFetch } from "../lib/magento.js";
 import { SITEMAP_CATEGORIES_QUERY, SITEMAP_PRODUCTS_QUERY } from "../graphql/catalog.js";
 import { locales, siteUrl } from "../lib/seo.js";
@@ -16,11 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const out: MetadataRoute.Sitemap = [];
   for (const locale of locales()) {
     const opts = { tags: ["sitemap", `locale:${locale}`], revalidate: 3600, locale };
-    out.push({ url: `${base}/${locale}`, changeFrequency: "daily", priority: 1 });
+    out.push({ url: `${base}${seg(locale)}`, changeFrequency: "daily", priority: 1 });
 
     const cats = await magentoFetch<{ categoryList: Cat[] }>(SITEMAP_CATEGORIES_QUERY, {}, opts).catch(() => null);
     const walk = (list: Cat[] = []): void => list.forEach((c) => {
-      if (c.url_path) out.push({ url: `${base}/${locale}/${c.url_path}.html`, lastModified: date(c.updated_at), changeFrequency: "daily", priority: 0.8 });
+      if (c.url_path) out.push({ url: `${base}${seg(locale)}/${c.url_path}.html`, lastModified: date(c.updated_at), changeFrequency: "daily", priority: 0.8 });
       walk(c.children);
     });
     walk(cats?.categoryList?.[0]?.children);
@@ -30,7 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       if (!res) break;
       pages = res.products?.page_info?.total_pages ?? 1;
       for (const p of res.products?.items ?? []) {
-        if (p?.url_key) out.push({ url: `${base}/${locale}/${p.url_key}.html`, lastModified: date(p.updated_at), changeFrequency: "weekly", priority: 0.6 });
+        if (p?.url_key) out.push({ url: `${base}${seg(locale)}/${p.url_key}.html`, lastModified: date(p.updated_at), changeFrequency: "weekly", priority: 0.6 });
       }
     }
   }

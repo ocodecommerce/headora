@@ -5,6 +5,11 @@
 // resolve core's TS-ESM imports ("./x.js" -> x.ts / x.tsx).
 
 const DEFAULT_LOCALE = process.env.NEXT_PUBLIC_LOCALE || "en";
+// HIDE_DEFAULT_LOCALE=true drops the default locale from URLs ("/shirt.html" instead of
+// "/en/shirt.html"). Other locales keep their prefix. Build-time, like BASE_URL.
+const HIDE_DEFAULT_LOCALE = process.env.HIDE_DEFAULT_LOCALE === "true";
+const OTHER_LOCALES = [...new Set((process.env.NEXT_PUBLIC_LOCALES || "").split(",").map((s) => s.trim()))]
+  .filter((l) => l && l !== DEFAULT_LOCALE);
 
 // BASE_URL = public storefront URL. Its path becomes Next's basePath, so
 // BASE_URL=https://shop.example.com/dev serves every page under /dev ("/dev" -> "/dev/en").
@@ -28,7 +33,7 @@ export function withHeadora(config = {}) {
   return {
     ...config,
     ...(base ? { basePath: base } : {}),
-    env: { ...config.env, NEXT_PUBLIC_HEADORA_IMAGE_HOSTS: hosts.join(","), NEXT_PUBLIC_BASE_PATH: base },
+    env: { ...config.env, NEXT_PUBLIC_HEADORA_IMAGE_HOSTS: hosts.join(","), NEXT_PUBLIC_BASE_PATH: base, NEXT_PUBLIC_HIDE_DEFAULT_LOCALE: String(HIDE_DEFAULT_LOCALE) },
     images: {
       ...config.images,
       formats: config.images?.formats ?? ["image/avif", "image/webp"],
@@ -51,10 +56,28 @@ export function withHeadora(config = {}) {
     // Pages here render fully before sending, so nothing is gained; keep title/description/
     // canonical/OG in <head> for every crawler and link-preview bot.
     htmlLimitedBots: config.htmlLimitedBots ?? /.*/,
-    // Core serves app/[locale]/* only; "/" goes to the default locale.
+    // Core serves app/[locale]/* only; "/" goes to the default locale. With HIDE_DEFAULT_LOCALE the
+    // old prefixed URLs redirect to the bare ones (307, so turning the option off again is safe).
     async redirects() {
       const own = config.redirects ? await config.redirects() : [];
-      return [{ source: "/", destination: `/${DEFAULT_LOCALE}`, permanent: false }, ...own];
+      const locale = HIDE_DEFAULT_LOCALE
+        ? [{ source: `/${DEFAULT_LOCALE}`, destination: "/", permanent: false },
+           { source: `/${DEFAULT_LOCALE}/:path*`, destination: "/:path*", permanent: false }]
+        : [{ source: "/", destination: `/${DEFAULT_LOCALE}`, permanent: false }];
+      return [...locale, ...own];
+    },
+    // Bare paths are served by app/[locale] as the default locale. afterFiles runs after public
+    // files and static routes (api/*), before the [locale] dynamic route would claim them.
+    async rewrites() {
+      const own = config.rewrites ? await config.rewrites() : [];
+      if (!HIDE_DEFAULT_LOCALE) return own;
+      const skip = OTHER_LOCALES.map((l) => `${l}(?:/|$)|`).join("");
+      const ours = [
+        { source: "/", destination: `/${DEFAULT_LOCALE}` },
+        { source: `/:path((?!${skip}_next/|api/).+)`, destination: `/${DEFAULT_LOCALE}/:path` },
+      ];
+      if (Array.isArray(own)) return [...ours, ...own];
+      return { ...own, afterFiles: [...ours, ...(own.afterFiles ?? [])] };
     },
     webpack(webpackConfig, ctx) {
       webpackConfig.resolve.extensionAlias = {

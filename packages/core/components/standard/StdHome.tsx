@@ -7,7 +7,7 @@ import { NewsletterForm } from "../layout/FooterClient.js";
 import { HeroSlider } from "./HeroSlider.js";
 import { ProductTabs } from "./ProductTabs.js";
 import { ArrowIcon, UspIcon } from "./StdIcons.js";
-import { BASE } from "../../lib/base.js";
+import { home, lp } from "../../lib/base.js";
 
 type Cat = { uid: string; name: string; url_path: string; include_in_menu?: number; position?: number; product_count?: number };
 const TABS = 3;
@@ -31,8 +31,8 @@ export async function StdHome({ locale }: { locale: string }) {
     .sort((a: Cat, b: Cat) => (a.position ?? 0) - (b.position ?? 0))
     .slice(0, 4);
   const rows = await magentoFetch<any>(rowsQuery(cats), { size: PER_TAB }, { tags, revalidate: 300, locale }).catch(() => null);
-  const catHref = (c: Cat) => `${BASE}/${locale}/${c.url_path}.html`;
-  const fill = (h: string) => h.replace(/\{category:(\d+)\}/, (_, i) => (cats[+i] ? catHref(cats[+i]) : `${BASE}/${locale}`)).replaceAll("/{locale}", `${BASE}/${locale}`).replaceAll("{locale}", locale);
+  const catHref = (c: Cat) => `${lp(locale)}/${c.url_path}.html`;
+  const fill = (h: string) => h.replace(/\{category:(\d+)\}/, (_, i) => (cats[+i] ? catHref(cats[+i]) : home(locale))).replaceAll("/{locale}", lp(locale)).replaceAll("{locale}", locale);
   const items = (k: string): CardProduct[] => rows?.[k]?.items ?? [];
   // Magento OS has no best-seller query: mix the categories' first products round-robin,
   // falling back to the unfiltered list when there are no menu categories.
