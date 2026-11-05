@@ -146,6 +146,8 @@
 .hd.hd--std .hd-card__actions > * { pointer-events: auto; }
 .hd.hd--std .hd-card__atc { width: auto; height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: #fff; color: var(--std-ink); font: 600 13px var(--headora-font); text-transform: none; box-shadow: 0 4px 14px rgb(18 18 18 / .1); visibility: hidden; }
 .hd.hd--std .hd-card:is(:hover, :focus-within) .hd-card__atc { visibility: visible; }
+/* Touch screens have no hover, so keep quick-add visible there. */
+@media (hover: none) { .hd.hd--std .hd-card__atc { visibility: visible; } }
 .hd.hd--std .hd-card__atc:hover:not(:disabled) { background: var(--std-ink); color: #fff; }
 .hd.hd--std .hd-card__wish { width: 38px; height: 38px; align-items: center; justify-content: center; border-radius: 999px; background: #fff; box-shadow: 0 4px 14px rgb(18 18 18 / .1); }
 .hd.hd--std .hd-card__wish svg { width: 18px; height: 18px; }
@@ -370,7 +372,7 @@
   .hd.hd--std .std-news { grid-template-columns: minmax(0, 1fr); width: auto; margin: 64px 16px; padding: 32px 22px; }
   .hd.hd--std .hd-plp { grid-template-columns: minmax(0, 1fr); }
   .hd.hd--std .hd-grid { gap: 28px 12px; }
-  .hd.hd--std .hd-card__atc { display: none; }
+  .hd.hd--std .hd-card__atc { width: 38px; padding: 0; visibility: visible; }
   .hd.hd--std .hd-pdp { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .hd.hd--std .hd-pdp__info { position: static; }
   .hd.hd--std .hd-gallery__main { border-radius: 18px; }
