@@ -81,7 +81,7 @@
 .hd.hd--std .std-hero { position: relative; max-width: var(--headora-container); margin: 20px auto 0; padding: 0 40px; }
 .hd.hd--std .std-hero__slide { display: none; position: relative; overflow: hidden; border-radius: 8px; background: var(--std-soft); aspect-ratio: 1440 / 640; }
 .hd.hd--std .std-hero__slide.is-active { display: block; animation: std-fade .6s ease; }
-.hd.hd--std .std-hero__slide img { width: 100%; height: 100%; object-fit: cover; object-position: 70% center; }
+.hd.hd--std .std-hero__slide img { width: 100%; height: 100%; object-fit: cover; object-position: 70% top; }
 .hd.hd--std .std-hero__copy { position: absolute; inset: 0 auto 0 0; width: min(46%, 560px); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 0 0 0 64px; }
 .hd.hd--std .std-hero__title { margin: 0; font-size: clamp(40px, 5.2vw, 76px); font-weight: 800; line-height: .98; letter-spacing: -.035em; color: var(--std-ink); }
 .hd.hd--std .std-hero__text { margin: 18px 0 30px; font-size: 18px; color: #3F3F3F; max-width: 38ch; }
