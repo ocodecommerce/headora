@@ -17,7 +17,7 @@
     "template"
   ],
   "scripts": {
-    "prepack": "node -e \"require('fs').cpSync('../../sites/demo-fashion','template',{recursive:true,filter:s=>!/(node_modules|\\.next|\\.env$|tsbuildinfo|next-env\\.d\\.ts)/.test(s)})\"",
+    "prepack": "node -e \"require('fs').cpSync('../../sites/demo-fashion','template',{recursive:true,filter:s=>!/(node_modules|\\.next|\\.env(?!\\.example$)[^/]*$|tsbuildinfo|next-env\\.d\\.ts)/.test(s)})\"",
     "postpack": "node -e \"require('fs').rmSync('template',{recursive:true,force:true})\""
   },
   "repository": {
