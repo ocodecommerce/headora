@@ -4,8 +4,8 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "create-headora-app": "./init.mjs",
-    "headora": "./cli.mjs"
+    "create-headora-app": "init.mjs",
+    "headora": "cli.mjs"
   },
   "description": "Create a Headora headless Magento storefront: npx create-headora-app my-store",
   "files": [
